@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password      String
+  firstName     String
+  lastName      String
+  avatar        String?
+  phone         String
+  role          String         @default("user")
+  codeTemplates CodeTemplate[]
+  blogs         BlogPost[]
+  comments      Comment[]
+  reports       Report[]
+  votes         Vote[]
+}
+
+model CodeTemplate {
+  id          Int                    @id @default(autoincrement())
+  title       String
+  code        String
+  explanation String?
+  user        User                   @relation(fields: [userId], references: [id])
+  userId      Int
+  tags        CodeTemplateTag[]
+  blogPosts   BlogPostCodeTemplate[]
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+}
+
+model BlogPost {
+  id            Int                    @id @default(autoincrement())
+  title         String
+  description   String
+  content       String
+  user          User                   @relation(fields: [userId], references: [id])
+  userId        Int
+  tags          BlogPostTag[]
+  codeTemplates BlogPostCodeTemplate[]
+  comments      Comment[]
+  votes         Vote[]
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  Report        Report[]
+}
+
+model BlogPostCodeTemplate {
+  id             Int @id @default(autoincrement())
+  blogPostId     Int
+  codeTemplateId Int
+
+  blogPost     BlogPost     @relation(fields: [blogPostId], references: [id])
+  codeTemplate CodeTemplate @relation(fields: [codeTemplateId], references: [id])
+
+  @@unique([blogPostId, codeTemplateId])
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  content    String
+  userId     Int
+  blogPostId Int?
+  parentId   Int?
+  createdAt  DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id])
+  blogPost BlogPost? @relation(fields: [blogPostId], references: [id])
+  parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentToComment")
+  votes    Vote[]
+  reports  Report[]
+}
+
+model Report {
+  id         Int       @id @default(autoincrement())
+  reason     String
+  user       User      @relation(fields: [userId], references: [id])
+  userId     Int
+  blogPost   BlogPost? @relation(fields: [blogPostId], references: [id])
+  blogPostId Int?
+  comment    Comment?  @relation(fields: [commentId], references: [id])
+  commentId  Int?
+  createdAt  DateTime  @default(now())
+}
+
+model Tag {
+  id       Int               @id @default(autoincrement())
+  name     String            @unique
+  codeTags CodeTemplateTag[]
+  blogTags BlogPostTag[]
+}
+
+model CodeTemplateTag {
+  id             Int @id @default(autoincrement())
+  codeTemplateId Int
+  tagId          Int
+
+  codeTemplate CodeTemplate @relation(fields: [codeTemplateId], references: [id])
+  tag          Tag          @relation(fields: [tagId], references: [id])
+
+  @@unique([codeTemplateId, tagId])
+}
+
+model BlogPostTag {
+  id         Int @id @default(autoincrement())
+  blogPostId Int
+  tagId      Int
+
+  blogPost BlogPost @relation(fields: [blogPostId], references: [id])
+  tag      Tag      @relation(fields: [tagId], references: [id])
+
+  @@unique([blogPostId, tagId])
+}
+
+model Vote {
+  id         Int    @id @default(autoincrement())
+  userId     Int
+  blogPostId Int?
+  commentId  Int?
+  voteType   String
+
+  user     User      @relation(fields: [userId], references: [id])
+  blogPost BlogPost? @relation(fields: [blogPostId], references: [id])
+  comment  Comment?  @relation(fields: [commentId], references: [id])
+
+  @@unique([userId, blogPostId], name: "unique_blog_vote")
+  @@unique([userId, commentId], name: "unique_comment_vote")
+}
