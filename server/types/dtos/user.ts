@@ -21,3 +21,12 @@ export interface CreateUserRequest {
     password: string;
     avatar?: string;
 }
+
+export interface EditUserRequest {
+    userId: number,
+    email?: string;
+    phone?: string;
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
+}

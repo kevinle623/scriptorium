@@ -6,8 +6,10 @@ export interface BlogPost {
     description: string;
     content: string;
     userId: number;
+    hidden: boolean;
     createdAt: Date;
     updatedAt: Date;
+    codeTemplateIds: number[]
 }
 
 export interface BlogPostTag {
@@ -15,4 +17,12 @@ export interface BlogPostTag {
     blogPostId: number;
     tagId: number;
     tag: Tag;
+}
+
+export interface CreateBlogPostRequest {
+    title: string;
+    description: string;
+    content: string;
+    userId: number;
+    codeTemplateIds: number[]
 }

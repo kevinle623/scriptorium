@@ -1,7 +1,7 @@
 import {DatabaseIntegrityException} from "../types/exceptions";
 import {User as UserModel} from "@prisma/client";
 
-import {CreateUserRequest, User} from "@server/types/dtos/user"
+import {CreateUserRequest, EditUserRequest, User} from "@server/types/dtos/user"
 
 export async function createUser(prismaClient, createUserRequest: CreateUserRequest, hashedPassword: string): Promise<User> {
     try {
@@ -34,6 +34,33 @@ export async function findUserByEmail(prismaClient, email: string): Promise<User
     } catch (error) {
         console.error("Database Error", error)
         throw new DatabaseIntegrityException('Database error: Failed to find user');
+    }
+}
+
+export async function updateUser(prismaClient, editUserRequest: EditUserRequest): Promise<User> {
+    try {
+        const existingUser = await prismaClient.user.findUnique({
+            where: { id: editUserRequest.userId },
+        });
+
+        if (!existingUser) {
+            throw new Error('User not found');
+        }
+
+        const updatedUser = await prismaClient.user.update({
+            where: { id: editUserRequest.userId },
+            data: {
+                email: editUserRequest.email ?? existingUser.email,
+                firstName: editUserRequest.firstName ?? existingUser.firstName,
+                lastName: editUserRequest.lastName ?? existingUser.lastName,
+                avatar: editUserRequest.avatar ?? existingUser.avatar,
+                phone: editUserRequest.phone ?? existingUser.phone,
+            },
+        });
+        return deserializeUser(updatedUser)
+    } catch (error) {
+        console.error('Database Error', error);
+        throw new DatabaseIntegrityException('Database error: Failed to edit user');
     }
 }
 

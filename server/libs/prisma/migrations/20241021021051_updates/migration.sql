@@ -1,11 +1,11 @@
 /*
   Warnings:
 
-  - You are about to drop the column `hidden` on the `BlogPost` table. All the data in the column will be lost.
-  - You are about to drop the column `reportsCount` on the `BlogPost` table. All the data in the column will be lost.
+  - You are about to drop the column `hidden` on the `BlogPosts` table. All the data in the column will be lost.
+  - You are about to drop the column `reportsCount` on the `BlogPosts` table. All the data in the column will be lost.
   - The primary key for the `CodeTemplateTag` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - Added the required column `updatedAt` to the `BlogPost` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updatedAt` to the `CodeTemplate` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `updatedAt` to the `BlogPosts` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `updatedAt` to the `CodeTemplates` table without a default value. This is not possible if the table is not empty.
   - Added the required column `id` to the `CodeTemplateTag` table without a default value. This is not possible if the table is not empty.
 
 */
@@ -14,8 +14,8 @@ CREATE TABLE "BlogPostCodeTemplate" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "blogPostId" INTEGER NOT NULL,
     "codeTemplateId" INTEGER NOT NULL,
-    CONSTRAINT "BlogPostCodeTemplate_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPost" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "BlogPostCodeTemplate_codeTemplateId_fkey" FOREIGN KEY ("codeTemplateId") REFERENCES "CodeTemplate" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "BlogPostCodeTemplate_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPosts" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "BlogPostCodeTemplate_codeTemplateId_fkey" FOREIGN KEY ("codeTemplateId") REFERENCES "CodeTemplates" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -23,7 +23,7 @@ CREATE TABLE "BlogPostTag" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "blogPostId" INTEGER NOT NULL,
     "tagId" INTEGER NOT NULL,
-    CONSTRAINT "BlogPostTag_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPost" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "BlogPostTag_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPosts" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "BlogPostTag_tagId_fkey" FOREIGN KEY ("tagId") REFERENCES "Tag" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -35,7 +35,7 @@ CREATE TABLE "Vote" (
     "commentId" INTEGER,
     "voteType" TEXT NOT NULL,
     CONSTRAINT "Vote_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Vote_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPost" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Vote_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPosts" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Vote_commentId_fkey" FOREIGN KEY ("commentId") REFERENCES "Comment" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
@@ -52,9 +52,9 @@ CREATE TABLE "new_BlogPost" (
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "BlogPost_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
-INSERT INTO "new_BlogPost" ("content", "description", "id", "title", "userId") SELECT "content", "description", "id", "title", "userId" FROM "BlogPost";
-DROP TABLE "BlogPost";
-ALTER TABLE "new_BlogPost" RENAME TO "BlogPost";
+INSERT INTO "new_BlogPost" ("content", "description", "id", "title", "userId") SELECT "content", "description", "id", "title", "userId" FROM "BlogPosts";
+DROP TABLE "BlogPosts";
+ALTER TABLE "new_BlogPost" RENAME TO "BlogPosts";
 CREATE TABLE "new_CodeTemplate" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "title" TEXT NOT NULL,
@@ -65,14 +65,14 @@ CREATE TABLE "new_CodeTemplate" (
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "CodeTemplate_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
-INSERT INTO "new_CodeTemplate" ("code", "explanation", "id", "title", "userId") SELECT "code", "explanation", "id", "title", "userId" FROM "CodeTemplate";
-DROP TABLE "CodeTemplate";
-ALTER TABLE "new_CodeTemplate" RENAME TO "CodeTemplate";
+INSERT INTO "new_CodeTemplate" ("code", "explanation", "id", "title", "userId") SELECT "code", "explanation", "id", "title", "userId" FROM "CodeTemplates";
+DROP TABLE "CodeTemplates";
+ALTER TABLE "new_CodeTemplate" RENAME TO "CodeTemplates";
 CREATE TABLE "new_CodeTemplateTag" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "codeTemplateId" INTEGER NOT NULL,
     "tagId" INTEGER NOT NULL,
-    CONSTRAINT "CodeTemplateTag_codeTemplateId_fkey" FOREIGN KEY ("codeTemplateId") REFERENCES "CodeTemplate" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "CodeTemplateTag_codeTemplateId_fkey" FOREIGN KEY ("codeTemplateId") REFERENCES "CodeTemplates" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "CodeTemplateTag_tagId_fkey" FOREIGN KEY ("tagId") REFERENCES "Tag" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 INSERT INTO "new_CodeTemplateTag" ("codeTemplateId", "tagId") SELECT "codeTemplateId", "tagId" FROM "CodeTemplateTag";
@@ -87,7 +87,7 @@ CREATE TABLE "new_Comment" (
     "parentId" INTEGER,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Comment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Comment_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPost" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Comment_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPosts" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Comment_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Comment" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 INSERT INTO "new_Comment" ("blogPostId", "content", "id", "userId") SELECT "blogPostId", "content", "id", "userId" FROM "Comment";

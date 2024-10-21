@@ -36,3 +36,4 @@ yarn-error.log*
 next-env.d.ts
 
 */.idea/workspace.xml */.idea/tasks.xml
+/.idea

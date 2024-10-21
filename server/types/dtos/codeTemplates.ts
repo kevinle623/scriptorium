@@ -1,6 +1,6 @@
 import {Tag} from "@prisma/client";
 
-export interface CodeTemplate {
+export interface CodeTemplates {
     id: number;
     title: string;
     code: string;
