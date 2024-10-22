@@ -1,7 +1,7 @@
 import {
     DatabaseIntegrityException,
     InvalidCredentialsException,
-    UserException
+    ServiceException
 } from "@server/types/exceptions";
 import {NextResponse} from "next/server";
 
@@ -22,7 +22,7 @@ export async function GET(req: Request, { params }: { params: { id: string }}){
         const user = await userService.getUserById(userId)
         return NextResponse.json(
             {
-                message: "User updated successfully",
+                message: "User fetched successfully",
                 user: {
                     id: user.id,
                     email: user.email,
@@ -39,7 +39,7 @@ export async function GET(req: Request, { params }: { params: { id: string }}){
             return NextResponse.json({ error: error.message }, { status: 400 });
         } else if (error instanceof InvalidCredentialsException) {
             return NextResponse.json({ error: error.message }, { status: 401 });
-        } else if (error instanceof UserException) {
+        } else if (error instanceof ServiceException) {
             return NextResponse.json({ error: error.message }, { status: 400 });
         }
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -95,7 +95,7 @@ export async function PUT(req: Request, { params }: { params: { id: string }}) {
             return NextResponse.json({ error: error.message }, { status: 400 });
         } else if (error instanceof InvalidCredentialsException) {
             return NextResponse.json({ error: error.message }, { status: 401 });
-        } else if (error instanceof UserException) {
+        } else if (error instanceof ServiceException) {
             return NextResponse.json({ error: error.message }, { status: 400 });
         }
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });

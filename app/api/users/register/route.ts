@@ -3,7 +3,7 @@ import * as userService from "@server/services/users";
 import {
     DatabaseIntegrityException,
     InvalidCredentialsException,
-    UserException,
+    ServiceException,
 } from "@server/types/exceptions";
 import {Role} from "@server/types/dtos/roles";
 import {CreateUserRequest} from "@server/types/dtos/user";
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: error.message }, { status: 400 });
         } else if (error instanceof InvalidCredentialsException) {
             return NextResponse.json({ error: error.message }, { status: 401 });
-        } else if (error instanceof UserException) {
+        } else if (error instanceof ServiceException) {
             return NextResponse.json({ error: error.message }, { status: 400 });
         }
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });

@@ -1,6 +1,6 @@
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 import {BlogPost as BlogPostModel} from "@prisma/client"
-import {BlogPost, CreateBlogPostRequest, EditBlogPostRequest} from "@server/types/dtos/blogPosts";
+import {BlogPost, CreateBlogPostRequest, EditBlogPostRequest, GetBlogPostRequest} from "@server/types/dtos/blogPosts";
 
 export async function createBlogPost(prismaClient, createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
     try {
@@ -86,7 +86,7 @@ export async function editBlogPost(
 
         await prismaClient.blogPost.update({
             where: {
-                id: editBlogPostRequest.id,
+                id: editBlogPostRequest.blogPostId,
             },
             data: dataToUpdate,
         });
@@ -98,7 +98,63 @@ export async function editBlogPost(
     }
 }
 
+export async function getBlogPosts(
+    prismaClient,
+    getBlogPostsRequest: GetBlogPostRequest
+): Promise<BlogPost[]> {
+    try {
+        const { page, limit, tagsList, sortBy, sortOrd } = getBlogPostsRequest
+        const skip = page && limit ? (page - 1) * limit : undefined;
+        const take = limit || undefined;
+
+        const whereCondition: any = {};
+
+        if (tagsList && tagsList.length > 0) {
+            whereCondition.tags = {
+                some: {
+                    tag: {
+                        name: {
+                            in: tagsList,
+                        },
+                    },
+                },
+            };
+        }
+
+        const orderBy = sortBy
+            ? {
+                [sortBy]: sortOrd === 'desc' ? 'desc' : 'asc',
+            }
+            : undefined;
+
+        const blogPosts = await prismaClient.blogPost.findMany({
+            skip,
+            take,
+            where: whereCondition,
+            orderBy,
+            include: {
+                tags: {
+                    include: {
+                        tag: true,
+                    },
+                },
+                votes: true,
+                comments: true,
+                codeTemplates: true,
+            },
+        });
+
+        return blogPosts.map(deserializeBlogPost);
+    } catch (e) {
+        console.error('Database Error', e);
+        throw new Error('Failed to fetch blog posts');
+    }
+}
+
+
 function deserializeBlogPost(blogPost: BlogPostModel): BlogPost {
+    const upVotes = blogPost.votes.filter(vote => vote.voteType === 'up').length;
+    const downVotes = blogPost.votes.filter(vote => vote.voteType === 'down').length;
     return {
         id: blogPost.id,
         title: blogPost.title,
@@ -108,6 +164,10 @@ function deserializeBlogPost(blogPost: BlogPostModel): BlogPost {
         hidden: blogPost.hidden,
         createdAt: blogPost.createdAt,
         updatedAt: blogPost.updatedAt,
-        codeTemplateIds: blogPost.codeTemplates.map((template) => template.codeTemplateId),
+        codeTemplateIds: blogPost.codeTemplates.map(template => template.id),
+        upVotes: upVotes,
+        downVotes: downVotes,
+        commentIds: blogPost.comments.map(comment => comment.id),
+        tagIds: blogPost.tags.map(tag => tag.id),
     };
 }

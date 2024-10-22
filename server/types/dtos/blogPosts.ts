@@ -9,7 +9,11 @@ export interface BlogPost {
     hidden: boolean;
     createdAt: Date;
     updatedAt: Date;
-    codeTemplateIds: number[]
+    codeTemplateIds: number[];
+    upVotes: number;
+    downVotes: number;
+    commentIds: number[];
+    tagIds: number[];
 }
 
 export interface BlogPostTag {
@@ -25,12 +29,22 @@ export interface CreateBlogPostRequest {
     content: string;
     userId: number;
     codeTemplateIds: number[]
+    tags: string[]
 }
 
 export interface EditBlogPostRequest {
-    id: number,
+    blogPostId: number,
     title: string;
     description: string;
     content: string;
     codeTemplateIds: number[]
+    tags: string[]
+}
+
+export interface GetBlogPostRequest {
+    page?: number,
+    limit?: number,
+    tagsList?: string[],
+    sortBy?: string,
+    sortOrd?: string
 }

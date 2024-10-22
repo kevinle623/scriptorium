@@ -1,5 +1,5 @@
 import * as userRepository from '@server/repositories/users'
-import {InvalidCredentialsException, NotFoundException, UserException} from "../types/exceptions";
+import {InvalidCredentialsException, NotFoundException, ServiceException} from "../types/exceptions";
 import {prisma} from "@server/libs/prisma/client";
 import {comparePassword, hashPassword} from "@server/utils/password_utils";
 import {generateAccessToken, generateRefreshToken } from "@server/utils/jwt_utils";
@@ -9,7 +9,7 @@ export async function registerUser(createUserRequest: CreateUserRequest) {
     try {
         const existingUser = await userRepository.findUserByEmail(prisma, createUserRequest.email)
         if (existingUser) {
-            throw new UserException("Username already exists")
+            throw new ServiceException("Username already exists")
         }
         const hashedPassword = await hashPassword(createUserRequest.password)
 
@@ -61,12 +61,12 @@ export async function getUserById(userId: number) {
 
 export async function editUser(editUserRequest: EditUserRequest){
     try {
-        await userRepository.updateUser(prisma, editUserRequest)
         const user = await userRepository.findUserById(prisma, editUserRequest.userId)
         if (!user) {
             throw new NotFoundException("User not found")
         }
-        const updatedUser = await userRepository.updateUser(prisma, editUserRequest)
+        await userRepository.updateUser(prisma, editUserRequest)
+        const updatedUser = await userRepository.findUserById(prisma, editUserRequest.userId)
         return updatedUser
     } catch (error) {
         throw error

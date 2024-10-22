@@ -3,7 +3,7 @@ import * as userService from "@server/services/users";
 import {
     DatabaseIntegrityException,
     InvalidCredentialsException,
-    UserException,
+    ServiceException,
 } from "@server/types/exceptions";
 
 export async function POST(req: Request) {
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     } catch (error) {
         if (error instanceof DatabaseIntegrityException) {
             return NextResponse.json({ error: error.message }, { status: 400 });
-        } else if (error instanceof UserException) {
+        } else if (error instanceof ServiceException) {
             return NextResponse.json({ error: error.message }, { status: 401 });
         } else if (error instanceof InvalidCredentialsException) {
             return NextResponse.json({ error: error.message }, { status: 401 });
