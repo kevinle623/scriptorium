@@ -26,3 +26,11 @@ export interface CreateBlogPostRequest {
     userId: number;
     codeTemplateIds: number[]
 }
+
+export interface EditBlogPostRequest {
+    id: number,
+    title: string;
+    description: string;
+    content: string;
+    codeTemplateIds: number[]
+}

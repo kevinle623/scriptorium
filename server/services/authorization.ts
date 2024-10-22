@@ -26,9 +26,9 @@ export async function verifyRole(tokenPayload, requiredRole: Role) {
 }
 
 export async function refreshTokens(tokenPayload){
-    const {userId, username, role} = tokenPayload
-    const refreshToken = generateRefreshToken(userId, username, role)
-    const accessToken = generateAccessToken(userId, username, role)
+    const {userId, email, role} = tokenPayload
+    const refreshToken = generateRefreshToken(userId, email, role)
+    const accessToken = generateAccessToken(userId, email, role)
 
     return {
         refreshToken,

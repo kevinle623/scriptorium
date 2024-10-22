@@ -23,6 +23,20 @@ export async function createUser(prismaClient, createUserRequest: CreateUserRequ
     }
 }
 
+export async function findUserById(prismaClient, userId: number): Promise<User> {
+    try {
+        const user = await prismaClient.user.findUnique({
+            where: {
+                id: userId,
+            }
+        })
+        return deserializeUser(user)
+    } catch (error) {
+        console.error("Database Error", error)
+        throw new DatabaseIntegrityException('Database error: Failed to find user');
+    }
+}
+
 export async function findUserByEmail(prismaClient, email: string): Promise<User> {
     try {
         const user = await prismaClient.user.findUnique({
@@ -37,7 +51,7 @@ export async function findUserByEmail(prismaClient, email: string): Promise<User
     }
 }
 
-export async function updateUser(prismaClient, editUserRequest: EditUserRequest): Promise<User> {
+export async function updateUser(prismaClient, editUserRequest: EditUserRequest): Promise<void> {
     try {
         const existingUser = await prismaClient.user.findUnique({
             where: { id: editUserRequest.userId },
@@ -47,7 +61,7 @@ export async function updateUser(prismaClient, editUserRequest: EditUserRequest)
             throw new Error('User not found');
         }
 
-        const updatedUser = await prismaClient.user.update({
+        await prismaClient.user.update({
             where: { id: editUserRequest.userId },
             data: {
                 email: editUserRequest.email ?? existingUser.email,
@@ -57,7 +71,7 @@ export async function updateUser(prismaClient, editUserRequest: EditUserRequest)
                 phone: editUserRequest.phone ?? existingUser.phone,
             },
         });
-        return deserializeUser(updatedUser)
+        return
     } catch (error) {
         console.error('Database Error', error);
         throw new DatabaseIntegrityException('Database error: Failed to edit user');
