@@ -7,6 +7,8 @@ import {NotFoundException} from "@server/types/exceptions";
 import {Comment} from "@server/types/dtos/comments";
 import * as commentRepository from "@server/repositories/comments";
 import * as reportRepository from "@server/repositories/reports";
+import {VoteType} from "@server/types/dtos/votes";
+import * as voteRepository from "@server/repositories/votes";
 
 export async function createBlogPost(createBlogPostRequest: CreateBlogPostRequest){
     try {
@@ -97,4 +99,17 @@ export async function reportBlogPost(userId: number, blogPostId: number, reason:
     } catch (e) {
         throw e
     }
+}
+
+export async function toggleBlogPostVote(
+    userId: number,
+    blogPostId: number,
+    voteType: VoteType | null,
+) {
+    try {
+        return await voteRepository.toggleVote(prisma, userId, voteType, blogPostId, undefined);
+    } catch (e) {
+        throw e
+    }
+
 }
