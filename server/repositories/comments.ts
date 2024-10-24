@@ -1,6 +1,6 @@
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 import {Comment as CommentModel} from "@prisma/client"
-import {Comment, EditCommentRequest, GetCommentResult} from "@server/types/dtos/comments"
+import {Comment, EditCommentRequest, GetCommentsResult} from "@server/types/dtos/comments"
 
 export async function getCommentById(
     prismaClient,
@@ -139,7 +139,7 @@ export async function getDirectCommentsFromBlogPost(
     blogPostId: number,
     page?: number,
     limit?: number
-): Promise<GetCommentResult> {
+): Promise<GetCommentsResult> {
     try {
         const queryOptions: any = {
             where: {
@@ -184,7 +184,7 @@ export async function getDirectRepliesFromComment(
     commentId: number,
     page?: number,
     limit?: number
-): Promise<GetCommentResult> {
+): Promise<GetCommentsResult> {
     try {
         const totalCount = await prismaClient.comment.count({
             where: {
@@ -224,7 +224,7 @@ export async function getMostReportedComments(
     prisma,
     page?: number,
     limit?: number
-): Promise<GetCommentResult> {
+): Promise<GetCommentsResult> {
     try {
         const offset = page && limit ? (page - 1) * limit : undefined;
         const take = limit ?? undefined;

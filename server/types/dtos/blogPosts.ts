@@ -50,7 +50,7 @@ export interface GetBlogPostRequest {
     sortOrd?: string
 }
 
-export interface GetBlogPostResult {
+export interface GetBlogPostsResult {
     totalCount: number,
     blogPosts: BlogPost[]
 }

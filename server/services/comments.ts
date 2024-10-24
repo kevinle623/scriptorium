@@ -1,12 +1,10 @@
 import * as commentRepository from "@server/repositories/comments";
-import {Comment, GetCommentResult} from "@server/types/dtos/comments";
+import {Comment, GetCommentsResult} from "@server/types/dtos/comments";
 import {prisma} from "@server/libs/prisma/client";
 import * as reportRepository from "@server/repositories/reports";
 import {VoteType} from "@server/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
 import {NotFoundException} from "@server/types/exceptions";
-import * as blogPostRepository from "@server/repositories/blogPosts";
-import {BlogPost, GetBlogPostRequest, GetBlogPostResult} from "@server/types/dtos/blogPosts";
 
 export async function addCommentToComment(
     parentCommentId: number,
@@ -78,7 +76,7 @@ export async function getDirectRepliesFromComment(
     commentId: number,
     page?: number,
     limit?: number
-): Promise<GetCommentResult> {
+): Promise<GetCommentsResult> {
     try {
         const comment = await commentRepository.getCommentById(prisma, commentId)
         if (!comment) {
@@ -108,7 +106,7 @@ export async function toggleHiddentComment(commentId: number, hidden: boolean) {
 export async function getMostReportedComments(
     page?: number,
     limit?: number,
-): Promise<GetBlogPostResult> {
+): Promise<GetCommentsResult> {
     try {
         return await commentRepository.getMostReportedComments(prisma, page, limit)
     } catch (e) {

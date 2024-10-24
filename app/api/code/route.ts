@@ -52,3 +52,47 @@ export async function GET(req: Request) {
         return NextResponse.json({error: "Internal server error"}, {status: 500});
     }
 }
+
+export async function POST(req: Request) {
+    try {
+        const createCodeTemplateRequest = await req.json();
+
+        if (!createCodeTemplateRequest.userId || !createCodeTemplateRequest.title || !createCodeTemplateRequest.language || !createCodeTemplateRequest.code) {
+            return NextResponse.json(
+                {message: "Missing required fields"},
+                {status: 400}
+            );
+        }
+
+        const createdCodeTemplate = await codeTemplateService.createCodeTemplate(createCodeTemplateRequest);
+
+        const tags = await tagService.getTagNamesByIds(createdCodeTemplate.tagIds);
+
+        return NextResponse.json(
+            {
+                message: "Code Template created successfully",
+                codeTemplate: {
+                    id: createdCodeTemplate.id,
+                    userId: createdCodeTemplate.userId,
+                    title: createdCodeTemplate.title,
+                    language: createdCodeTemplate.language,
+                    code: createdCodeTemplate.code,
+                    parentTemplateId: createdCodeTemplate.parentTemplateId,
+                    tags: tags,
+                    createdAt: createdCodeTemplate.createdAt,
+                    updatedAt: createdCodeTemplate.updatedAt,
+                }
+            },
+            {status: 201}
+        );
+    } catch (error) {
+        if (error instanceof DatabaseIntegrityException) {
+            return NextResponse.json({error: error.message}, {status: 400});
+        } else if (error instanceof InvalidCredentialsException) {
+            return NextResponse.json({error: error.message}, {status: 401});
+        } else if (error instanceof ServiceException) {
+            return NextResponse.json({error: error.message}, {status: 400});
+        }
+        return NextResponse.json({error: "Internal server error"}, {status: 500});
+    }
+}

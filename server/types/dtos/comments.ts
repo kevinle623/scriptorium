@@ -20,7 +20,7 @@ export interface EditCommentRequest {
     hidden?: boolean,
 }
 
-export interface GetCommentResult {
+export interface GetCommentsResult {
     totalCount: number,
     comments: Comment[]
 }

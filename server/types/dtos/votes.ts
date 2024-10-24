@@ -12,8 +12,3 @@ export interface Vote {
     commentId?: number | null;
     voteType: VoteType;
 }
-
-export interface GetVotesResult {
-    totalCount: number,
-    votes: Vote[]
-}

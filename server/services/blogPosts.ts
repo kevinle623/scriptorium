@@ -1,61 +1,71 @@
 
 import {prisma} from "@server/libs/prisma/client";
 import {
-    BlogPost,
     CreateBlogPostRequest,
     EditBlogPostRequest,
     GetBlogPostRequest,
-    GetBlogPostResult
+    GetBlogPostsResult
 } from "@server/types/dtos/blogPosts";
 import * as blogPostRepository from "@server/repositories/blogPosts"
 import * as tagRepository from "@server/repositories/tags"
 import {NotFoundException} from "@server/types/exceptions";
-import {Comment, GetCommentResult} from "@server/types/dtos/comments";
+import {Comment, GetCommentsResult} from "@server/types/dtos/comments";
 import * as commentRepository from "@server/repositories/comments";
 import * as reportRepository from "@server/repositories/reports";
 import {VoteType} from "@server/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
 
-export async function createBlogPost(createBlogPostRequest: CreateBlogPostRequest){
+export async function createBlogPost(createBlogPostRequest: CreateBlogPostRequest) {
     try {
-        const newBlogPost = await blogPostRepository.createBlogPost(prisma, createBlogPostRequest)
-        const tags = createBlogPostRequest.tags
-        await tagRepository.createBlogPostTags(prisma, newBlogPost.id, tags)
-        return newBlogPost
+        const newBlogPost = await prisma.$transaction(async (prismaTx) => {
+            const createdBlogPost = await blogPostRepository.createBlogPost(prismaTx, createBlogPostRequest);
+            if (createBlogPostRequest.tags && createBlogPostRequest.tags.length > 0) {
+                await tagRepository.createBlogPostTags(prismaTx, createdBlogPost.id, createBlogPostRequest.tags);
+            }
+            return createdBlogPost;
+        });
+        return newBlogPost;
     } catch (e) {
-        throw e
+        throw e;
     }
 }
 
-export async function deleteBlogPost(blogPostId) {
+export async function deleteBlogPost(blogPostId: number) {
     try {
-        const existingBlogPost = await blogPostRepository.getBlogPostById(prisma, blogPostId)
-        if (!existingBlogPost) {
-            throw new NotFoundException("Blog Post does not exist")
-        }
-        await tagRepository.deleteBlogPostTags(prisma, blogPostId)
-        await blogPostRepository.deleteBlogPost(prisma, blogPostId)
-        return
+        await prisma.$transaction(async (prismaTx) => {
+            const existingBlogPost = await blogPostRepository.getBlogPostById(prismaTx, blogPostId);
+            if (!existingBlogPost) {
+                throw new NotFoundException("Blog Post does not exist");
+            }
+            await tagRepository.deleteBlogPostTags(prismaTx, blogPostId);
+            await blogPostRepository.deleteBlogPost(prismaTx, blogPostId);
+        });
+
+        return;
     } catch (e) {
-        throw e
+        throw e;
     }
 }
 
-export async function updateBlogPost(editBlogPostRequest: EditBlogPostRequest) {
+export async function updateBlogPost(prisma, editBlogPostRequest: EditBlogPostRequest) {
     try {
-        const existingBlogPost = await blogPostRepository.getBlogPostById(prisma, editBlogPostRequest.blogPostId)
-        if (!existingBlogPost) {
-            throw new NotFoundException("Blog Post does not exist")
-        }
-        const tags = editBlogPostRequest.tags ?? []
-        await blogPostRepository.editBlogPost(prisma, editBlogPostRequest)
-        if (tags) {
-            await tagRepository.updateBlogPostTags(prisma, editBlogPostRequest.blogPostId, tags)
-        }
-        const updatedBlogPost = await blogPostRepository.getBlogPostById(prisma, editBlogPostRequest.blogPostId)
-        return updatedBlogPost
+        const { blogPostId, tags = [] } = editBlogPostRequest;
+        const updatedBlogPost = await prisma.$transaction(async (prismaTx) => {
+            const existingBlogPost = await blogPostRepository.getBlogPostById(prismaTx, blogPostId);
+            if (!existingBlogPost) {
+                throw new NotFoundException("Blog Post does not exist");
+            }
+            await blogPostRepository.editBlogPost(prismaTx, editBlogPostRequest);
+            if (tags.length > 0) {
+                await tagRepository.updateBlogPostTags(prismaTx, blogPostId, tags);
+            }
+            return await blogPostRepository.getBlogPostById(prismaTx, blogPostId);
+        });
+
+        return updatedBlogPost;
     } catch (e) {
-        throw e
+        console.error("Error updating blog post: ", e);
+        throw e;
     }
 }
 
@@ -123,7 +133,7 @@ export async function getDirectCommentsFromBlogPost(
     blogPostId: number,
     page: number,
     limit: number
-): Promise<GetCommentResult> {
+): Promise<GetCommentsResult> {
     try {
         const blogPost = await blogPostRepository.getBlogPostById(prisma, blogPostId)
         if (!blogPost) {
@@ -151,7 +161,7 @@ export async function toggleHiddenBlogPost(blogPostId: number, hidden: boolean) 
 export async function getMostReportedBlogPosts(
     page?: number,
     limit?: number,
-): Promise<GetBlogPostResult> {
+): Promise<GetBlogPostsResult> {
     try {
         return await blogPostRepository.getMostReportedBlogPosts(prisma, page, limit)
     } catch (e) {

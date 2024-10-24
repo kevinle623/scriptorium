@@ -2,7 +2,7 @@ import {CodeTemplate as CodeTemplateModel} from "@prisma/client";
 import {
     CodeTemplate,
     CreateCodeTemplateRequest,
-    GetCodeTemplateResult,
+    GetCodeTemplatesResult,
     UpdateCodeTemplateRequest
 } from "@server/types/dtos/codeTemplates"
 import {DatabaseIntegrityException} from "@server/types/exceptions";
@@ -59,7 +59,7 @@ export async function getCodeTemplatesByUserId(
     userId: number,
     page?: number,
     limit?: number
-): Promise<GetCodeTemplateResult> {
+): Promise<GetCodeTemplatesResult> {
     try {
         const skip = page && limit ? (page - 1) * limit : undefined;
         const take = limit ?? undefined;

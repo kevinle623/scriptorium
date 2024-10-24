@@ -2,7 +2,7 @@ import * as codeExecutionLibrary from "@server/libs/codeExecution";
 import {
     CodeTemplate,
     CodingLanguage,
-    CreateCodeTemplateRequest, GetCodeTemplateResult,
+    CreateCodeTemplateRequest, GetCodeTemplatesResult,
     UpdateCodeTemplateRequest
 } from "@server/types/dtos/codeTemplates";
 import * as codeTemplateRepository from "@server/repositories/codeTemplates"
@@ -13,14 +13,24 @@ import {NotFoundException} from "@server/types/exceptions";
 
 export async function createCodeTemplate(createCodeTemplateRequest: CreateCodeTemplateRequest) {
     try {
-        const codeTemplate = await codeTemplateRepository.createCodeTemplate(prisma, createCodeTemplateRequest)
-        await tagRepository.createCodeTemplateTags(prisma, codeTemplate.id, createCodeTemplateRequest.tags)
-        const updatedCodeTemplate = await codeTemplateRepository.getCodeTemplateById(prisma, codeTemplate.id)
-        return updatedCodeTemplate
-    } catch(e) {
-        throw e
-    }
+        const codeTemplate = await prisma.$transaction(async (prismaTx) => {
+            const newCodeTemplate = await codeTemplateRepository.createCodeTemplate(prismaTx, createCodeTemplateRequest);
+            if (createCodeTemplateRequest.tags && createCodeTemplateRequest.tags.length > 0) {
+                await tagRepository.createCodeTemplateTags(prismaTx, newCodeTemplate.id, createCodeTemplateRequest.tags);
+            }
+            return newCodeTemplate;
+        });
 
+        const updatedCodeTemplate = await codeTemplateRepository.getCodeTemplateById(prisma, codeTemplate.id);
+
+        if (!updatedCodeTemplate) {
+            throw new NotFoundException("Code template not found.")
+        }
+
+        return updatedCodeTemplate;
+    } catch(e) {
+        throw e;
+    }
 }
 
 export async function getCodeTemplateById(codeTemplateId: number): Promise<CodeTemplate> {
@@ -36,26 +46,31 @@ export async function getCodeTemplateById(codeTemplateId: number): Promise<CodeT
 }
 export async function updateCodeTemplate(updateCodeTemplateRequest: UpdateCodeTemplateRequest): Promise<CodeTemplate> {
     try {
-        await codeTemplateRepository.editCodeTemplate(prisma, updateCodeTemplateRequest)
-        if (updateCodeTemplateRequest.tags) {
-            await tagRepository.updateCodeTemplateTags(prisma, updateCodeTemplateRequest.id, updateCodeTemplateRequest.tags)
-        }
-        const updatedCodeTemplate = await codeTemplateRepository.getCodeTemplateById(prisma, updateCodeTemplateRequest.id)
-        if (!updatedCodeTemplate) {
-            throw new NotFoundException("Code Template Not Found")
-        }
-        return updatedCodeTemplate
-    } catch (error) {
-        throw error
-    }
+        const updatedCodeTemplate = await prisma.$transaction(async (prismaTx) => {
+            await codeTemplateRepository.editCodeTemplate(prismaTx, updateCodeTemplateRequest);
 
+            if (updateCodeTemplateRequest.tags && updateCodeTemplateRequest.tags.length > 0) {
+                await tagRepository.updateCodeTemplateTags(prismaTx, updateCodeTemplateRequest.id, updateCodeTemplateRequest.tags);
+            }
+
+            const updatedTemplate = await codeTemplateRepository.getCodeTemplateById(prismaTx, updateCodeTemplateRequest.id);
+            if (!updatedTemplate) {
+                throw new NotFoundException("Code Template Not Found");
+            }
+            return updatedTemplate;
+        });
+
+        return updatedCodeTemplate;
+    } catch (error) {
+        throw error;
+    }
 }
 
 export async function getCodeTemplatesByUserId(
     userId: number,
     page?: number,
     limit?: number,
-): Promise<GetCodeTemplateResult> {
+): Promise<GetCodeTemplatesResult> {
     try {
         return await codeTemplateRepository.getCodeTemplatesByUserId(prisma, userId, page, limit)
     } catch (e) {

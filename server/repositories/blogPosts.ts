@@ -5,7 +5,7 @@ import {
     CreateBlogPostRequest,
     EditBlogPostRequest,
     GetBlogPostRequest,
-    GetBlogPostResult
+    GetBlogPostsResult
 } from "@server/types/dtos/blogPosts";
 
 export async function createBlogPost(prismaClient, createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
@@ -111,7 +111,7 @@ export async function editBlogPost(
 export async function getBlogPosts(
     prismaClient,
     getBlogPostsRequest: GetBlogPostRequest
-): Promise<GetBlogPostResult> {
+): Promise<GetBlogPostsResult> {
     try {
         const { page, limit, tagsList, sortBy, sortOrd } = getBlogPostsRequest
         const skip = page && limit ? (page - 1) * limit : undefined;
@@ -169,7 +169,7 @@ export async function getMostReportedBlogPosts(
     prisma,
     page?: number,
     limit?: number
-): Promise<GetBlogPostResult> {
+): Promise<GetBlogPostsResult> {
     try {
         const offset = page && limit ? (page - 1) * limit : undefined;
         const take = limit ?? undefined;
