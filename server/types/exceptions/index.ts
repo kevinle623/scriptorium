@@ -5,6 +5,13 @@ export class ServiceException extends Error {
     }
 }
 
+export class CodeExecutionException extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'CodeExecutionException';
+    }
+}
+
 export class InvalidCredentialsException extends Error {
     constructor(message) {
         super(message);

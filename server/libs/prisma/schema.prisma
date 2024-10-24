@@ -28,17 +28,20 @@ model User {
 }
 
 model CodeTemplate {
-  id          Int                    @id @default(autoincrement())
-  title       String
-  code        String
-  language    String
-  explanation String?
-  user        User                   @relation(fields: [userId], references: [id])
-  userId      Int
-  tags        CodeTemplateTag[]
-  blogPosts   BlogPostCodeTemplate[]
-  createdAt   DateTime               @default(now())
-  updatedAt   DateTime               @updatedAt
+  id               Int                    @id @default(autoincrement())
+  title            String
+  code             String
+  language         String
+  explanation      String?
+  user             User                   @relation(fields: [userId], references: [id])
+  userId           Int
+  tags             CodeTemplateTag[]
+  blogPosts        BlogPostCodeTemplate[]
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  parentTemplateId Int?
+  parentTemplate   CodeTemplate?          @relation("ForkParent", fields: [parentTemplateId], references: [id])
+  forkedTemplates  CodeTemplate[]         @relation("ForkParent")
 }
 
 model BlogPost {

@@ -8,7 +8,7 @@ export enum CodingLanguage {
     JAVASCRIPT = "javascript"
 }
 
-export interface CodeTemplates {
+export interface CodeTemplate {
     id: number;
     title: string;
     code: string;
@@ -16,6 +16,8 @@ export interface CodeTemplates {
     explanation?: string;
     userId: number;
     tagIds: number[]
+    createdAt: Date,
+    updatedAt: Date
 }
 
 export interface CodeTemplateTag {
@@ -23,5 +25,20 @@ export interface CodeTemplateTag {
     codeTemplateId: number;
     tagId: number;
     tag: Tag;
+}
+
+export interface CodeExecutionRequest {
+    language: CodingLanguage;
+    code: string;
+    stdin?: string;
+}
+
+export interface UpdateCodeTemplateRequest {
+    id: number;
+    title: string;
+    code: string;
+    language: CodingLanguage,
+    explanation?: string;
+    tagIds: number[]
 }
 

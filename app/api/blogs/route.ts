@@ -57,45 +57,55 @@ export async function GET(req: Request) {
     }
 }
 
-// export async function POST(req: Request) {
-//     try {
-//         const {
-//             title,
-//             description,
-//             content,
-//             userId,
-//             codeTemplateIds,
-//             tags
-//         } = await req.json()
-//         const blogPost = await blogPostService.createBlogPost()
-//         const tags = await tagService.getTagNamesByIds(blogPost.tagIds)
-//         return NextResponse.json(
-//             {
-//                 message: "Blog Post fetched successfully",
-//                 blogPost: {
-//                     id: blogPost.id,
-//                     userId: blogPost.userId,
-//                     title: blogPost.title,
-//                     description: blogPost.description,
-//                     content: blogPost.content,
-//                     hidden: blogPost.hidden,
-//                     codeTemplateIds: blogPost.codeTemplateIds,
-//                     createdAt: blogPost.createdAt,
-//                     updatedAt: blogPost.updatedAt,
-//                     tags: tags,
-//                     commentIds: blogPost.commentIds,
-//                 },
-//             },
-//             {status: 201}
-//         );
-//     } catch (error) {
-//         if (error instanceof DatabaseIntegrityException) {
-//             return NextResponse.json({error: error.message}, {status: 400});
-//         } else if (error instanceof InvalidCredentialsException) {
-//             return NextResponse.json({error: error.message}, {status: 401});
-//         } else if (error instanceof ServiceException) {
-//             return NextResponse.json({error: error.message}, {status: 400});
-//         }
-//         return NextResponse.json({error: "Internal server error"}, {status: 500});
-//     }
-// }
+export async function POST(req: Request) {
+    try {
+        const {
+            title,
+            description,
+            content,
+            userId,
+            codeTemplateIds,
+            tags
+        } = await req.json()
+
+        const createBlogPostRequest = {
+            title,
+            description,
+            content,
+            userId,
+            codeTemplateIds,
+            tags,
+        }
+
+        const blogPost = await blogPostService.createBlogPost(createBlogPostRequest)
+        const tagNames = await tagService.getTagNamesByIds(blogPost.tagIds)
+        return NextResponse.json(
+            {
+                message: "Blog Post created successfully",
+                blogPost: {
+                    id: blogPost.id,
+                    userId: blogPost.userId,
+                    title: blogPost.title,
+                    description: blogPost.description,
+                    content: blogPost.content,
+                    hidden: blogPost.hidden,
+                    codeTemplateIds: blogPost.codeTemplateIds,
+                    createdAt: blogPost.createdAt,
+                    updatedAt: blogPost.updatedAt,
+                    tags: tagNames,
+                    commentIds: blogPost.commentIds,
+                },
+            },
+            {status: 201}
+        );
+    } catch (error) {
+        if (error instanceof DatabaseIntegrityException) {
+            return NextResponse.json({error: error.message}, {status: 400});
+        } else if (error instanceof InvalidCredentialsException) {
+            return NextResponse.json({error: error.message}, {status: 401});
+        } else if (error instanceof ServiceException) {
+            return NextResponse.json({error: error.message}, {status: 400});
+        }
+        return NextResponse.json({error: "Internal server error"}, {status: 500});
+    }
+}

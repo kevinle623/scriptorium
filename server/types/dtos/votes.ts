@@ -6,7 +6,7 @@ export enum VoteType {
 export interface Vote {
     id: number;
     userId: number;
-    blogPostId?: number;
-    commentId?: number;
+    blogPostId?: number | null;
+    commentId?: number | null;
     voteType: VoteType;
 }
