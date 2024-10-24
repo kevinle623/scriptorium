@@ -173,8 +173,14 @@ export async function getDirectRepliesFromComment(
     commentId: number,
     page?: number,
     limit?: number
-): Promise<Comment[]> {
+): Promise<{ comments: Comment[], totalCount: number }> {
     try {
+        const totalCount = await prismaClient.comment.count({
+            where: {
+                parentId: commentId,
+            },
+        });
+
         const queryOptions: any = {
             where: {
                 parentId: commentId,
@@ -194,7 +200,9 @@ export async function getDirectRepliesFromComment(
         }
 
         const comments = await prismaClient.comment.findMany(queryOptions);
-        return comments.map((comment) => deserializeComment(comment));
+        const deserializedComments = comments.map((comment) => deserializeComment(comment));
+
+        return { comments: deserializedComments, totalCount };
     } catch (e) {
         console.error("Database error: ", e);
         throw new DatabaseIntegrityException("Database error: Failed to fetch direct replies");

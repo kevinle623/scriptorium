@@ -78,15 +78,15 @@ export async function getDirectRepliesFromComment(
     commentId: number,
     page?: number,
     limit?: number
-): Promise<Comment[]> {
+): Promise<{ comments: Comment[], totalCount: number }> {
     try {
         const comment = await commentRepository.getCommentById(prisma, commentId)
         if (!comment) {
             throw new NotFoundException("Comment not Found")
 
         }
-        const comments = await commentRepository.getDirectRepliesFromComment(prisma, commentId, page, limit);
-        return comments
+        const { comments, totalCount } = await commentRepository.getDirectRepliesFromComment(prisma, commentId, page, limit);
+        return { comments, totalCount }
     } catch (error) {
         throw error
     }
