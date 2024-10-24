@@ -4,6 +4,8 @@ import {prisma} from "@server/libs/prisma/client";
 import * as reportRepository from "@server/repositories/reports";
 import {VoteType} from "@server/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
+import {NotFoundException} from "@server/types/exceptions";
+import {getCommentById} from "@server/repositories/comments";
 
 export async function addCommentToComment(
     parentCommentId: number,
@@ -64,5 +66,23 @@ export async function toggleCommentVote(
         return await voteRepository.toggleVote(prisma, userId, voteType, undefined, commentId);
     } catch (e) {
         throw e
+    }
+}
+
+export async function getDirectRepliesFromComment(
+    commentId: number,
+    page?: number,
+    limit?: number
+): Promise<Comment[]> {
+    try {
+        const comment = await commentRepository.getCommentById(prisma, commentId)
+        if (!comment) {
+            throw new NotFoundException("Comment not Found")
+
+        }
+        const comments = await commentRepository.getDirectRepliesFromComment(prisma, commentId, page, limit);
+        return comments
+    } catch (error) {
+        throw error
     }
 }

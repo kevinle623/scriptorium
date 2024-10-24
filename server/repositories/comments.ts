@@ -2,6 +2,26 @@ import {DatabaseIntegrityException} from "@server/types/exceptions";
 import {Comment as CommentModel} from "@prisma/client"
 import {Comment} from "@server/types/dtos/comments"
 
+export async function getCommentById(
+    prismaClient,
+    commentId,
+): Promise<Comment> {
+    try {
+        const comment = await prismaClient.comment.findUnique({
+            where: {
+                id: commentId,
+            },
+            include: {
+                votes: true,
+                replies: true,
+            },
+        });
+        return comment
+    } catch (e) {
+        console.error("Database error: ", e)
+        throw new DatabaseIntegrityException("Database error: failed to fetch comment")
+    }
+}
 export async function createCommentToBlogPost(
     prismaClient,
     blogPostId: number,
@@ -106,6 +126,74 @@ export async function editComment(
         throw new DatabaseIntegrityException("Database error: failed to update comment");
     }
 }
+
+export async function getDirectCommentsFromBlogPost(
+    prismaClient,
+    blogPostId: number,
+    page?: number,
+    limit?: number
+): Promise<Comment[]> {
+    try {
+        const queryOptions: any = {
+            where: {
+                blogPostId: blogPostId,
+                parentId: null,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            include: {
+                votes: true,
+            },
+        };
+
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            queryOptions.skip = skip;
+            queryOptions.take = limit;
+        }
+
+        const comments = await prismaClient.comment.findMany(queryOptions);
+        return comments.map((comment) => deserializeComment(comment));
+    } catch (e) {
+        console.error("Database error: ", e);
+        throw new DatabaseIntegrityException("Database error: Failed to fetch direct comments");
+    }
+}
+
+export async function getDirectRepliesFromComment(
+    prismaClient,
+    commentId: number,
+    page?: number,
+    limit?: number
+): Promise<Comment[]> {
+    try {
+        const queryOptions: any = {
+            where: {
+                parentId: commentId,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            include: {
+                votes: true,
+            },
+        };
+
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            queryOptions.skip = skip;
+            queryOptions.take = limit;
+        }
+
+        const comments = await prismaClient.comment.findMany(queryOptions);
+        return comments.map((comment) => deserializeComment(comment));
+    } catch (e) {
+        console.error("Database error: ", e);
+        throw new DatabaseIntegrityException("Database error: Failed to fetch direct replies");
+    }
+}
+
 
 function deserializeComment(commentModel: CommentModel): Comment {
     const upVotes = commentModel.votes.filter(vote => vote.voteType === 'up').length;

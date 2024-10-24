@@ -1,11 +1,10 @@
 import { exec } from 'child_process';
-import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
 import { CodingLanguage } from "@server/types/dtos/codeTemplates";
-import {CodeExecutionException} from "@server/types/exceptions";
+import { CodeExecutionException } from "@server/types/exceptions";
 
-const execAsync = promisify(exec);
+const MAX_CODE_EXECUTION_TIMEOUT = 5000;
 
 export async function runCode(
     language: CodingLanguage,
@@ -14,7 +13,7 @@ export async function runCode(
 ): Promise<string> {
     try {
         const filePath = await createTempFile(language, code);
-        let stdinFilePath: string | undefined = undefined
+        let stdinFilePath: string | undefined = undefined;
 
         if (stdin) {
             stdinFilePath = await createTempStdinFile(stdin);
@@ -29,7 +28,7 @@ export async function runCode(
 
         return stdout;
     } catch (error) {
-        throw error
+        throw new CodeExecutionException(`Error executing code: ${error.message}`);
     }
 }
 
@@ -71,7 +70,7 @@ async function executeCode(
     stdinFilePath?: string
 ): Promise<string> {
     const execCommand = getExecCommand(language, filePath, stdinFilePath);
-    return await execAsync(execCommand);
+    return await runWithExec(execCommand);
 }
 
 function getExecCommand(language: CodingLanguage, filePath: string, stdinFilePath?: string): string {
@@ -91,4 +90,16 @@ function getExecCommand(language: CodingLanguage, filePath: string, stdinFilePat
         default:
             throw new CodeExecutionException('Unsupported language');
     }
+}
+
+async function runWithExec(command: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        exec(command, { timeout: MAX_CODE_EXECUTION_TIMEOUT }, (error, stdout, stderr) => {
+            if (error) {
+                reject(new CodeExecutionException(`Error executing code: ${stderr || error.message}`));
+            } else {
+                resolve(stdout);
+            }
+        });
+    });
 }
