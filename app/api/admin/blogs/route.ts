@@ -9,7 +9,7 @@ export async function GET(req: Request) {
         const page = url.searchParams.get('page') ? parseInt(url.searchParams.get('page')!) : undefined;
         const limit = url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!) : undefined;
 
-        const blogPosts = await blogPostService.getMostReportedBlogPosts(page, limit)
+        const {totalCount, blogPosts} = await blogPostService.getMostReportedBlogPosts(page, limit)
         const blogPostsWithTags = await Promise.all(
             blogPosts.map(async (blogPost) => {
                 const tags = await tagService.getTagNamesByIds(blogPost.tagIds);
@@ -36,6 +36,7 @@ export async function GET(req: Request) {
             {
                 message: "Most reported blog posts fetched successfully",
                 blogPosts: blogPostsWithTags,
+                totalCount: totalCount,
             },
             {status: 201}
         );

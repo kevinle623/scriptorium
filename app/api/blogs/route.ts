@@ -20,7 +20,7 @@ export async function GET(req: Request) {
             sortOrd,
         };
 
-        const blogPosts = await blogPostService.getBlogPosts(getBlogPostRequest);
+        const {totalCount, blogPosts} = await blogPostService.getBlogPosts(getBlogPostRequest);
 
         const blogPostsWithTags = await Promise.all(
             blogPosts.map(async (blogPost) => {
@@ -47,6 +47,7 @@ export async function GET(req: Request) {
             {
                 message: "Blog Posts fetched successfully",
                 blogPosts: blogPostsWithTags,
+                totalCount: totalCount,
             },
             {status: 201}
         );

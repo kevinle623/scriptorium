@@ -1,3 +1,5 @@
+import {CodeTemplate} from "@server/types/dtos/codeTemplates";
+
 export interface Comment {
     id: number;
     content: string;
@@ -16,4 +18,9 @@ export interface EditCommentRequest {
     commentId: number,
     content?: string,
     hidden?: boolean,
+}
+
+export interface GetCommentResult {
+    totalCount: number,
+    comments: Comment[]
 }

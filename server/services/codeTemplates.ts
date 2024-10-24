@@ -2,7 +2,7 @@ import * as codeExecutionLibrary from "@server/libs/codeExecution";
 import {
     CodeTemplate,
     CodingLanguage,
-    CreateCodeTemplateRequest,
+    CreateCodeTemplateRequest, GetCodeTemplateResult,
     UpdateCodeTemplateRequest
 } from "@server/types/dtos/codeTemplates";
 import * as codeTemplateRepository from "@server/repositories/codeTemplates"
@@ -55,7 +55,7 @@ export async function getCodeTemplatesByUserId(
     userId: number,
     page?: number,
     limit?: number,
-) {
+): Promise<GetCodeTemplateResult> {
     try {
         return await codeTemplateRepository.getCodeTemplatesByUserId(prisma, userId, page, limit)
     } catch (e) {

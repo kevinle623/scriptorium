@@ -1,5 +1,10 @@
 import {CodeTemplate as CodeTemplateModel} from "@prisma/client";
-import {CodeTemplate, CreateCodeTemplateRequest, UpdateCodeTemplateRequest} from "@server/types/dtos/codeTemplates"
+import {
+    CodeTemplate,
+    CreateCodeTemplateRequest,
+    GetCodeTemplateResult,
+    UpdateCodeTemplateRequest
+} from "@server/types/dtos/codeTemplates"
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 
 
@@ -49,10 +54,19 @@ export async function getCodeTemplateById(
     }
 }
 
-export async function getCodeTemplatesByUserId(prismaClient, userId: number, page?: number, limit?: number) {
+export async function getCodeTemplatesByUserId(
+    prismaClient,
+    userId: number,
+    page?: number,
+    limit?: number
+): Promise<GetCodeTemplateResult> {
     try {
         const skip = page && limit ? (page - 1) * limit : undefined;
         const take = limit ?? undefined;
+
+        const totalCount = await prismaClient.codeTemplate.count({
+            where: { userId: userId },
+        });
 
         const codeTemplates = await prismaClient.codeTemplate.findMany({
             where: { userId: userId },
@@ -71,13 +85,16 @@ export async function getCodeTemplatesByUserId(prismaClient, userId: number, pag
             },
         });
 
-        return codeTemplates.map((codeTemplate) => deserializeCodeTemplate(codeTemplate));
-
+        return {
+            codeTemplates: codeTemplates.map((codeTemplate) => deserializeCodeTemplate(codeTemplate)),
+            totalCount
+        };
     } catch (e) {
         console.error("Database error: ", e);
         throw new DatabaseIntegrityException("Database error: failed to fetch code templates by user id");
     }
 }
+
 
 export async function editCodeTemplate(
     prismaClient,

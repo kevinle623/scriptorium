@@ -1,6 +1,12 @@
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 import {BlogPost as BlogPostModel} from "@prisma/client"
-import {BlogPost, CreateBlogPostRequest, EditBlogPostRequest, GetBlogPostRequest} from "@server/types/dtos/blogPosts";
+import {
+    BlogPost,
+    CreateBlogPostRequest,
+    EditBlogPostRequest,
+    GetBlogPostRequest,
+    GetBlogPostResult
+} from "@server/types/dtos/blogPosts";
 
 export async function createBlogPost(prismaClient, createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
     try {
@@ -105,7 +111,7 @@ export async function editBlogPost(
 export async function getBlogPosts(
     prismaClient,
     getBlogPostsRequest: GetBlogPostRequest
-): Promise<BlogPost[]> {
+): Promise<GetBlogPostResult> {
     try {
         const { page, limit, tagsList, sortBy, sortOrd } = getBlogPostsRequest
         const skip = page && limit ? (page - 1) * limit : undefined;
@@ -131,6 +137,10 @@ export async function getBlogPosts(
             }
             : undefined;
 
+        const totalCount = await prismaClient.blogPost.count({
+            where: whereCondition,
+        });
+
         const blogPosts = await prismaClient.blogPost.findMany({
             skip,
             take,
@@ -148,7 +158,7 @@ export async function getBlogPosts(
             },
         });
 
-        return blogPosts.map(deserializeBlogPost);
+        return {totalCount: totalCount, blogPosts: blogPosts.map(deserializeBlogPost)};
     } catch (e) {
         console.error('Database Error', e);
         throw new Error('Failed to fetch blog posts');
@@ -159,10 +169,17 @@ export async function getMostReportedBlogPosts(
     prisma,
     page?: number,
     limit?: number
-): Promise<BlogPost[]> {
+): Promise<GetBlogPostResult> {
     try {
         const offset = page && limit ? (page - 1) * limit : undefined;
         const take = limit ?? undefined;
+        const totalCount = await prisma.blogPost.count({
+            where: {
+                report: {
+                    some: {},
+                },
+            },
+        });
 
         const blogPosts = await prisma.blogPost.findMany({
             where: {
@@ -185,7 +202,7 @@ export async function getMostReportedBlogPosts(
             },
         });
 
-        return blogPosts.map((blogPost) => deserializeBlogPost(blogPost));
+        return {totalCount: totalCount, blogPosts: blogPosts.map((blogPost) => deserializeBlogPost(blogPost))};
     } catch (e) {
         console.error('Database Error', e);
         throw new Error('Failed to fetch most reported blog posts');

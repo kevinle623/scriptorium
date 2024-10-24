@@ -49,3 +49,8 @@ export interface GetBlogPostRequest {
     sortBy?: string,
     sortOrd?: string
 }
+
+export interface GetBlogPostResult {
+    totalCount: number,
+    blogPosts: BlogPost[]
+}

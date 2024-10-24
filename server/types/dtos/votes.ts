@@ -1,3 +1,5 @@
+import {Report} from "@server/types/dtos/reports";
+
 export enum VoteType {
     UP = "up",
     DOWN = "down",
@@ -9,4 +11,9 @@ export interface Vote {
     blogPostId?: number | null;
     commentId?: number | null;
     voteType: VoteType;
+}
+
+export interface GetVotesResult {
+    totalCount: number,
+    votes: Vote[]
 }

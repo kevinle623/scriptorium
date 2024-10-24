@@ -1,6 +1,6 @@
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 import {Comment as CommentModel} from "@prisma/client"
-import {Comment, EditCommentRequest} from "@server/types/dtos/comments"
+import {Comment, EditCommentRequest, GetCommentResult} from "@server/types/dtos/comments"
 
 export async function getCommentById(
     prismaClient,
@@ -139,7 +139,7 @@ export async function getDirectCommentsFromBlogPost(
     blogPostId: number,
     page?: number,
     limit?: number
-): Promise<Comment[]> {
+): Promise<GetCommentResult> {
     try {
         const queryOptions: any = {
             where: {
@@ -160,8 +160,19 @@ export async function getDirectCommentsFromBlogPost(
             queryOptions.take = limit;
         }
 
+        const totalCount = await prismaClient.comment.count({
+            where: {
+                blogPostId: blogPostId,
+                parentId: null,
+            },
+        });
+
         const comments = await prismaClient.comment.findMany(queryOptions);
-        return comments.map((comment) => deserializeComment(comment));
+
+        return {
+            comments: comments.map((comment) => deserializeComment(comment)),
+            totalCount,
+        };
     } catch (e) {
         console.error("Database error: ", e);
         throw new DatabaseIntegrityException("Database error: Failed to fetch direct comments");
@@ -173,7 +184,7 @@ export async function getDirectRepliesFromComment(
     commentId: number,
     page?: number,
     limit?: number
-): Promise<{ comments: Comment[], totalCount: number }> {
+): Promise<GetCommentResult> {
     try {
         const totalCount = await prismaClient.comment.count({
             where: {
@@ -206,6 +217,50 @@ export async function getDirectRepliesFromComment(
     } catch (e) {
         console.error("Database error: ", e);
         throw new DatabaseIntegrityException("Database error: Failed to fetch direct replies");
+    }
+}
+
+export async function getMostReportedComments(
+    prisma,
+    page?: number,
+    limit?: number
+): Promise<GetCommentResult> {
+    try {
+        const offset = page && limit ? (page - 1) * limit : undefined;
+        const take = limit ?? undefined;
+        const totalCount = await prisma.comment.count({
+            where: {
+                report: {
+                    some: {},
+                },
+            },
+        });
+
+        const comments = await prisma.comment.findMany({
+            where: {
+                report: {
+                    some: {},
+                },
+            },
+            orderBy: {
+                reports: {
+                    _count: 'desc',
+                },
+            },
+            skip: offset,
+            take: take,
+            include: {
+                user: true,
+                tags: true,
+                report: true,
+                comments: true,
+            },
+        });
+
+        return {totalCount: totalCount, comments: comments.map((comment) => deserializeComment(comment))};
+    } catch (e) {
+        console.error('Database Error', e);
+        throw new Error('Failed to fetch most reported blog posts');
     }
 }
 

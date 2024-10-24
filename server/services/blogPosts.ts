@@ -1,10 +1,16 @@
 
 import {prisma} from "@server/libs/prisma/client";
-import {BlogPost, CreateBlogPostRequest, EditBlogPostRequest, GetBlogPostRequest} from "@server/types/dtos/blogPosts";
+import {
+    BlogPost,
+    CreateBlogPostRequest,
+    EditBlogPostRequest,
+    GetBlogPostRequest,
+    GetBlogPostResult
+} from "@server/types/dtos/blogPosts";
 import * as blogPostRepository from "@server/repositories/blogPosts"
 import * as tagRepository from "@server/repositories/tags"
 import {NotFoundException} from "@server/types/exceptions";
-import {Comment} from "@server/types/dtos/comments";
+import {Comment, GetCommentResult} from "@server/types/dtos/comments";
 import * as commentRepository from "@server/repositories/comments";
 import * as reportRepository from "@server/repositories/reports";
 import {VoteType} from "@server/types/dtos/votes";
@@ -117,14 +123,13 @@ export async function getDirectCommentsFromBlogPost(
     blogPostId: number,
     page: number,
     limit: number
-): Promise<Comment[]> {
+): Promise<GetCommentResult> {
     try {
         const blogPost = await blogPostRepository.getBlogPostById(prisma, blogPostId)
         if (!blogPost) {
             throw new NotFoundException("Blog Post does not exist")
         }
-        const comments = await commentRepository.getDirectCommentsFromBlogPost(prisma, blogPostId, page, limit);
-        return comments
+        return await commentRepository.getDirectCommentsFromBlogPost(prisma, blogPostId, page, limit);
     } catch (error) {
         throw error;
     }
@@ -146,10 +151,9 @@ export async function toggleHiddenBlogPost(blogPostId: number, hidden: boolean) 
 export async function getMostReportedBlogPosts(
     page?: number,
     limit?: number,
-): Promise<BlogPost[]> {
+): Promise<GetBlogPostResult> {
     try {
-        const blogPosts = await blogPostRepository.getMostReportedBlogPosts(prisma, page, limit)
-        return blogPosts
+        return await blogPostRepository.getMostReportedBlogPosts(prisma, page, limit)
     } catch (e) {
         throw e
     }

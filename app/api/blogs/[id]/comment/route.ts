@@ -56,12 +56,13 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
 
         const {page, limit} = await req.json();
 
-        const comments = await blogPostService.getDirectCommentsFromBlogPost(blogPostId, page, limit)
+        const {totalCount, comments} = await blogPostService.getDirectCommentsFromBlogPost(blogPostId, page, limit)
 
         return NextResponse.json(
             {
                 message: "Blog Post direct comments fetched successfully",
                 comments: comments,
+                totalCount: totalCount,
             },
             {status: 201}
         );

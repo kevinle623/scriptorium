@@ -14,7 +14,7 @@ export async function GET(req: Request) {
             throw new InvalidCredentialsException("User id is not valid")
         }
 
-        const codeTemplates = await codeTemplateService.getCodeTemplatesByUserId(userId, page, limit)
+        const {totalCount, codeTemplates} = await codeTemplateService.getCodeTemplatesByUserId(userId, page, limit)
 
         const codeTemplatesWithTags = await Promise.all(
             codeTemplates.map(async (codeTemplatePost) => {
@@ -37,6 +37,7 @@ export async function GET(req: Request) {
             {
                 message: "Blog Posts fetched successfully",
                 codeTemplates: codeTemplatesWithTags,
+                totalCount: totalCount,
             },
             {status: 201}
         );

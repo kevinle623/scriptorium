@@ -59,3 +59,8 @@ export interface ForkCodeTemplateRequest {
     parentTemplateId: number;
 }
 
+export interface GetCodeTemplateResult {
+    totalCount: number,
+    codeTemplates: CodeTemplate[]
+}
+
