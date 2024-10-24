@@ -1,82 +1,84 @@
 import {CodeTemplate as CodeTemplateModel} from "@prisma/client";
-import {CodeTemplate, UpdateCodeTemplateRequest} from "@server/types/dtos/codeTemplates"
+import {CodeTemplate, CreateCodeTemplateRequest, UpdateCodeTemplateRequest} from "@server/types/dtos/codeTemplates"
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 
 
+export async function createCodeTemplate(prismaClient, createCodeTemplateRequest: CreateCodeTemplateRequest) {
+    try {
+        const newCodeTemplate = await prismaClient.codeTemplate.create({
+            data: {
+                title: createCodeTemplateRequest.title,
+                userId: createCodeTemplateRequest.userId,
+                code: createCodeTemplateRequest.code,
+                explanation: createCodeTemplateRequest.explaination,
+                language: createCodeTemplateRequest.language,
+                parentTemplateId: createCodeTemplateRequest.parentTemplateId || null,
+            },
+        });
+        return deserializeCodeTemplate(newCodeTemplate);
+    } catch (e) {
+        console.error("Database error: ", e);
+        throw new DatabaseIntegrityException("Database error: failed to create code template");
+    }
+}
+export async function getCodeTemplateById(
+    prismaClient,
+    codeTemplateId: number
+): Promise<CodeTemplate | null> {
+    try {
+        const codeTemplate = await prismaClient.codeTemplate.findUnique({
+            where: { id: codeTemplateId },
+            include: {
+                tags: {
+                    include: {
+                        tag: true,
+                    },
+                },
+                user: true,
+            },
+        });
+
+        if (!codeTemplate) {
+            return null;
+        }
+        return deserializeCodeTemplate(codeTemplate);
+    } catch (e) {
+        console.error("Database error: ", e);
+        throw new DatabaseIntegrityException("Database error: failed to fetch code template by id");
+    }
+}
 export async function editCodeTemplate(
     prismaClient,
-    codeTemplateId: number,
     updateCodeTemplateRequest: UpdateCodeTemplateRequest
 ): Promise<CodeTemplate> {
     try {
+        const dataToUpdate: Record<string, any> = {};
+
+        if (updateCodeTemplateRequest.title !== undefined) {
+            dataToUpdate.title = updateCodeTemplateRequest.title;
+        }
+
+        if (updateCodeTemplateRequest.code !== undefined) {
+            dataToUpdate.code = updateCodeTemplateRequest.code;
+        }
+
+        if (updateCodeTemplateRequest.explanation !== undefined) {
+            dataToUpdate.explanation = updateCodeTemplateRequest.explanation;
+        }
+
+        if (updateCodeTemplateRequest.language !== undefined) {
+            dataToUpdate.language = updateCodeTemplateRequest.language;
+        }
+
         const updatedTemplate = await prismaClient.codeTemplate.update({
-            where: { id: codeTemplateId },
-            data: {
-                title: updateCodeTemplateRequest.title ?? undefined,
-                code: updateCodeTemplateRequest.code ?? undefined,
-                explanation: updateCodeTemplateRequest.explanation ?? undefined,
-                language: updateCodeTemplateRequest.language ?? undefined,
-                tags: updateCodeTemplateRequest.tagIds
-                    ? {
-                        set: [],
-                        create: updateCodeTemplateRequest.tagIds.map((id) => ({
-                            tag: {
-                                connect: { id },
-                            },
-                        })),
-                    }
-                    : undefined,
-            },
+            where: { id: updateCodeTemplateRequest.id },
+            data: dataToUpdate,
         });
+
         return deserializeCodeTemplate(updatedTemplate);
     } catch (e) {
         console.error("Database error: ", e);
         throw new DatabaseIntegrityException("Database error: failed to update code template");
-    }
-}
-
-export async function forkCodeTemplate(
-    prismaClient,
-    userId: number,
-    forkedTemplateId: number,
-    title: string,
-    code: string,
-    explanation?: string
-): Promise<CodeTemplate> {
-    try {
-        const originalTemplate = await prismaClient.codeTemplate.findUnique({
-            where: { id: forkedTemplateId },
-            include: {
-                tags: true,
-            },
-        });
-
-        if (!originalTemplate) {
-            throw new DatabaseIntegrityException("Original template not found");
-        }
-
-        const newTemplate = await prismaClient.codeTemplate.create({
-            data: {
-                title,
-                code,
-                explanation: explanation || null,
-                userId,
-                language: originalTemplate.language,
-                parentTemplateId: forkedTemplateId,
-                tags: {
-                    create: originalTemplate.tags.map((tag) => ({
-                        tag: {
-                            connect: { id: tag.tagId },
-                        },
-                    })),
-                },
-            },
-        });
-
-        return deserializeCodeTemplate(newTemplate);
-    } catch (e) {
-        console.error("Database error: ", e);
-        throw new DatabaseIntegrityException("Database error: failed to fork code template");
     }
 }
 
@@ -88,6 +90,7 @@ function deserializeCodeTemplate(templateModel: CodeTemplateModel): CodeTemplate
         code: templateModel.code,
         language: templateModel.language,
         explanation: templateModel.explanation,
+        parentTemplateId: templateModel.parentTemplateId,
         userId: templateModel.userId,
         tagIds: templateModel.tags.map((tag) => tag.tagId),
         createdAt: templateModel.createdAt,

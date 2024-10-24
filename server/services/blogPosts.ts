@@ -12,7 +12,7 @@ export async function createBlogPost(createBlogPostRequest: CreateBlogPostReques
     try {
         const newBlogPost = await blogPostRepository.createBlogPost(prisma, createBlogPostRequest)
         const tags = createBlogPostRequest.tags
-        await tagRepository.createCodeTemplateTags(prisma, newBlogPost.id, tags)
+        await tagRepository.createBlogPostTags(prisma, newBlogPost.id, tags)
         return newBlogPost
     } catch (e) {
         throw e

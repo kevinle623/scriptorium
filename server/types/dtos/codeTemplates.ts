@@ -12,12 +12,13 @@ export interface CodeTemplate {
     id: number;
     title: string;
     code: string;
-    language: CodingLanguage,
+    language: CodingLanguage;
     explanation?: string;
     userId: number;
-    tagIds: number[]
-    createdAt: Date,
-    updatedAt: Date
+    parentTemplateId: number;
+    tagIds: number[];
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface CodeTemplateTag {
@@ -35,10 +36,26 @@ export interface CodeExecutionRequest {
 
 export interface UpdateCodeTemplateRequest {
     id: number;
-    title: string;
-    code: string;
-    language: CodingLanguage,
+    title?: string;
+    code?: string;
+    language?: CodingLanguage;
     explanation?: string;
-    tagIds: number[]
+    tags?: string[]
+}
+
+export interface CreateCodeTemplateRequest {
+    title: string;
+    userId: number;
+    code: string;
+    parentTemplateId?: number;
+    language: CodingLanguage;
+    explaination: string;
+    tags: string[];
+}
+
+export interface ForkCodeTemplateRequest {
+    title: string;
+    userId: number;
+    parentTemplateId: number;
 }
 
