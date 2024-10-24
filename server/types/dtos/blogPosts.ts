@@ -34,11 +34,12 @@ export interface CreateBlogPostRequest {
 
 export interface EditBlogPostRequest {
     blogPostId: number,
-    title: string;
-    description: string;
-    content: string;
-    codeTemplateIds: number[]
-    tags: string[]
+    title?: string;
+    description?: string;
+    content?: string;
+    codeTemplateIds?: number[]
+    tags?: string[]
+    hidden?: boolean
 }
 
 export interface GetBlogPostRequest {

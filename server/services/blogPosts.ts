@@ -1,6 +1,6 @@
 
 import {prisma} from "@server/libs/prisma/client";
-import {CreateBlogPostRequest, EditBlogPostRequest, GetBlogPostRequest} from "@server/types/dtos/blogPosts";
+import {BlogPost, CreateBlogPostRequest, EditBlogPostRequest, GetBlogPostRequest} from "@server/types/dtos/blogPosts";
 import * as blogPostRepository from "@server/repositories/blogPosts"
 import * as tagRepository from "@server/repositories/tags"
 import {NotFoundException} from "@server/types/exceptions";
@@ -127,5 +127,30 @@ export async function getDirectCommentsFromBlogPost(
         return comments
     } catch (error) {
         throw error;
+    }
+}
+
+export async function toggleHiddenBlogPost(blogPostId: number, hidden: boolean) {
+    try {
+        const updateBlogPostRequest = {
+            blogPostId,
+            hidden: hidden
+        }
+        await blogPostRepository.editBlogPost(prisma, updateBlogPostRequest)
+    } catch (e) {
+        throw e
+    }
+
+}
+
+export async function getMostReportedBlogPosts(
+    page?: number,
+    limit?: number,
+): Promise<BlogPost[]> {
+    try {
+        const blogPosts = await blogPostRepository.getMostReportedBlogPosts(prisma, page, limit)
+        return blogPosts
+    } catch (e) {
+        throw e
     }
 }

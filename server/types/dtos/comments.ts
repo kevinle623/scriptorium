@@ -11,3 +11,9 @@ export interface Comment {
     downVotes: number;
     reportIds: number[];
 }
+
+export interface EditCommentRequest {
+    commentId: number,
+    content?: string,
+    hidden?: boolean,
+}

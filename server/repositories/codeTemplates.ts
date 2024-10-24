@@ -21,13 +21,14 @@ export async function createCodeTemplate(prismaClient, createCodeTemplateRequest
         throw new DatabaseIntegrityException("Database error: failed to create code template");
     }
 }
+
 export async function getCodeTemplateById(
     prismaClient,
     codeTemplateId: number
 ): Promise<CodeTemplate | null> {
     try {
         const codeTemplate = await prismaClient.codeTemplate.findUnique({
-            where: { id: codeTemplateId },
+            where: {id: codeTemplateId},
             include: {
                 tags: {
                     include: {
@@ -47,6 +48,37 @@ export async function getCodeTemplateById(
         throw new DatabaseIntegrityException("Database error: failed to fetch code template by id");
     }
 }
+
+export async function getCodeTemplatesByUserId(prismaClient, userId: number, page?: number, limit?: number) {
+    try {
+        const skip = page && limit ? (page - 1) * limit : undefined;
+        const take = limit ?? undefined;
+
+        const codeTemplates = await prismaClient.codeTemplate.findMany({
+            where: { userId: userId },
+            include: {
+                tags: {
+                    include: {
+                        tag: true,
+                    },
+                },
+                user: true,
+            },
+            skip: skip,
+            take: take,
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        return codeTemplates.map((codeTemplate) => deserializeCodeTemplate(codeTemplate));
+
+    } catch (e) {
+        console.error("Database error: ", e);
+        throw new DatabaseIntegrityException("Database error: failed to fetch code templates by user id");
+    }
+}
+
 export async function editCodeTemplate(
     prismaClient,
     updateCodeTemplateRequest: UpdateCodeTemplateRequest
@@ -71,7 +103,7 @@ export async function editCodeTemplate(
         }
 
         const updatedTemplate = await prismaClient.codeTemplate.update({
-            where: { id: updateCodeTemplateRequest.id },
+            where: {id: updateCodeTemplateRequest.id},
             data: dataToUpdate,
         });
 

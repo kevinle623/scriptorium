@@ -50,6 +50,18 @@ export async function updateCodeTemplate(updateCodeTemplateRequest: UpdateCodeTe
     }
 
 }
+
+export async function getCodeTemplatesByUserId(
+    userId: number,
+    page?: number,
+    limit?: number,
+) {
+    try {
+        return await codeTemplateRepository.getCodeTemplatesByUserId(prisma, userId, page, limit)
+    } catch (e) {
+        throw e
+    }
+}
 export async function executeCodeSnippet(
     language: CodingLanguage,
     code: string,

@@ -5,7 +5,12 @@ import {DatabaseIntegrityException, InvalidCredentialsException, ServiceExceptio
 
 export async function GET(req: Request) {
     try {
-        const {page, limit, tagsList, sortBy, sortOrd} = await req.json();
+        const url = new URL(req.url);
+        const page = url.searchParams.get('page') ? parseInt(url.searchParams.get('page')!) : undefined;
+        const limit = url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!) : undefined;
+        const tagsList = url.searchParams.get('tagsList') ? url.searchParams.get('tagsList')!.split(',') : undefined;
+        const sortBy = url.searchParams.get('sortBy') || undefined;
+        const sortOrd = url.searchParams.get('sortOrd') || undefined;
 
         const getBlogPostRequest = {
             page,

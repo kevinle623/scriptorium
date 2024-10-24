@@ -5,7 +5,8 @@ import * as reportRepository from "@server/repositories/reports";
 import {VoteType} from "@server/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
 import {NotFoundException} from "@server/types/exceptions";
-import {getCommentById} from "@server/repositories/comments";
+import * as blogPostRepository from "@server/repositories/blogPosts";
+import {BlogPost} from "@server/types/dtos/blogPosts";
 
 export async function addCommentToComment(
     parentCommentId: number,
@@ -41,7 +42,11 @@ export async function updateComment(
     content: string
 ): Promise<Comment> {
     try {
-        const updatedComment = await commentRepository.editComment(prisma, commentId, content);
+        const updateCommentRequest = {
+            commentId,
+            content,
+        }
+        const updatedComment = await commentRepository.editComment(prisma, updateCommentRequest);
         return updatedComment;
     } catch (error) {
         throw error;
@@ -86,3 +91,29 @@ export async function getDirectRepliesFromComment(
         throw error
     }
 }
+
+export async function toggleHiddentComment(commentId: number, hidden: boolean) {
+    try {
+        const updateCommentRequest = {
+            commentId,
+            hidden: hidden
+        }
+        await commentRepository.editComment(prisma, updateCommentRequest)
+    } catch (e) {
+        throw e
+    }
+
+}
+
+export async function getMostReportedComments(
+    page?: number,
+    limit?: number,
+): Promise<BlogPost[]> {
+    try {
+        const blogPosts = await blogPostRepository.getMostReportedBlogPosts(prisma, page, limit)
+        return blogPosts
+    } catch (e) {
+        throw e
+    }
+}
+

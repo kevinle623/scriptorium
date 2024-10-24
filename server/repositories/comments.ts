@@ -1,6 +1,6 @@
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 import {Comment as CommentModel} from "@prisma/client"
-import {Comment} from "@server/types/dtos/comments"
+import {Comment, EditCommentRequest} from "@server/types/dtos/comments"
 
 export async function getCommentById(
     prismaClient,
@@ -96,23 +96,30 @@ export async function deleteComment(
 
 export async function editComment(
     prismaClient,
-    commentId: number,
-    content: string
+    editCommentRequest: EditCommentRequest
 ): Promise<Comment> {
     try {
         const existingComment = await prismaClient.comment.findUnique({
-            where: { id: commentId },
+            where: { id: editCommentRequest.commentId },
         });
 
         if (!existingComment) {
             throw new DatabaseIntegrityException("Comment not found");
         }
 
+        const updateData: Partial<{ content: string; hidden: boolean }> = {};
+
+        if (editCommentRequest.content !== undefined) {
+            updateData.content = editCommentRequest.content;
+        }
+
+        if (editCommentRequest.hidden !== undefined) {
+            updateData.hidden = editCommentRequest.hidden;
+        }
+
         await prismaClient.comment.update({
-            where: { id: commentId },
-            data: {
-                content: content,
-            },
+            where: { id: editCommentRequest.commentId },
+            data: updateData,
             include: {
                 replies: true,
                 votes: true,

@@ -73,6 +73,10 @@ export async function editBlogPost(
             dataToUpdate.content = editBlogPostRequest.content;
         }
 
+        if (editBlogPostRequest.hidden !== undefined) {
+            dataToUpdate.hidden = editBlogPostRequest.hidden
+        }
+
         if (editBlogPostRequest.codeTemplateIds !== undefined) {
             dataToUpdate.codeTemplates = {
                 set: [],
@@ -148,6 +152,43 @@ export async function getBlogPosts(
     } catch (e) {
         console.error('Database Error', e);
         throw new Error('Failed to fetch blog posts');
+    }
+}
+
+export async function getMostReportedBlogPosts(
+    prisma,
+    page?: number,
+    limit?: number
+): Promise<BlogPost[]> {
+    try {
+        const offset = page && limit ? (page - 1) * limit : undefined;
+        const take = limit ?? undefined;
+
+        const blogPosts = await prisma.blogPost.findMany({
+            where: {
+                report: {
+                    some: {},
+                },
+            },
+            orderBy: {
+                reports: {
+                    _count: 'desc',
+                },
+            },
+            skip: offset,
+            take: take,
+            include: {
+                user: true,
+                tags: true,
+                report: true,
+                comments: true,
+            },
+        });
+
+        return blogPosts.map((blogPost) => deserializeBlogPost(blogPost));
+    } catch (e) {
+        console.error('Database Error', e);
+        throw new Error('Failed to fetch most reported blog posts');
     }
 }
 

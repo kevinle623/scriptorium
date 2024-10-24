@@ -1,28 +1,20 @@
 import {NextResponse} from "next/server";
-import * as blogPostService from "@server/services/blogPosts"
+import * as codeTemplateService from "@server/services/codeTemplates";
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
 
-export async function PUT(req: Request, {params}: { params: { id: string } }) {
+export async function POST(req: Request) {
     try {
-        if (!Number(params.id)) {
-            return NextResponse.json(
-                {message: "Invalid id"},
-                {status: 400}
-            );
-        }
-
-        const blogPostId = parseInt(params.id, 10)
-
         const {
-            hidden,
+            language,
+            code,
+            stdin,
         } = await req.json()
 
-        await blogPostService.toggleHiddenBlogPost(blogPostId, hidden)
+        const result =  await codeTemplateService.executeCodeSnippet(language, code, stdin)
         return NextResponse.json(
             {
-                message: "Blog Post hidden status has been updated",
-                blogPostId: blogPostId,
-                hidden: hidden,
+                message: "Comment executed successfully",
+                result: result
             },
             {status: 201}
         );
