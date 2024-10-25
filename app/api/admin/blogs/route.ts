@@ -2,9 +2,11 @@ import {DatabaseIntegrityException, InvalidCredentialsException, ServiceExceptio
 import * as blogPostService from "@server/services/blogPosts";
 import * as tagService from "@server/services/tags";
 import {NextResponse} from "next/server";
+import * as authorizationService from "@server/services/authorization";
 
 export async function GET(req: Request) {
     try {
+        await authorizationService.verifyAdminAuthorization(req)
         const url = new URL(req.url);
         const page = url.searchParams.get('page') ? parseInt(url.searchParams.get('page')!) : undefined;
         const limit = url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!) : undefined;

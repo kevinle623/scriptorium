@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import * as codeTemplateService from "@server/services/codeTemplates";
 import * as tagService from "@server/services/tags";
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
+import * as authorizationService from "@server/services/authorization";
 
 export async function GET(req: Request) {
     try {
@@ -63,6 +64,8 @@ export async function POST(req: Request) {
                 {status: 400}
             );
         }
+
+        await authorizationService.verifyMatchingUserAuthorization(req, createCodeTemplateRequest.userId)
 
         const createdCodeTemplate = await codeTemplateService.createCodeTemplate(createCodeTemplateRequest);
 

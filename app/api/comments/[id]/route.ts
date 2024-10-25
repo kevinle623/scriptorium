@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import * as commentService from "@server/services/comments";
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
+import * as authorizationService from "@server/services/authorization";
 
 export async function PUT(req: Request, {params}: { params: { id: string } }) {
     try {
@@ -16,6 +17,9 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
         const {
             content
         } = await req.json()
+
+        const currentComment = await commentService.getCommentById(commentId)
+        await authorizationService.verifyMatchingUserAuthorization(req, currentComment.userId)
 
         const comment = await commentService.updateComment(commentId, content)
         return NextResponse.json(

@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import * as blogPostService from "@server/services/blogPosts";
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
+import * as authorizationService from "@server/services/authorization";
 
 export async function POST(req: Request, {params}: { params: { id: string } }) {
     try {
@@ -17,6 +18,8 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
             userId,
             content,
         } = await req.json()
+
+        await authorizationService.verifyMatchingUserAuthorization(req, userId)
 
         const comment =  await blogPostService.addCommentToBlogPost(blogPostId, userId, content)
         return NextResponse.json(

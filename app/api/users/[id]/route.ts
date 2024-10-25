@@ -6,6 +6,7 @@ import {
 import {NextResponse} from "next/server";
 
 import * as userService from "@server/services/users"
+import * as authorizationService from "@server/services/authorization"
 
 
 export async function GET(req: Request, { params }: { params: { id: string }}){
@@ -16,8 +17,9 @@ export async function GET(req: Request, { params }: { params: { id: string }}){
                 { status: 400 }
             );
         }
-
         const userId = parseInt(params.id, 10)
+
+        await authorizationService.verifyMatchingUserAuthorization(req, userId)
 
         const user = await userService.getUserById(userId)
         return NextResponse.json(
@@ -56,6 +58,7 @@ export async function PUT(req: Request, { params }: { params: { id: string }}) {
             );
         }
         const userId = parseInt(params.id, 10)
+        await authorizationService.verifyMatchingUserAuthorization(req, userId)
 
         const { email, phone, firstName, lastName, avatar } = await req.json()
 

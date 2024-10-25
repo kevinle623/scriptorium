@@ -35,6 +35,20 @@ export async function removeComment(
     }
 }
 
+export async function getCommentById(commentId: number): Promise<Comment> {
+    try {
+        const comment = await commentRepository.getCommentById(commentId)
+        if (!comment){
+            throw new NotFoundException("Comment not found")
+        }
+        return comment
+
+    } catch (e) {
+        throw (e)
+    }
+
+}
+
 export async function updateComment(
     commentId: number,
     content: string

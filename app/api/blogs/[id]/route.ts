@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import * as blogPostService from "@server/services/blogPosts";
 import * as tagService from "@server/services/tags.ts"
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
+import * as authorizationService from "@server/services/authorization";
 
 export async function GET(req: Request, {params}: { params: { id: string } }) {
     try {
@@ -57,6 +58,10 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
         }
 
         const blogPostId = parseInt(params.id, 10)
+
+        const currentBlogPost = await blogPostService.getBlogPostById(blogPostId)
+
+        await authorizationService.verifyMatchingUserAuthorization(req, currentBlogPost.userId)
 
         const {
             title,
@@ -118,6 +123,10 @@ export async function DELETE(req: Request, {params}: { params: { id: string } })
         }
 
         const blogPostId = parseInt(params.id, 10);
+
+        const blogPost = await blogPostService.getBlogPostById(blogPostId)
+
+        await authorizationService.verifyMatchingUserAuthorization(req, blogPost.userId)
 
         await blogPostService.deleteBlogPost(blogPostId);
 

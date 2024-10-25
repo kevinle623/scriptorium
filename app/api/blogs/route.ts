@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import * as blogPostService from "@server/services/blogPosts";
 import * as tagService from "@server/services/tags";
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
+import * as authorizationService from "@server/services/authorization";
 
 export async function GET(req: Request) {
     try {
@@ -82,6 +83,8 @@ export async function POST(req: Request) {
             codeTemplateIds,
             tags,
         }
+
+        await authorizationService.verifyMatchingUserAuthorization(req, userId)
 
         const blogPost = await blogPostService.createBlogPost(createBlogPostRequest)
         const tagNames = await tagService.getTagNamesByIds(blogPost.tagIds)
