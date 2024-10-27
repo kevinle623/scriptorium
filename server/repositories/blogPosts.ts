@@ -1,5 +1,5 @@
 import {DatabaseIntegrityException} from "@server/types/exceptions";
-import {BlogPost as BlogPostModel} from "@prisma/client"
+import {BlogPost as BlogPostModel, PrismaClient} from "@prisma/client"
 import {
     BlogPost,
     CreateBlogPostRequest,
@@ -8,7 +8,7 @@ import {
     GetBlogPostsResult
 } from "@server/types/dtos/blogPosts";
 
-export async function createBlogPost(prismaClient, createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
+export async function createBlogPost(prismaClient: any, createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
     try {
         const blogPost = await prismaClient.BlogPost.create({
             data: {
@@ -32,7 +32,7 @@ export async function createBlogPost(prismaClient, createBlogPostRequest: Create
     }
 }
 
-export async function getBlogPostById(prismaClient, blogPostId) {
+export async function getBlogPostById(prismaClient: any, blogPostId: number) {
     try {
         const blogPost = await prismaClient.BlogPost.findUnique({
             where: {
@@ -47,7 +47,7 @@ export async function getBlogPostById(prismaClient, blogPostId) {
     }
 }
 
-export async function deleteBlogPost(prismaClient, blogPostId: number): Promise<void> {
+export async function deleteBlogPost(prismaClient: any, blogPostId: number): Promise<void> {
     try {
         await prismaClient.blogPost.delete({
             where: {
@@ -61,7 +61,7 @@ export async function deleteBlogPost(prismaClient, blogPostId: number): Promise<
 }
 
 export async function editBlogPost(
-    prismaClient,
+    prismaClient: any,
     editBlogPostRequest: EditBlogPostRequest
 ): Promise<void> {
     try {
@@ -109,7 +109,7 @@ export async function editBlogPost(
 }
 
 export async function getBlogPosts(
-    prismaClient,
+    prismaClient: any,
     getBlogPostsRequest: GetBlogPostRequest
 ): Promise<GetBlogPostsResult> {
     try {
@@ -166,14 +166,14 @@ export async function getBlogPosts(
 }
 
 export async function getMostReportedBlogPosts(
-    prisma,
+    prismaClient: any,
     page?: number,
     limit?: number
 ): Promise<GetBlogPostsResult> {
     try {
         const offset = page && limit ? (page - 1) * limit : undefined;
         const take = limit ?? undefined;
-        const totalCount = await prisma.blogPost.count({
+        const totalCount = await prismaClient.blogPost.count({
             where: {
                 report: {
                     some: {},
@@ -181,7 +181,7 @@ export async function getMostReportedBlogPosts(
             },
         });
 
-        const blogPosts = await prisma.blogPost.findMany({
+        const blogPosts = await prismaClient.blogPost.findMany({
             where: {
                 report: {
                     some: {},
@@ -202,7 +202,7 @@ export async function getMostReportedBlogPosts(
             },
         });
 
-        return {totalCount: totalCount, blogPosts: blogPosts.map((blogPost) => deserializeBlogPost(blogPost))};
+        return {totalCount: totalCount, blogPosts: blogPosts.map((blogPost: BlogPostModel) => deserializeBlogPost(blogPost))};
     } catch (e) {
         console.error('Database Error', e);
         throw new Error('Failed to fetch most reported blog posts');
@@ -210,9 +210,9 @@ export async function getMostReportedBlogPosts(
 }
 
 
-function deserializeBlogPost(blogPost: BlogPostModel): BlogPost {
-    const upVotes = blogPost.votes.filter(vote => vote.voteType === 'up').length;
-    const downVotes = blogPost.votes.filter(vote => vote.voteType === 'down').length;
+function deserializeBlogPost(blogPost: any): BlogPost {
+    const upVotes = blogPost.votes.filter((vote: any) => vote.voteType === 'up').length || 0;
+    const downVotes = blogPost.votes.filter((vote: any) => vote.voteType === 'down').length || 0;
     return {
         id: blogPost.id,
         title: blogPost.title,
@@ -222,10 +222,10 @@ function deserializeBlogPost(blogPost: BlogPostModel): BlogPost {
         hidden: blogPost.hidden,
         createdAt: blogPost.createdAt,
         updatedAt: blogPost.updatedAt,
-        codeTemplateIds: blogPost.codeTemplates.map(template => template.id),
+        codeTemplateIds: blogPost.codeTemplates.map((template: any) => template.id),
         upVotes: upVotes,
         downVotes: downVotes,
-        commentIds: blogPost.comments.map(comment => comment.id),
-        tagIds: blogPost.tags.map(tag => tag.id),
+        commentIds: blogPost.comments.map((comment: any) => comment.id),
+        tagIds: blogPost.tags.map((tag: any) => tag.id),
     };
 }

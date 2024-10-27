@@ -3,7 +3,7 @@ import {Tag as TagModel} from "@prisma/client"
 import {Tag} from "@server/types/dtos/tags"
 
 export async function deleteBlogPostTags(
-    prismaClient,
+    prismaClient: any,
     blogPostId: number
 ): Promise<void> {
     try {
@@ -18,7 +18,7 @@ export async function deleteBlogPostTags(
     }
 }
 export async function updateBlogPostTags(
-    prismaClient,
+    prismaClient: any,
     blogPostId: number,
     newTagNames: string[]
 ): Promise<void> {
@@ -36,7 +36,7 @@ export async function updateBlogPostTags(
 }
 
 export async function createBlogPostTags(
-    prismaClient,
+    prismaClient: any,
     blogPostId: number,
     newTagNames: string[]
 ): Promise<void> {
@@ -71,7 +71,7 @@ export async function createBlogPostTags(
 }
 
 export async function deleteCodeTemplateTags(
-    prismaClient,
+    prismaClient: any,
     codeTemplateId: number,
 ): Promise<void> {
     try {
@@ -87,7 +87,7 @@ export async function deleteCodeTemplateTags(
 }
 
 export async function updateCodeTemplateTags(
-    prismaClient,
+    prismaClient: any,
     codeTemplateId: number,
     newTagNames: string[]
 ): Promise<void> {
@@ -101,7 +101,7 @@ export async function updateCodeTemplateTags(
 }
 
 export async function createCodeTemplateTags(
-    prismaClient,
+    prismaClient: any,
     codeTemplateId: number,
     newTagNames: string[]
 ): Promise<void> {
@@ -135,7 +135,7 @@ export async function createCodeTemplateTags(
     }
 }
 
-export async function fetchTagsById(prismaClient, tagIds: number[]): Promise<Tag[]> {
+export async function fetchTagsById(prismaClient: any, tagIds: number[]): Promise<Tag[]> {
     try {
         const tagModels = await prismaClient.tag.findMany({
             where: {

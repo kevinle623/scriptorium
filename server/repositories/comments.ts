@@ -3,8 +3,8 @@ import {Comment as CommentModel} from "@prisma/client"
 import {Comment, EditCommentRequest, GetCommentsResult} from "@server/types/dtos/comments"
 
 export async function getCommentById(
-    prismaClient,
-    commentId,
+    prismaClient: any,
+    commentId: number,
 ): Promise<Comment> {
     try {
         const comment = await prismaClient.comment.findUnique({
@@ -16,14 +16,14 @@ export async function getCommentById(
                 replies: true,
             },
         });
-        return comment
+        return deserializeComment(comment)
     } catch (e) {
         console.error("Database error: ", e)
         throw new DatabaseIntegrityException("Database error: failed to fetch comment")
     }
 }
 export async function createCommentToBlogPost(
-    prismaClient,
+    prismaClient: any,
     blogPostId: number,
     userId: number,
     content: string
@@ -45,7 +45,7 @@ export async function createCommentToBlogPost(
 }
 
 export async function createCommentToComment(
-    prismaClient,
+    prismaClient: any,
     parentCommentId: number,
     userId: number,
     content: string
@@ -68,7 +68,7 @@ export async function createCommentToComment(
 }
 
 export async function deleteComment(
-    prismaClient,
+    prismaClient: any,
     commentId: number
 ): Promise<void> {
     try {
@@ -95,9 +95,9 @@ export async function deleteComment(
 }
 
 export async function editComment(
-    prismaClient,
+    prismaClient: any,
     editCommentRequest: EditCommentRequest
-): Promise<Comment> {
+): Promise<void> {
     try {
         const existingComment = await prismaClient.comment.findUnique({
             where: { id: editCommentRequest.commentId },
@@ -135,7 +135,7 @@ export async function editComment(
 }
 
 export async function getDirectCommentsFromBlogPost(
-    prismaClient,
+    prismaClient: any,
     blogPostId: number,
     page?: number,
     limit?: number
@@ -170,7 +170,7 @@ export async function getDirectCommentsFromBlogPost(
         const comments = await prismaClient.comment.findMany(queryOptions);
 
         return {
-            comments: comments.map((comment) => deserializeComment(comment)),
+            comments: comments.map((comment: any) => deserializeComment(comment)),
             totalCount,
         };
     } catch (e) {
@@ -180,7 +180,7 @@ export async function getDirectCommentsFromBlogPost(
 }
 
 export async function getDirectRepliesFromComment(
-    prismaClient,
+    prismaClient: any,
     commentId: number,
     page?: number,
     limit?: number
@@ -211,7 +211,7 @@ export async function getDirectRepliesFromComment(
         }
 
         const comments = await prismaClient.comment.findMany(queryOptions);
-        const deserializedComments = comments.map((comment) => deserializeComment(comment));
+        const deserializedComments = comments.map((comment: any) => deserializeComment(comment));
 
         return { comments: deserializedComments, totalCount };
     } catch (e) {
@@ -221,26 +221,26 @@ export async function getDirectRepliesFromComment(
 }
 
 export async function getMostReportedComments(
-    prisma,
+    prismaClient: any,
     page?: number,
     limit?: number
 ): Promise<GetCommentsResult> {
     try {
         const offset = page && limit ? (page - 1) * limit : undefined;
         const take = limit ?? undefined;
-        const totalCount = await prisma.comment.count({
+        const totalCount = await prismaClient.comment.count({
             where: {
-                report: {
-                    some: {},
-                },
+                reports: {
+                    some: {}
+                }
             },
         });
 
-        const comments = await prisma.comment.findMany({
+        const comments = await prismaClient.comment.findMany({
             where: {
-                report: {
-                    some: {},
-                },
+                reports: {
+                    some: {}
+                }
             },
             orderBy: {
                 reports: {
@@ -257,7 +257,7 @@ export async function getMostReportedComments(
             },
         });
 
-        return {totalCount: totalCount, comments: comments.map((comment) => deserializeComment(comment))};
+        return {totalCount: totalCount, comments: comments.map((comment: any) => deserializeComment(comment))};
     } catch (e) {
         console.error('Database Error', e);
         throw new Error('Failed to fetch most reported blog posts');
@@ -266,8 +266,10 @@ export async function getMostReportedComments(
 
 
 function deserializeComment(commentModel: CommentModel): Comment {
-    const upVotes = commentModel.votes.filter(vote => vote.voteType === 'up').length;
-    const downVotes = commentModel.votes.filter(vote => vote.voteType === 'down').length;
+    // const upVotes = commentModel.votes.filter((vote: any) => vote.voteType === 'up').length;
+    const upVotes = 0
+    // const downVotes = commentModel.votes.filter((vote: any) => vote.voteType === 'down').length;
+    const downVotes = 0
 
     return {
         id: commentModel.id,
@@ -277,9 +279,12 @@ function deserializeComment(commentModel: CommentModel): Comment {
         parentId: commentModel.parentId || null,
         createdAt: commentModel.createdAt,
         hidden: commentModel.hidden,
-        replyIds: commentModel.replies.map(reply => reply.id),
+        // replyIds: commentModel.replies.map((reply: any) => reply.id),
+        replyIds:[],
         upVotes: upVotes,
         downVotes: downVotes,
-        reportIds: commentModel.reports.map(report => report.id),
+        // reportIds: commentModel.reports.map((report: any) => report.id),
+        reportIds: [],
     };
+
 }

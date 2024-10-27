@@ -1,9 +1,10 @@
 import {DatabaseIntegrityException} from "../types/exceptions";
 import {User as UserModel} from "@prisma/client";
+import {Role} from "@server/types/dtos/roles"
 
 import {CreateUserRequest, EditUserRequest, User} from "@server/types/dtos/user"
 
-export async function createUser(prismaClient, createUserRequest: CreateUserRequest, hashedPassword: string): Promise<User> {
+export async function createUser(prismaClient: any, createUserRequest: CreateUserRequest, hashedPassword: string): Promise<User> {
     try {
         const user = await prismaClient.user.create({
             data: {
@@ -23,7 +24,7 @@ export async function createUser(prismaClient, createUserRequest: CreateUserRequ
     }
 }
 
-export async function findUserById(prismaClient, userId: number): Promise<User> {
+export async function findUserById(prismaClient: any, userId: number): Promise<User> {
     try {
         const user = await prismaClient.user.findUnique({
             where: {
@@ -37,7 +38,7 @@ export async function findUserById(prismaClient, userId: number): Promise<User> 
     }
 }
 
-export async function findUserByEmail(prismaClient, email: string): Promise<User> {
+export async function findUserByEmail(prismaClient: any, email: string): Promise<User> {
     try {
         const user = await prismaClient.user.findUnique({
             where: {
@@ -51,7 +52,7 @@ export async function findUserByEmail(prismaClient, email: string): Promise<User
     }
 }
 
-export async function updateUser(prismaClient, editUserRequest: EditUserRequest): Promise<void> {
+export async function updateUser(prismaClient: any, editUserRequest: EditUserRequest): Promise<void> {
     try {
         const existingUser = await prismaClient.user.findUnique({
             where: { id: editUserRequest.userId },
@@ -82,11 +83,11 @@ function deserializeUser(user: UserModel): User {
     return {
         id: user.id,
         email: user.email,
-        role: user.role,
+        role: (user.role as Role),
         password: user.password,
         firstName: user.firstName,
         lastName: user.lastName,
-        avatar: user.avatar,
+        avatar: user.avatar || undefined,
         phone: user.phone,
     };
 }

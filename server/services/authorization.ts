@@ -2,7 +2,7 @@ import {generateAccessToken, generateRefreshToken, verifyAccessToken} from "@ser
 import {InsufficientPermissionsException, InvalidCredentialsException} from "../types/exceptions";
 import {Role} from "@server/types/dtos/roles";
 
-export async function verifyAuthorizationHeader(authorizationHeader: string) {
+export async function verifyAuthorizationHeader(authorizationHeader: string | null) {
     try {
         if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
             return null;

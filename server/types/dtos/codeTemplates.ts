@@ -15,7 +15,7 @@ export interface CodeTemplate {
     language: CodingLanguage;
     explanation?: string;
     userId: number;
-    parentTemplateId: number;
+    parentTemplateId?: number;
     tagIds: number[];
     createdAt: Date;
     updatedAt: Date;

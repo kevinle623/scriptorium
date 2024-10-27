@@ -28,7 +28,8 @@ export async function runCode(
 
         return stdout;
     } catch (error) {
-        throw new CodeExecutionException(`Error executing code: ${error.message}`);
+        console.error(error)
+        throw new CodeExecutionException(`Error executing code`);
     }
 }
 

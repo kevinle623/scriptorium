@@ -47,7 +47,7 @@ export async function deleteBlogPost(blogPostId: number) {
     }
 }
 
-export async function updateBlogPost(prisma, editBlogPostRequest: EditBlogPostRequest) {
+export async function updateBlogPost(editBlogPostRequest: EditBlogPostRequest) {
     try {
         const { blogPostId, tags = [] } = editBlogPostRequest;
         const updatedBlogPost = await prisma.$transaction(async (prismaTx) => {

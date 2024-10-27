@@ -3,7 +3,7 @@ import { Report as ReportModel} from "@prisma/client";
 import { Report } from "@server/types/dtos/reports";
 
 export async function createReport(
-    prismaClient,
+    prismaClient: any,
     reason: string,
     userId: number,
     blogPostId?: number,

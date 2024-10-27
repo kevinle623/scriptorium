@@ -3,7 +3,7 @@ import {Vote as VoteModel} from "@prisma/client"
 import {Vote, VoteType} from "@server/types/dtos/votes"
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 export async function toggleVote(
-    prismaClient,
+    prismaClient: any,
     userId: number,
     voteType: VoteType | null,
     blogPostId?: number,
@@ -59,6 +59,6 @@ function deserializeVote(voteModel: VoteModel): Vote {
         userId: voteModel.userId,
         blogPostId: voteModel.blogPostId || null,
         commentId: voteModel.commentId || null,
-        voteType: voteModel.voteType,
+        voteType: voteModel.voteType as VoteType,
     };
 }

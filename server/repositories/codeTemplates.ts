@@ -1,6 +1,6 @@
 import {CodeTemplate as CodeTemplateModel} from "@prisma/client";
 import {
-    CodeTemplate,
+    CodeTemplate, CodingLanguage,
     CreateCodeTemplateRequest,
     GetCodeTemplatesResult,
     UpdateCodeTemplateRequest
@@ -8,7 +8,7 @@ import {
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 
 
-export async function createCodeTemplate(prismaClient, createCodeTemplateRequest: CreateCodeTemplateRequest) {
+export async function createCodeTemplate(prismaClient: any, createCodeTemplateRequest: CreateCodeTemplateRequest) {
     try {
         const newCodeTemplate = await prismaClient.codeTemplate.create({
             data: {
@@ -28,7 +28,7 @@ export async function createCodeTemplate(prismaClient, createCodeTemplateRequest
 }
 
 export async function getCodeTemplateById(
-    prismaClient,
+    prismaClient: any,
     codeTemplateId: number
 ): Promise<CodeTemplate | null> {
     try {
@@ -55,7 +55,7 @@ export async function getCodeTemplateById(
 }
 
 export async function getCodeTemplatesByUserId(
-    prismaClient,
+    prismaClient: any,
     userId: number,
     page?: number,
     limit?: number
@@ -86,7 +86,7 @@ export async function getCodeTemplatesByUserId(
         });
 
         return {
-            codeTemplates: codeTemplates.map((codeTemplate) => deserializeCodeTemplate(codeTemplate)),
+            codeTemplates: codeTemplates.map((codeTemplate: any) => deserializeCodeTemplate(codeTemplate)),
             totalCount
         };
     } catch (e) {
@@ -97,7 +97,7 @@ export async function getCodeTemplatesByUserId(
 
 
 export async function editCodeTemplate(
-    prismaClient,
+    prismaClient: any,
     updateCodeTemplateRequest: UpdateCodeTemplateRequest
 ): Promise<CodeTemplate> {
     try {
@@ -137,11 +137,12 @@ function deserializeCodeTemplate(templateModel: CodeTemplateModel): CodeTemplate
         id: templateModel.id,
         title: templateModel.title,
         code: templateModel.code,
-        language: templateModel.language,
-        explanation: templateModel.explanation,
-        parentTemplateId: templateModel.parentTemplateId,
+        language: (templateModel.language as CodingLanguage),
+        explanation: (templateModel.explanation || undefined),
+        parentTemplateId: (templateModel.parentTemplateId || undefined),
         userId: templateModel.userId,
-        tagIds: templateModel.tags.map((tag) => tag.tagId),
+        // tagIds: templateModel.tags.map((tag: any) => tag.tagId),
+        tagIds: [],
         createdAt: templateModel.createdAt,
         updatedAt: templateModel.updatedAt,
     };

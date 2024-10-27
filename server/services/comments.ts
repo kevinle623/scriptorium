@@ -37,7 +37,7 @@ export async function removeComment(
 
 export async function getCommentById(commentId: number): Promise<Comment> {
     try {
-        const comment = await commentRepository.getCommentById(commentId)
+        const comment = await commentRepository.getCommentById(prisma, commentId)
         if (!comment){
             throw new NotFoundException("Comment not found")
         }
@@ -58,8 +58,9 @@ export async function updateComment(
             commentId,
             content,
         }
-        const updatedComment = await commentRepository.editComment(prisma, updateCommentRequest);
-        return updatedComment;
+        await commentRepository.editComment(prisma, updateCommentRequest);
+        const comment = commentRepository.getCommentById(prisma, commentId)
+        return comment;
     } catch (error) {
         throw error;
     }

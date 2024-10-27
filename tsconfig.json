@@ -19,8 +19,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@server/*": ["server/*"],
-      "@client/*": ["client/*"]
+      "@server/*": ["./server/*"],
+      "@client/*": ["./client/*"]
     },
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
