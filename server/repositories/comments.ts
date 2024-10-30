@@ -179,6 +179,49 @@ export async function getDirectCommentsFromBlogPost(
     }
 }
 
+export async function getCommentIdsByParentCommentId(
+    prismaClient: PrismaClient,
+    parentCommentId: number
+): Promise<number[]> {
+    try {
+        const comments = await prismaClient.comment.findMany({
+            where: {
+                parentId: parentCommentId,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        return comments.map(comment => comment.id);
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to fetch comment IDs by parent comment ID");
+    }
+}
+
+export async function getCommentIdsByBlogPostId(
+    prismaClient: PrismaClient,
+    blogPostId: number
+): Promise<number[]> {
+    try {
+        const comments = await prismaClient.comment.findMany({
+            where: {
+                blogPostId: blogPostId,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        return comments.map(comment => comment.id);
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to fetch comment IDs by blog post ID");
+    }
+}
+
+
 export async function getCommentsByIds(
     prismaClient: any,
     ids: number[]

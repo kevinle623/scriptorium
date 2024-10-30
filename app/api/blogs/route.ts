@@ -1,6 +1,5 @@
 import {NextResponse} from "next/server";
 import * as blogPostService from "@server/services/blogPosts";
-import * as tagService from "@server/services/tags";
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
 import {BlogPost} from "@server/types/dtos/blogPosts";
@@ -24,31 +23,10 @@ export async function GET(req: Request) {
 
         const {totalCount, blogPosts} = await blogPostService.getBlogPosts(getBlogPostRequest);
 
-        const blogPostsWithTags = await Promise.all(
-            blogPosts.map(async (blogPost) => {
-                const tags = await tagService.getTagNamesByIds(blogPost.tagIds);
-                return {
-                    id: blogPost.id,
-                    userId: blogPost.userId,
-                    title: blogPost.title,
-                    description: blogPost.description,
-                    content: blogPost.content,
-                    hidden: blogPost.hidden,
-                    codeTemplateIds: blogPost.codeTemplateIds,
-                    createdAt: blogPost.createdAt,
-                    updatedAt: blogPost.updatedAt,
-                    tags: tags,
-                    commentIds: blogPost.commentIds,
-                    upVotes: blogPost.upVotes,
-                    downVotes: blogPost.downVotes,
-                };
-            })
-        );
-
         return NextResponse.json(
             {
                 message: "Blog Posts fetched successfully",
-                blogPosts: blogPostsWithTags,
+                blogPosts: blogPosts,
                 totalCount: totalCount,
             },
             {status: 201}
@@ -88,7 +66,6 @@ export async function POST(req: Request) {
         await authorizationService.verifyMatchingUserAuthorization(req, userId)
 
         const blogPost: BlogPost = await blogPostService.createBlogPost(createBlogPostRequest)
-        const tagNames = await tagService.getTagNamesByIds(blogPost.tagIds)
         return NextResponse.json(
             {
                 message: "Blog Post created successfully",
@@ -102,7 +79,7 @@ export async function POST(req: Request) {
                     codeTemplateIds: blogPost.codeTemplateIds,
                     createdAt: blogPost.createdAt,
                     updatedAt: blogPost.updatedAt,
-                    tags: tagNames,
+                    tags: blogPost.tags,
                     commentIds: blogPost.commentIds,
                 },
             },

@@ -1,5 +1,5 @@
 
-import {PrismaClient, Vote as VoteModel} from "@prisma/client"
+import {Vote as VoteModel} from "@prisma/client"
 import {Vote, VoteType} from "@server/types/dtos/votes"
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 export async function toggleVote(
@@ -51,7 +51,31 @@ export async function toggleVote(
     }
 }
 
+export async function getVoteCountsByBlogPostId(
+    prismaClient: any,
+    blogPostId: number
+): Promise<{ upVotes: number; downVotes: number }> {
+    try {
+        const upVotes = await prismaClient.vote.count({
+            where: {
+                blogPostId: blogPostId,
+                voteType: "UP",
+            },
+        });
 
+        const downVotes = await prismaClient.vote.count({
+            where: {
+                blogPostId: blogPostId,
+                voteType: "DOWN",
+            },
+        });
+
+        return { upVotes, downVotes };
+    } catch (error) {
+        console.error("Database Error", error);
+        throw new DatabaseIntegrityException("Database error: Failed to fetch vote counts by blog post ID");
+    }
+}
 
 function deserializeVote(voteModel: VoteModel): Vote {
     return {

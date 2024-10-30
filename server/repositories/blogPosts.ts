@@ -1,5 +1,5 @@
 import {DatabaseIntegrityException} from "@server/types/exceptions";
-import {BlogPost as BlogPostModel, PrismaClient} from "@prisma/client"
+import {BlogPost as BlogPostModel} from "@prisma/client"
 import {
     BlogPost,
     CreateBlogPostRequest,

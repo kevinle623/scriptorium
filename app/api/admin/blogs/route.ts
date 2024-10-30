@@ -1,9 +1,7 @@
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
 import * as blogPostService from "@server/services/blogPosts";
-import * as tagService from "@server/services/tags";
 import {NextResponse} from "next/server";
 import * as authorizationService from "@server/services/authorization";
-import {BlogPost} from "@server/types/dtos/blogPosts";
 
 export async function GET(req: Request) {
     try {
@@ -13,32 +11,11 @@ export async function GET(req: Request) {
         const limit = url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!) : undefined;
 
         const {totalCount, blogPosts} = await blogPostService.getMostReportedBlogPosts(page, limit)
-        const blogPostsWithTags = await Promise.all(
-            blogPosts.map(async (blogPost: BlogPost) => {
-                const tags = await tagService.getTagNamesByIds(blogPost.tagIds);
-                return {
-                    id: blogPost.id,
-                    userId: blogPost.userId,
-                    title: blogPost.title,
-                    description: blogPost.description,
-                    content: blogPost.content,
-                    hidden: blogPost.hidden,
-                    codeTemplateIds: blogPost.codeTemplateIds,
-                    createdAt: blogPost.createdAt,
-                    updatedAt: blogPost.updatedAt,
-                    tags: tags,
-                    commentIds: blogPost.commentIds,
-                    upVotes: blogPost.upVotes,
-                    downVotes: blogPost.downVotes,
-                };
-            })
-        );
-
 
         return NextResponse.json(
             {
                 message: "Most reported blog posts fetched successfully",
-                blogPosts: blogPostsWithTags,
+                blogPosts: blogPosts,
                 totalCount: totalCount,
             },
             {status: 201}

@@ -13,7 +13,7 @@ export interface BlogPost {
     upVotes?: number;
     downVotes?: number;
     commentIds?: number[];
-    tagIds?: number[];
+    tags?: string[];
 }
 
 export interface BlogPostTag {

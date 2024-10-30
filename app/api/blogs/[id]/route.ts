@@ -1,6 +1,5 @@
 import {NextResponse} from "next/server";
 import * as blogPostService from "@server/services/blogPosts";
-import * as tagService from "@server/services/tags"
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
 import {BlogPost} from "@server/types/dtos/blogPosts";
@@ -17,7 +16,6 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
         const blogPostId = parseInt(params.id, 10)
 
         const blogPost = await blogPostService.getBlogPostById(blogPostId)
-        const tags = await tagService.getTagNamesByIds(blogPost.tagIds)
         return NextResponse.json(
             {
                 message: "Blog Post fetched successfully",
@@ -31,7 +29,7 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
                     codeTemplateIds: blogPost.codeTemplateIds,
                     createdAt: blogPost.createdAt,
                     updatedAt: blogPost.updatedAt,
-                    tags: tags,
+                    tags: blogPost.tags,
                     commentIds: blogPost.commentIds,
                 },
             },
@@ -82,7 +80,6 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
         }
 
         const blogPost: BlogPost = await blogPostService.updateBlogPost(editBlogPostRequest)
-        const newTags = await tagService.getTagNamesByIds(blogPost.tagIds)
         return NextResponse.json(
             {
                 message: "Blog Post updated successfully",
@@ -96,7 +93,7 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
                     codeTemplateIds: blogPost.codeTemplateIds,
                     createdAt: blogPost.createdAt,
                     updatedAt: blogPost.updatedAt,
-                    tags: newTags,
+                    tags: blogPost.tags,
                     commentIds: blogPost.commentIds,
                 },
             },

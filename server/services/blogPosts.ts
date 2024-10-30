@@ -4,8 +4,7 @@ import {
     BlogPost,
     CreateBlogPostRequest,
     EditBlogPostRequest,
-    GetBlogPostRequest,
-    GetBlogPostsResult
+    GetBlogPostRequest, GetBlogPostsResult,
 } from "@server/types/dtos/blogPosts";
 import * as blogPostRepository from "@server/repositories/blogPosts"
 import * as tagRepository from "@server/repositories/tags"
@@ -15,7 +14,7 @@ import * as commentRepository from "@server/repositories/comments";
 import * as reportRepository from "@server/repositories/reports";
 import {VoteType} from "@server/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
-import {PrismaClient} from "@prisma/client";
+import * as codeTemplateRepository from "@server/repositories/codeTemplates"
 
 export async function createBlogPost(createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
     try {
@@ -74,6 +73,9 @@ export async function updateBlogPost(editBlogPostRequest: EditBlogPostRequest): 
 export async function getBlogPostById(blogPostId: number) {
     try {
         const blogPost = await blogPostRepository.getBlogPostById(prisma, blogPostId)
+        blogPost.tags = await tagRepository.getTagNamesByBlogPostId(prisma, blogPostId)
+        blogPost.commentIds = await commentRepository.getCommentIdsByBlogPostId(prisma, blogPostId)
+        blogPost.codeTemplateIds = await codeTemplateRepository.getCodeTemplateIdsByBlogPostId(prisma, blogPostId)
         if (!blogPost) {
             throw new NotFoundException("Blog Post does not exist")
         }
@@ -83,14 +85,30 @@ export async function getBlogPostById(blogPostId: number) {
     }
 }
 
-export async function getBlogPosts(getBlogPostsRequest: GetBlogPostRequest) {
+export async function getBlogPosts(
+    getBlogPostsRequest: GetBlogPostRequest
+): Promise<GetBlogPostsResult> {
     try {
-        const blogPosts = await blogPostRepository.getBlogPosts(prisma, getBlogPostsRequest)
-        return blogPosts
+        const { totalCount, blogPosts } = await blogPostRepository.getBlogPosts(prisma, getBlogPostsRequest);
+
+        const populatedBlogPosts = await Promise.all(
+            blogPosts.map(async (blogPost) => {
+                const blogPostId = blogPost.id;
+                blogPost.tags = await tagRepository.getTagNamesByBlogPostId(prisma, blogPostId)
+                blogPost.commentIds = await commentRepository.getCommentIdsByBlogPostId(prisma, blogPostId)
+                blogPost.codeTemplateIds = await codeTemplateRepository.getCodeTemplateIdsByBlogPostId(prisma, blogPostId)
+                return {
+                    ...blogPost,
+                };
+            })
+        );
+
+        return { totalCount, blogPosts: populatedBlogPosts };
     } catch (e) {
-        throw e
+        throw e;
     }
 }
+
 
 export async function addCommentToBlogPost(
     blogPostId: number,
@@ -168,7 +186,19 @@ export async function getMostReportedBlogPosts(
         const { totalCount, blogPostIds } = await reportRepository.getBlogPostIdsByReportCount(prisma, page, limit)
 
         const blogPosts = await blogPostRepository.getBlogPostsByIds(prisma, blogPostIds)
-        return { totalCount, blogPosts }
+
+        const populatedBlogPosts = await Promise.all(
+            blogPosts.map(async (blogPost) => {
+                const blogPostId = blogPost.id;
+                blogPost.tags = await tagRepository.getTagNamesByBlogPostId(prisma, blogPostId)
+                blogPost.commentIds = await commentRepository.getCommentIdsByBlogPostId(prisma, blogPostId)
+                blogPost.codeTemplateIds = await codeTemplateRepository.getCodeTemplateIdsByBlogPostId(prisma, blogPostId)
+                return {
+                    ...blogPost,
+                };
+            })
+        );
+        return { totalCount, blogPosts: populatedBlogPosts }
     } catch (e) {
         throw e
     }

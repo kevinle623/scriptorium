@@ -1,5 +1,5 @@
 import {DatabaseIntegrityException} from "@server/types/exceptions";
-import {PrismaClient, Tag as TagModel} from "@prisma/client"
+import {PrismaClient, Tag as TagModel, BlogPostTag as BlogPostTagModel} from "@prisma/client"
 import {Tag} from "@server/types/dtos/tags"
 
 export async function deleteBlogPostTags(
@@ -99,6 +99,69 @@ export async function updateCodeTemplateTags(
         throw new DatabaseIntegrityException("Database error: Failed to update code template tags");
     }
 }
+
+export async function getTagNamesByCodeTemplateId(
+    prismaClient: PrismaClient,
+    codeTemplateId: number
+): Promise<string[]> {
+    try {
+        const codeTemplateTags = await prismaClient.codeTemplateTag.findMany({
+            where: {
+                codeTemplateId: codeTemplateId,
+            },
+            include: {
+                tag: true,
+            },
+        });
+
+        const tagIds = codeTemplateTags.map((tag: any) => tag.tagId);
+
+        const tags = await prismaClient.tag.findMany({
+            where: {
+                id: { in: tagIds },
+            },
+            select: {
+                name: true,
+            },
+        });
+
+        return tags.map(tag => tag.name);
+    } catch (error) {
+        console.error("Database Error", error);
+        throw new DatabaseIntegrityException("Database error: Failed to fetch tag names by code template ID");
+    }
+}
+
+export async function getTagNamesByBlogPostId(
+    prismaClient: PrismaClient,
+    blogPostId: number
+): Promise<string[]> {
+    try {
+        const blogTags = await prismaClient.blogPostTag.findMany({
+            where: {
+                blogPostId: blogPostId,
+            },
+            include: {
+                tag: true,
+            },
+        });
+
+        const tagIds = blogTags.map((tag: BlogPostTagModel) => tag.tagId)
+
+        const tags = await prismaClient.tag.findMany({
+            where: {
+                id: { in: tagIds },
+            },
+        });
+
+        return tags.map((tag: TagModel) => tag.name);
+
+    } catch (error) {
+        console.error("Database Error", error);
+        throw new DatabaseIntegrityException("Database error: Failed to fetch tag names by blog post ID");
+    }
+}
+
 
 export async function createCodeTemplateTags(
     prismaClient: any,

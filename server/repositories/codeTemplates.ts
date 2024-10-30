@@ -27,6 +27,27 @@ export async function createCodeTemplate(prismaClient: any, createCodeTemplateRe
     }
 }
 
+export async function getCodeTemplateIdsByBlogPostId(
+    prismaClient: PrismaClient,
+    blogPostId: number
+): Promise<number[]> {
+    try {
+        const codeTemplates = await prismaClient.blogPostCodeTemplate.findMany({
+            where: {
+                blogPostId: blogPostId,
+            },
+            select: {
+                codeTemplateId: true,
+            },
+        });
+
+        return codeTemplates.map((relation) => relation.codeTemplateId);
+    } catch (error) {
+        console.error("Database Error", error);
+        throw new DatabaseIntegrityException("Database error: Failed to fetch code template IDs by blog post ID");
+    }
+}
+
 export async function getCodeTemplateById(
     prismaClient: any,
     codeTemplateId: number
