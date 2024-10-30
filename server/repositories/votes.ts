@@ -1,5 +1,5 @@
 
-import {Vote as VoteModel} from "@prisma/client"
+import {PrismaClient, Vote as VoteModel} from "@prisma/client"
 import {Vote, VoteType} from "@server/types/dtos/votes"
 import {DatabaseIntegrityException} from "@server/types/exceptions";
 export async function toggleVote(
@@ -12,11 +12,11 @@ export async function toggleVote(
     try {
         const existingVote = await prismaClient.vote.findFirst({
             where: {
-                userId,
+                userId: userId,
                 blogPostId: blogPostId || null,
                 commentId: commentId || null,
             },
-        });
+        }) as VoteModel;
 
         if (existingVote) {
             if (voteType === null) {
@@ -28,7 +28,7 @@ export async function toggleVote(
                 const updatedVote = await prismaClient.vote.update({
                     where: { id: existingVote.id },
                     data: { voteType },
-                });
+                }) as VoteModel;
                 return deserializeVote(updatedVote);
             }
         } else {
@@ -40,7 +40,7 @@ export async function toggleVote(
                         commentId: commentId || null,
                         voteType,
                     },
-                });
+                }) as VoteModel;
                 return deserializeVote(newVote);
             }
             return null

@@ -3,6 +3,7 @@ import * as blogPostService from "@server/services/blogPosts";
 import * as tagService from "@server/services/tags";
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
+import {BlogPost} from "@server/types/dtos/blogPosts";
 
 export async function GET(req: Request) {
     try {
@@ -86,7 +87,7 @@ export async function POST(req: Request) {
 
         await authorizationService.verifyMatchingUserAuthorization(req, userId)
 
-        const blogPost = await blogPostService.createBlogPost(createBlogPostRequest)
+        const blogPost: BlogPost = await blogPostService.createBlogPost(createBlogPostRequest)
         const tagNames = await tagService.getTagNamesByIds(blogPost.tagIds)
         return NextResponse.json(
             {

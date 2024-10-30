@@ -16,7 +16,7 @@ export interface CodeTemplate {
     explanation?: string;
     userId: number;
     parentTemplateId?: number;
-    tagIds: number[];
+    tagIds?: number[];
     createdAt: Date;
     updatedAt: Date;
 }

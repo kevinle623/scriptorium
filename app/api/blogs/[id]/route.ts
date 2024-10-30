@@ -3,6 +3,7 @@ import * as blogPostService from "@server/services/blogPosts";
 import * as tagService from "@server/services/tags"
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
+import {BlogPost} from "@server/types/dtos/blogPosts";
 
 export async function GET(req: Request, {params}: { params: { id: string } }) {
     try {
@@ -80,7 +81,7 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
             tags,
         }
 
-        const blogPost = await blogPostService.updateBlogPost(editBlogPostRequest)
+        const blogPost: BlogPost = await blogPostService.updateBlogPost(editBlogPostRequest)
         const newTags = await tagService.getTagNamesByIds(blogPost.tagIds)
         return NextResponse.json(
             {

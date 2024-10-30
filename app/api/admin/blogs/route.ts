@@ -3,6 +3,7 @@ import * as blogPostService from "@server/services/blogPosts";
 import * as tagService from "@server/services/tags";
 import {NextResponse} from "next/server";
 import * as authorizationService from "@server/services/authorization";
+import {BlogPost} from "@server/types/dtos/blogPosts";
 
 export async function GET(req: Request) {
     try {
@@ -13,7 +14,7 @@ export async function GET(req: Request) {
 
         const {totalCount, blogPosts} = await blogPostService.getMostReportedBlogPosts(page, limit)
         const blogPostsWithTags = await Promise.all(
-            blogPosts.map(async (blogPost) => {
+            blogPosts.map(async (blogPost: BlogPost) => {
                 const tags = await tagService.getTagNamesByIds(blogPost.tagIds);
                 return {
                     id: blogPost.id,

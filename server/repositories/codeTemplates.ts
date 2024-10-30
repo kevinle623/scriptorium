@@ -1,4 +1,4 @@
-import {CodeTemplate as CodeTemplateModel} from "@prisma/client";
+import {CodeTemplate as CodeTemplateModel, PrismaClient} from "@prisma/client";
 import {
     CodeTemplate, CodingLanguage,
     CreateCodeTemplateRequest,
@@ -19,7 +19,7 @@ export async function createCodeTemplate(prismaClient: any, createCodeTemplateRe
                 language: createCodeTemplateRequest.language,
                 parentTemplateId: createCodeTemplateRequest.parentTemplateId || null,
             },
-        });
+        }) as CodeTemplateModel;
         return deserializeCodeTemplate(newCodeTemplate);
     } catch (e) {
         console.error("Database error: ", e);
@@ -42,7 +42,7 @@ export async function getCodeTemplateById(
                 },
                 user: true,
             },
-        });
+        }) as CodeTemplateModel;
 
         if (!codeTemplate) {
             return null;
@@ -70,23 +70,12 @@ export async function getCodeTemplatesByUserId(
 
         const codeTemplates = await prismaClient.codeTemplate.findMany({
             where: { userId: userId },
-            include: {
-                tags: {
-                    include: {
-                        tag: true,
-                    },
-                },
-                user: true,
-            },
             skip: skip,
-            take: take,
-            orderBy: {
-                createdAt: 'desc',
-            },
+            take: take
         });
 
         return {
-            codeTemplates: codeTemplates.map((codeTemplate: any) => deserializeCodeTemplate(codeTemplate)),
+            codeTemplates: codeTemplates.map((codeTemplate: CodeTemplateModel) => deserializeCodeTemplate(codeTemplate)),
             totalCount
         };
     } catch (e) {
@@ -99,32 +88,19 @@ export async function getCodeTemplatesByUserId(
 export async function editCodeTemplate(
     prismaClient: any,
     updateCodeTemplateRequest: UpdateCodeTemplateRequest
-): Promise<CodeTemplate> {
+): Promise<void> {
     try {
-        const dataToUpdate: Record<string, any> = {};
-
-        if (updateCodeTemplateRequest.title !== undefined) {
-            dataToUpdate.title = updateCodeTemplateRequest.title;
-        }
-
-        if (updateCodeTemplateRequest.code !== undefined) {
-            dataToUpdate.code = updateCodeTemplateRequest.code;
-        }
-
-        if (updateCodeTemplateRequest.explanation !== undefined) {
-            dataToUpdate.explanation = updateCodeTemplateRequest.explanation;
-        }
-
-        if (updateCodeTemplateRequest.language !== undefined) {
-            dataToUpdate.language = updateCodeTemplateRequest.language;
-        }
-
-        const updatedTemplate = await prismaClient.codeTemplate.update({
+        await prismaClient.codeTemplate.update({
             where: {id: updateCodeTemplateRequest.id},
-            data: dataToUpdate,
+            data: {
+                ...(updateCodeTemplateRequest.title && {title: updateCodeTemplateRequest.title}),
+                ...(updateCodeTemplateRequest.code && {code: updateCodeTemplateRequest.code}),
+                ...(updateCodeTemplateRequest.explanation && {explanation: updateCodeTemplateRequest.explanation}),
+                ...(updateCodeTemplateRequest.language && {language: updateCodeTemplateRequest.language}),
+            },
         });
 
-        return deserializeCodeTemplate(updatedTemplate);
+        return
     } catch (e) {
         console.error("Database error: ", e);
         throw new DatabaseIntegrityException("Database error: failed to update code template");
@@ -141,8 +117,6 @@ function deserializeCodeTemplate(templateModel: CodeTemplateModel): CodeTemplate
         explanation: (templateModel.explanation || undefined),
         parentTemplateId: (templateModel.parentTemplateId || undefined),
         userId: templateModel.userId,
-        // tagIds: templateModel.tags.map((tag: any) => tag.tagId),
-        tagIds: [],
         createdAt: templateModel.createdAt,
         updatedAt: templateModel.updatedAt,
     };

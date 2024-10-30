@@ -1,5 +1,5 @@
 import {DatabaseIntegrityException} from "../types/exceptions";
-import {User as UserModel} from "@prisma/client";
+import {PrismaClient, User as UserModel} from "@prisma/client";
 import {Role} from "@server/types/dtos/roles"
 
 import {CreateUserRequest, EditUserRequest, User} from "@server/types/dtos/user"
@@ -16,7 +16,7 @@ export async function createUser(prismaClient: any, createUserRequest: CreateUse
                 avatar: createUserRequest.avatar,
                 password: hashedPassword,
             }
-        })
+        }) as UserModel
         return deserializeUser(user)
     } catch (error) {
         console.error("Database Error", error)
@@ -30,7 +30,7 @@ export async function findUserById(prismaClient: any, userId: number): Promise<U
             where: {
                 id: userId,
             }
-        })
+        }) as UserModel
         return deserializeUser(user)
     } catch (error) {
         console.error("Database Error", error)
@@ -44,7 +44,7 @@ export async function findUserByEmail(prismaClient: any, email: string): Promise
             where: {
                 email: email,
             }
-        })
+        }) as UserModel
         return deserializeUser(user)
     } catch (error) {
         console.error("Database Error", error)
@@ -56,7 +56,7 @@ export async function updateUser(prismaClient: any, editUserRequest: EditUserReq
     try {
         const existingUser = await prismaClient.user.findUnique({
             where: { id: editUserRequest.userId },
-        });
+        }) as UserModel;
 
         if (!existingUser) {
             throw new Error('User not found');

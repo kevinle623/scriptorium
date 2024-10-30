@@ -1,6 +1,7 @@
 
 import {prisma} from "@server/libs/prisma/client";
 import {
+    BlogPost,
     CreateBlogPostRequest,
     EditBlogPostRequest,
     GetBlogPostRequest,
@@ -14,8 +15,9 @@ import * as commentRepository from "@server/repositories/comments";
 import * as reportRepository from "@server/repositories/reports";
 import {VoteType} from "@server/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
+import {PrismaClient} from "@prisma/client";
 
-export async function createBlogPost(createBlogPostRequest: CreateBlogPostRequest) {
+export async function createBlogPost(createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
     try {
         const newBlogPost = await prisma.$transaction(async (prismaTx) => {
             const createdBlogPost = await blogPostRepository.createBlogPost(prismaTx, createBlogPostRequest);
@@ -47,7 +49,7 @@ export async function deleteBlogPost(blogPostId: number) {
     }
 }
 
-export async function updateBlogPost(editBlogPostRequest: EditBlogPostRequest) {
+export async function updateBlogPost(editBlogPostRequest: EditBlogPostRequest): Promise<BlogPost> {
     try {
         const { blogPostId, tags = [] } = editBlogPostRequest;
         const updatedBlogPost = await prisma.$transaction(async (prismaTx) => {
@@ -161,9 +163,12 @@ export async function toggleHiddenBlogPost(blogPostId: number, hidden: boolean) 
 export async function getMostReportedBlogPosts(
     page?: number,
     limit?: number,
-): Promise<GetBlogPostsResult> {
+): Promise<{totalCount: number, blogPosts: BlogPost[]}> {
     try {
-        return await blogPostRepository.getMostReportedBlogPosts(prisma, page, limit)
+        const { totalCount, blogPostIds } = await reportRepository.getBlogPostIdsByReportCount(prisma, page, limit)
+
+        const blogPosts = await blogPostRepository.getBlogPostsByIds(prisma, blogPostIds)
+        return { totalCount, blogPosts }
     } catch (e) {
         throw e
     }

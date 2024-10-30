@@ -9,11 +9,11 @@ export interface BlogPost {
     hidden: boolean;
     createdAt: Date;
     updatedAt: Date;
-    codeTemplateIds: number[];
-    upVotes: number;
-    downVotes: number;
-    commentIds: number[];
-    tagIds: number[];
+    codeTemplateIds?: number[];
+    upVotes?: number;
+    downVotes?: number;
+    commentIds?: number[];
+    tagIds?: number[];
 }
 
 export interface BlogPostTag {

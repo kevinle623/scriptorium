@@ -1,5 +1,3 @@
-import {CodeTemplate} from "@server/types/dtos/codeTemplates";
-
 export interface Comment {
     id: number;
     content: string;
@@ -8,10 +6,10 @@ export interface Comment {
     parentId?: number | null;
     createdAt: Date;
     hidden: boolean;
-    replyIds: number[];
-    upVotes: number;
-    downVotes: number;
-    reportIds: number[];
+    replyIds?: number[];
+    upVotes?: number;
+    downVotes?: number;
+    reportIds?: number[];
 }
 
 export interface EditCommentRequest {

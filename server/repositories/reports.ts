@@ -1,5 +1,5 @@
 import { DatabaseIntegrityException } from "@server/types/exceptions";
-import { Report as ReportModel} from "@prisma/client";
+import {PrismaClient, Report as ReportModel} from "@prisma/client";
 import { Report } from "@server/types/dtos/reports";
 
 export async function createReport(
@@ -17,13 +17,78 @@ export async function createReport(
                 blogPostId: blogPostId || null,
                 commentId: commentId || null,
             },
-        });
+        }) as ReportModel;
         return deserializeReport(newReport);
     } catch (e) {
         console.error("Database error: ", e);
         throw new DatabaseIntegrityException("Database error: failed to create report");
     }
 }
+
+export async function getBlogPostIdsByReportCount(
+    prismaClient: any,
+    page: number = 1,
+    pageSize: number = 10
+): Promise<{ totalCount: number; blogPostIds: number[] }> {
+    const skip = (page - 1) * pageSize;
+
+    const totalCount = await prismaClient.report.groupBy({
+        by: ['blogPostId'],
+        _count: true,
+    }).then((groups: any)=> groups.length);
+
+    const reports = await prismaClient.report.groupBy({
+        by: ['blogPostId'],
+        _count: {
+            blogPostId: true
+        },
+        orderBy: {
+            _count: {
+                blogPostId: 'desc'
+            }
+        },
+        skip,
+        take: pageSize,
+    }) as unknown as { blogPostId: number }[];
+
+    const blogPostIds = reports.map((report) => report.blogPostId);
+
+    return { totalCount, blogPostIds };
+}
+
+export async function getCommentIdsByReportCount(
+    prismaClient: any,
+    page: number = 1,
+    pageSize: number = 10
+): Promise<{ totalCount: number; commentIds: number[] }> {
+    const skip = (page - 1) * pageSize;
+
+    const totalCount = await prismaClient.report.groupBy({
+        by: ['commentId'],
+        _count: true,
+        where: { commentId: { not: null } }
+    }).then((groups: any) => groups.length);
+
+    const reports = await prismaClient.report.groupBy({
+        by: ['commentId'],
+        _count: {
+            commentId: true
+        },
+        where: { commentId: { not: null } },
+        orderBy: {
+            _count: {
+                commentId: 'desc'
+            }
+        },
+        skip,
+        take: pageSize,
+    }) as unknown as { commentId: number }[];
+
+    const commentIds = reports.map((report) => report.commentId);
+
+    return { totalCount, commentIds };
+}
+
 
 
 function deserializeReport(reportModel: ReportModel): Report {

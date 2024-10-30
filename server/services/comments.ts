@@ -121,9 +121,11 @@ export async function toggleHiddentComment(commentId: number, hidden: boolean) {
 export async function getMostReportedComments(
     page?: number,
     limit?: number,
-): Promise<GetCommentsResult> {
+): Promise<{totalCount: number, comments: Comment[]}> {
     try {
-        return await commentRepository.getMostReportedComments(prisma, page, limit)
+        const {totalCount, commentIds} = await reportRepository.getCommentIdsByReportCount(prisma, page, limit)
+        const comments = await commentRepository.getCommentsByIds(prisma, commentIds)
+        return { totalCount, comments }
     } catch (e) {
         throw e
     }

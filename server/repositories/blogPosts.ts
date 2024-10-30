@@ -10,7 +10,7 @@ import {
 
 export async function createBlogPost(prismaClient: any, createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
     try {
-        const blogPost = await prismaClient.BlogPost.create({
+        const blogPost = await prismaClient.blogPost.create({
             data: {
                 title: createBlogPostRequest.title,
                 description: createBlogPostRequest.description,
@@ -24,7 +24,7 @@ export async function createBlogPost(prismaClient: any, createBlogPostRequest: C
                     })),
                 },
             }
-        })
+        }) as BlogPostModel
         return deserializeBlogPost(blogPost)
     } catch (error) {
         console.error("Database Error", error)
@@ -34,11 +34,11 @@ export async function createBlogPost(prismaClient: any, createBlogPostRequest: C
 
 export async function getBlogPostById(prismaClient: any, blogPostId: number) {
     try {
-        const blogPost = await prismaClient.BlogPost.findUnique({
+        const blogPost = await prismaClient.blogPost.findUnique({
             where: {
                 id: blogPostId,
             }
-        })
+        }) as BlogPostModel
         return deserializeBlogPost(blogPost)
     } catch (error) {
         console.error("Database Error", error)
@@ -57,6 +57,26 @@ export async function deleteBlogPost(prismaClient: any, blogPostId: number): Pro
     } catch (error) {
         console.error("Database Error", error);
         throw new DatabaseIntegrityException('Database error: Failed to delete blog post');
+    }
+}
+
+export async function getBlogPostsByIds(
+    prismaClient: any,
+    ids: number[]
+): Promise<BlogPost[]> {
+    try {
+        const blogPosts = await prismaClient.blogPost.findMany({
+            where: {
+                id: {
+                    in: ids,
+                },
+            },
+        });
+
+        return blogPosts.map(deserializeBlogPost);
+    } catch (error) {
+        console.error("Database Error", error);
+        throw new DatabaseIntegrityException('Database error: Failed to fetch blog posts by IDs');
     }
 }
 
@@ -131,12 +151,6 @@ export async function getBlogPosts(
             };
         }
 
-        const orderBy = sortBy
-            ? {
-                [sortBy]: sortOrd === 'desc' ? 'desc' : 'asc',
-            }
-            : undefined;
-
         const totalCount = await prismaClient.blogPost.count({
             where: whereCondition,
         });
@@ -145,17 +159,9 @@ export async function getBlogPosts(
             skip,
             take,
             where: whereCondition,
-            orderBy,
-            include: {
-                tags: {
-                    include: {
-                        tag: true,
-                    },
-                },
-                votes: true,
-                comments: true,
-                codeTemplates: true,
-            },
+            ...(sortBy && sortOrd && {orderBy: {
+                [sortBy]: sortOrd === 'desc' ? 'desc' : 'asc',
+            }})
         });
 
         return {totalCount: totalCount, blogPosts: blogPosts.map(deserializeBlogPost)};
@@ -164,55 +170,7 @@ export async function getBlogPosts(
         throw new Error('Failed to fetch blog posts');
     }
 }
-
-export async function getMostReportedBlogPosts(
-    prismaClient: any,
-    page?: number,
-    limit?: number
-): Promise<GetBlogPostsResult> {
-    try {
-        const offset = page && limit ? (page - 1) * limit : undefined;
-        const take = limit ?? undefined;
-        const totalCount = await prismaClient.blogPost.count({
-            where: {
-                report: {
-                    some: {},
-                },
-            },
-        });
-
-        const blogPosts = await prismaClient.blogPost.findMany({
-            where: {
-                report: {
-                    some: {},
-                },
-            },
-            orderBy: {
-                reports: {
-                    _count: 'desc',
-                },
-            },
-            skip: offset,
-            take: take,
-            include: {
-                user: true,
-                tags: true,
-                report: true,
-                comments: true,
-            },
-        });
-
-        return {totalCount: totalCount, blogPosts: blogPosts.map((blogPost: BlogPostModel) => deserializeBlogPost(blogPost))};
-    } catch (e) {
-        console.error('Database Error', e);
-        throw new Error('Failed to fetch most reported blog posts');
-    }
-}
-
-
-function deserializeBlogPost(blogPost: any): BlogPost {
-    const upVotes = blogPost.votes.filter((vote: any) => vote.voteType === 'up').length || 0;
-    const downVotes = blogPost.votes.filter((vote: any) => vote.voteType === 'down').length || 0;
+function deserializeBlogPost(blogPost: BlogPostModel): BlogPost {
     return {
         id: blogPost.id,
         title: blogPost.title,
@@ -222,10 +180,5 @@ function deserializeBlogPost(blogPost: any): BlogPost {
         hidden: blogPost.hidden,
         createdAt: blogPost.createdAt,
         updatedAt: blogPost.updatedAt,
-        codeTemplateIds: blogPost.codeTemplates.map((template: any) => template.id),
-        upVotes: upVotes,
-        downVotes: downVotes,
-        commentIds: blogPost.comments.map((comment: any) => comment.id),
-        tagIds: blogPost.tags.map((tag: any) => tag.id),
     };
 }
