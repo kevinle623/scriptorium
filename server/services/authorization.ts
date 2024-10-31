@@ -96,7 +96,7 @@ export async function extractUserIdFromRequestHeader(req: Request): Promise<numb
         const authorizationHeader = req.headers.get("authorization");
 
         if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-            return null;
+            return undefined;
         }
 
         const token = authorizationHeader.split(" ")[1];

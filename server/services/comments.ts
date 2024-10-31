@@ -68,7 +68,8 @@ export async function updateComment(
             content,
         }
         await commentRepository.editComment(prisma, updateCommentRequest);
-        const comment = commentRepository.getCommentById(prisma, commentId)
+        const comment = await commentRepository.getCommentById(prisma, commentId)
+        if (!comment) throw new NotFoundException("Comment not found.")
         return comment;
     } catch (error) {
         throw error;

@@ -203,7 +203,7 @@ export async function getCommentIdsByParentCommentId(
             },
         });
 
-        return comments.map(comment => comment.id);
+        return comments.map((comment: CommentModel) => comment.id);
     } catch (error) {
         console.error("Database error: ", error);
         throw new DatabaseIntegrityException("Database error: failed to fetch comment IDs by parent comment ID");
@@ -224,7 +224,7 @@ export async function getCommentIdsByBlogPostId(
             },
         });
 
-        return comments.map(comment => comment.id);
+        return comments.map((comment: CommentModel) => comment.id);
     } catch (error) {
         console.error("Database error: ", error);
         throw new DatabaseIntegrityException("Database error: failed to fetch comment IDs by blog post ID");
@@ -337,7 +337,7 @@ export async function getMostReportedComments(
             take: limit,
         });
 
-        const result = mostReportedComments.map(comment => ({
+        const result = mostReportedComments.map((comment: any) => ({
             ...deserializeComment(comment),
             reportCount: comment.reports.length,
         }));

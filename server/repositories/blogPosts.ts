@@ -240,7 +240,7 @@ export async function getMostReportedBlogPosts(
             take: limit,
         });
 
-        const result = mostReportedBlogPosts.map(blogPost => ({
+        const result = mostReportedBlogPosts.map((blogPost: any) => ({
             ...blogPost,
             reportCount: blogPost.report.length,
         }));
@@ -266,7 +266,7 @@ export async function getOrderedBlogPosts(
     getBlogPostsRequest: GetBlogPostRequest
 ) {
     try {
-        const { page, limit, orderBy } = getBlogPostsRequest;
+        const { page= 1, limit = 10, orderBy } = getBlogPostsRequest;
 
         const whereCondition: any = buildBlogPostWhereCondition(getBlogPostsRequest)
 
@@ -278,9 +278,9 @@ export async function getOrderedBlogPosts(
         });
 
         if (orderBy === 'mostControversial' || orderBy === 'mostValued') {
-            blogPosts = blogPosts.map(blogPost => {
-                const upVotes = blogPost.votes.filter(vote => vote.voteType === 'UP').length;
-                const downVotes = blogPost.votes.filter(vote => vote.voteType === 'DOWN').length;
+            blogPosts = blogPosts.map((blogPost: any) => {
+                const upVotes = blogPost.votes.filter((vote: any) => vote.voteType === 'UP').length;
+                const downVotes = blogPost.votes.filter((vote: any) => vote.voteType === 'DOWN').length;
 
                 return {
                     ...blogPost,
@@ -291,9 +291,9 @@ export async function getOrderedBlogPosts(
 
             if (orderBy === 'mostControversial') {
 
-                blogPosts.sort((a, b) => b.totalVotes - a.totalVotes);
+                blogPosts.sort((a: any, b: any) => b.totalVotes - a.totalVotes);
             } else if (orderBy === 'mostValued') {
-                blogPosts.sort((a, b) => b.voteDifference - a.voteDifference);
+                blogPosts.sort((a: any, b: any) => b.voteDifference - a.voteDifference);
             }
         }
 

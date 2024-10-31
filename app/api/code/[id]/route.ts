@@ -1,6 +1,5 @@
 import {NextResponse} from "next/server";
 import * as codeTemplateService from "@server/services/codeTemplates";
-import * as tagService from "@server/services/tags"
 import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
 

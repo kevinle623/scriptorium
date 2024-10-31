@@ -121,7 +121,7 @@ export async function getBlogPosts(
         }
 
         const populatedBlogPosts = await Promise.all(
-            blogPosts.map(async (blogPost) => {
+            blogPosts.map(async (blogPost: BlogPost) => {
                 return {
                     ...await populateBlogPost(blogPost),
                 };

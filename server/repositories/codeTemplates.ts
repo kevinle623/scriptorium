@@ -184,6 +184,7 @@ function deserializeCodeTemplate(templateModel: CodeTemplateModel): CodeTemplate
         explanation: (templateModel.explanation || undefined),
         parentTemplateId: (templateModel.parentTemplateId || undefined),
         userId: templateModel.userId,
+        tags: [],
         createdAt: templateModel.createdAt,
         updatedAt: templateModel.updatedAt,
     };
