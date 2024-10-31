@@ -1,6 +1,6 @@
-import { DatabaseIntegrityException, InvalidCredentialsException } from "@server/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
 import { NextResponse } from "next/server";
+import {routeHandlerException} from "@server/utils/exception_utils";
 
 export async function POST(req: Request) {
     try {
@@ -15,11 +15,6 @@ export async function POST(req: Request) {
 
         return NextResponse.json(tokens, { status: 200 });
     } catch (error) {
-        if (error instanceof DatabaseIntegrityException) {
-            return NextResponse.json({ error: error.message }, { status: 400 });
-        } else if (error instanceof InvalidCredentialsException) {
-            return NextResponse.json({ error: error.message }, { status: 401 });
-        }
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        routeHandlerException(error)
     }
 }
