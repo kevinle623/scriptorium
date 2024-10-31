@@ -91,6 +91,25 @@ export async function verifyMatchingUser(tokenPayload: any, userId: number) {
     return tokenPayload;
 }
 
+export async function extractUserIdFromRequestHeader(req: Request): Promise<number | undefined> {
+    try {
+        const authorizationHeader = req.headers.get("authorization");
+
+        if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+            return null;
+        }
+
+        const token = authorizationHeader.split(" ")[1];
+
+        const payload = await verifyAccessToken(token);
+
+        return payload?.userId ?? undefined;
+    } catch (error) {
+        console.error("extractUserIdFromRequestHeader error:", error);
+        return undefined;
+    }
+}
+
 export async function refreshTokens(token: string) {
     const revoked = await revokedTokenRepository.isTokenRevoked(prisma, token, 'refresh');
     if (revoked) {

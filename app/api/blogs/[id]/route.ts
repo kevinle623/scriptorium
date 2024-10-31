@@ -21,6 +21,11 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
         const blogPostId = parseInt(params.id, 10)
 
         const blogPost = await blogPostService.getBlogPostById(blogPostId)
+
+        if (blogPost.hidden) {
+            await authorizationService.verifyMatchingUserAuthorization(req, blogPost.userId)
+        }
+
         return NextResponse.json(
             {
                 message: "Blog Post fetched successfully",

@@ -48,6 +48,7 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
 
 export async function GET(req: Request, {params}: { params: { id: string } }) {
     try {
+        const userId = await authorizationService.extractUserIdFromRequestHeader(req)
         if (!Number(params.id)) {
             return NextResponse.json(
                 {message: "Invalid id"},
@@ -61,7 +62,7 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
         const page = parseInt(url.searchParams.get("page") || "1", 10);
         const limit = parseInt(url.searchParams.get("limit") || "10", 10);
 
-        const { comments, totalCount } = await commentService.getDirectRepliesFromComment(commentId, page, limit)
+        const { comments, totalCount } = await commentService.getDirectRepliesFromComment(commentId, page, limit, userId)
 
         return NextResponse.json(
             {

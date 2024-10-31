@@ -139,13 +139,20 @@ export async function getDirectCommentsFromBlogPost(
     prismaClient: any,
     blogPostId: number,
     page?: number,
-    limit?: number
+    limit?: number,
+    userId?: number
 ): Promise<GetCommentsResult> {
     try {
         const queryOptions: any = {
             where: {
                 blogPostId: blogPostId,
                 parentId: null,
+                OR: userId !== undefined
+                    ? [
+                        { hidden: false },
+                        { userId: userId }
+                    ]
+                    : { hidden: false },
             },
             orderBy: {
                 createdAt: 'desc',
@@ -154,6 +161,8 @@ export async function getDirectCommentsFromBlogPost(
                 votes: true,
             },
         };
+
+
 
         if (page && limit) {
             const skip = (page - 1) * limit;
@@ -252,18 +261,31 @@ export async function getDirectRepliesFromComment(
     prismaClient: any,
     commentId: number,
     page?: number,
-    limit?: number
+    limit?: number,
+    userId?: number
 ): Promise<GetCommentsResult> {
     try {
         const totalCount = await prismaClient.comment.count({
             where: {
                 parentId: commentId,
+                OR: userId !== undefined
+                    ? [
+                        { hidden: false },
+                        { userId: userId }
+                    ]
+                    : { hidden: false },
             },
         });
 
         const queryOptions: any = {
             where: {
                 parentId: commentId,
+                OR: userId !== undefined
+                    ? [
+                        { hidden: false },
+                        { userId: userId }
+                    ]
+                    : { hidden: false },
             },
             orderBy: {
                 createdAt: 'desc',

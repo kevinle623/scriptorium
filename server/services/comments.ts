@@ -101,7 +101,8 @@ export async function toggleCommentVote(
 export async function getDirectRepliesFromComment(
     commentId: number,
     page?: number,
-    limit?: number
+    limit?: number,
+    userId?: number
 ): Promise<GetCommentsResult> {
     try {
         const comment = await commentRepository.getCommentById(prisma, commentId)
@@ -109,7 +110,7 @@ export async function getDirectRepliesFromComment(
             throw new NotFoundException("Comment not Found")
 
         }
-        const { comments, totalCount } = await commentRepository.getDirectRepliesFromComment(prisma, commentId, page, limit);
+        const { comments, totalCount } = await commentRepository.getDirectRepliesFromComment(prisma, commentId, page, limit, userId);
 
         const populatedComments = await Promise.all(
             comments.map(async (comment: Comment) => {

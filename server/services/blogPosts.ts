@@ -197,14 +197,15 @@ export async function getBlogPostVoteByUserId(
 export async function getDirectCommentsFromBlogPost(
     blogPostId: number,
     page: number,
-    limit: number
+    limit: number,
+    userId?: number,
 ): Promise<GetCommentsResult> {
     try {
         const blogPost = await blogPostRepository.getBlogPostById(prisma, blogPostId)
         if (!blogPost) {
             throw new NotFoundException("Blog Post does not exist")
         }
-        return await commentRepository.getDirectCommentsFromBlogPost(prisma, blogPostId, page, limit);
+        return await commentRepository.getDirectCommentsFromBlogPost(prisma, blogPostId, page, limit, userId);
     } catch (error) {
         throw error;
     }

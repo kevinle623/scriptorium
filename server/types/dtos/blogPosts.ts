@@ -52,6 +52,7 @@ export interface GetBlogPostRequest {
     codeTemplateIds?: number[],
     tagsList?: string[],
     orderBy: BlogPostOrderType
+    userId?: number,
 }
 
 export interface GetBlogPostsResult {

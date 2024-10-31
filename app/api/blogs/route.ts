@@ -11,6 +11,8 @@ import {BlogPost, BlogPostOrderType} from "@server/types/dtos/blogPosts";
 
 export async function GET(req: Request) {
     try {
+        const userId = await authorizationService.extractUserIdFromRequestHeader(req)
+
         const url = new URL(req.url);
 
         const page = url.searchParams.get('page') ? parseInt(url.searchParams.get('page')!) : undefined;
@@ -42,6 +44,7 @@ export async function GET(req: Request) {
             codeTemplateIds,
             tagsList,
             orderBy: parsedOrderBy as BlogPostOrderType,
+            userId
         };
 
         const {totalCount, blogPosts} = await blogPostService.getBlogPosts(getBlogPostRequest);

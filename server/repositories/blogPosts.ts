@@ -9,9 +9,18 @@ import {
 } from "@server/types/dtos/blogPosts";
 
 export function buildBlogPostWhereCondition(getBlogPostsRequest: GetBlogPostRequest) {
-    const { tagsList, content, title, codeTemplateIds } = getBlogPostsRequest;
+    const { tagsList, content, title, codeTemplateIds, userId } = getBlogPostsRequest;
 
     const whereCondition: any = {};
+
+    if (userId !== undefined) {
+        whereCondition.OR = [
+            { hidden: false },
+            { userId: userId }
+        ];
+    } else {
+        whereCondition.hidden = false;
+    }
 
     if (tagsList && tagsList.length > 0) {
         whereCondition.tags = {

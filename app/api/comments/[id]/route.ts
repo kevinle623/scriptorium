@@ -92,6 +92,10 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
         const commentId = parseInt(params.id, 10)
 
         const comment = await commentService.getCommentById(commentId)
+
+        if (comment.hidden) {
+            await authorizationService.verifyMatchingUserAuthorization(req, comment.userId)
+        }
         return NextResponse.json(
             {
                 message: "Comment fetched successfully",
