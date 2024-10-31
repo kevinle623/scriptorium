@@ -176,7 +176,7 @@ export async function getBlogPostVoteByUserId(
     blogPostId: number,
 ): Promise<Vote | null> {
     try {
-        await voteRepository.getBlogPostVoteByUserId(prisma, userId, blogPostId)
+        return await voteRepository.getBlogPostVoteByUserId(prisma, userId, blogPostId)
     } catch (e) {
         throw e
     }

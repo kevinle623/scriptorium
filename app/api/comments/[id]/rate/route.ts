@@ -44,3 +44,45 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
         return NextResponse.json({error: "Internal server error"}, {status: 500});
     }
 }
+
+export async function GET(req: Request, {params}: { params: { id: string } }) {
+    try {
+        const tokenPayload = await authorizationService.verifyBasicAuthorization(req)
+
+        if (!Number(params.id)) {
+            return NextResponse.json(
+                {message: "Invalid id"},
+                {status: 400}
+            );
+        }
+
+        const { userId } = tokenPayload
+
+        const commentId = parseInt(params.id, 10)
+
+        const vote =  await commentService.getCommentVoteByUserId(userId, commentId)
+
+        return NextResponse.json(
+            {
+                message: "Comment vote successfully fetched for user",
+                vote: vote ? {
+                    id: vote?.id,
+                    userId: vote?.userId,
+                    commentId: vote?.commentId,
+                    voteType: vote?.voteType
+                } : null
+            },
+            {status: 201}
+        );
+
+    } catch (error) {
+        if (error instanceof DatabaseIntegrityException) {
+            return NextResponse.json({error: error.message}, {status: 400});
+        } else if (error instanceof InvalidCredentialsException) {
+            return NextResponse.json({error: error.message}, {status: 401});
+        } else if (error instanceof ServiceException) {
+            return NextResponse.json({error: error.message}, {status: 400});
+        }
+        return NextResponse.json({error: "Internal server error"}, {status: 500});
+    }
+}

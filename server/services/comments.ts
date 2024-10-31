@@ -2,13 +2,13 @@ import * as commentRepository from "@server/repositories/comments";
 import {Comment, GetCommentsResult} from "@server/types/dtos/comments";
 import {prisma} from "@server/libs/prisma/client";
 import * as reportRepository from "@server/repositories/reports";
-import {VoteType} from "@server/types/dtos/votes";
+import {Vote, VoteType} from "@server/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
 import {NotFoundException, ServiceException} from "@server/types/exceptions";
 async function populateComment(comment: Comment): Promise<Comment> {
     const commentId = comment.id
     comment.replyIds = await commentRepository.getCommentIdsByParentCommentId(prisma, comment.id)
-    const {upVotes, downVotes} = await voteRepository.getVoteCountsByBlogPostId(prisma, commentId)
+    const {upVotes, downVotes} = await voteRepository.getVoteCountsByCommentId(prisma, commentId)
     comment.upVotes = upVotes || 0
     comment.downVotes = downVotes || 0
     return comment
@@ -155,3 +155,14 @@ export async function getMostReportedComments(
     }
 }
 
+export async function getCommentVoteByUserId(
+    userId: number,
+    commentId: number,
+): Promise<Vote | null> {
+    try {
+        return await voteRepository.getCommentVoteByUserId(prisma, userId, commentId)
+    } catch (e) {
+        throw e
+    }
+
+}
