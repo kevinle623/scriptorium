@@ -8,7 +8,7 @@ import {
 } from "@server/types/dtos/blogPosts";
 import * as blogPostRepository from "@server/repositories/blogPosts"
 import * as tagRepository from "@server/repositories/tags"
-import {NotFoundException} from "@server/types/exceptions";
+import {NotFoundException, ServiceException} from "@server/types/exceptions";
 import {Comment, GetCommentsResult} from "@server/types/dtos/comments";
 import * as commentRepository from "@server/repositories/comments";
 import * as reportRepository from "@server/repositories/reports";
@@ -147,6 +147,10 @@ export async function addCommentToBlogPost(
 
 export async function reportBlogPost(userId: number, blogPostId: number, reason: string) {
     try {
+        const existingReport = await reportRepository.getBlogPostReportByUser(prisma, userId, blogPostId)
+        if (existingReport) {
+            throw new ServiceException("User already reported this blog post.")
+        }
         const report  = await reportRepository.createReport(prisma, reason, userId, blogPostId, undefined)
         return report
     } catch (e) {
