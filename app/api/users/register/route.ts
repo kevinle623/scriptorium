@@ -19,7 +19,7 @@ export async function POST(req: Request) {
             );
         }
 
-        if (role !== Role.ADMIN || role !== Role.USER) {
+        if (role != Role.ADMIN && role != Role.USER) {
             return NextResponse.json(
                 { message: "Invalid user role" },
                 { status: 400 }

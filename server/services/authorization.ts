@@ -1,6 +1,13 @@
-import {generateAccessToken, generateRefreshToken, verifyAccessToken} from "@server/utils/jwt_utils";
+import {
+    generateAccessToken,
+    generateRefreshToken,
+    verifyAccessToken,
+    verifyRefreshToken
+} from "@server/utils/jwt_utils";
 import {InsufficientPermissionsException, InvalidCredentialsException} from "../types/exceptions";
 import {Role} from "@server/types/dtos/roles";
+import * as revokedTokenRepository from "@server/repositories/revokedTokens"
+import {prisma} from "@server/libs/prisma/client";
 
 export async function verifyAuthorizationHeader(authorizationHeader: string | null) {
     try {
@@ -9,7 +16,13 @@ export async function verifyAuthorizationHeader(authorizationHeader: string | nu
         }
 
         const token = authorizationHeader.split(" ")[1];
-        const payload = verifyAccessToken(token);
+
+        const revoked = await revokedTokenRepository.isTokenRevoked(prisma, token, 'access');
+        if (revoked) {
+            throw new InvalidCredentialsException("Token has been revoked.");
+        }
+
+        const payload = await verifyAccessToken(token);
 
         if (!payload) {
             throw new InvalidCredentialsException("Unable to verify token.");
@@ -20,6 +33,14 @@ export async function verifyAuthorizationHeader(authorizationHeader: string | nu
         console.error("verifyAuthorizationHeader", error);
         throw new InvalidCredentialsException("Forbidden");
     }
+}
+
+export function getBearerTokenFromRequest(req: Request) {
+    const authorizationHeader = req.headers.get("authorization");
+    if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+        return null;
+    }
+    return authorizationHeader.split(" ")[1];
 }
 
 export async function verifyAdminAuthorization(req: Request) {
@@ -62,8 +83,19 @@ export async function verifyMatchingUser(tokenPayload: any, userId: number) {
     return tokenPayload;
 }
 
-export async function refreshTokens(tokenPayload: any) {
-    const {userId, email, role} = tokenPayload;
+export async function refreshTokens(token: string) {
+    const revoked = await revokedTokenRepository.isTokenRevoked(prisma, token, 'refresh');
+    if (revoked) {
+        throw new InvalidCredentialsException("Token has been revoked.");
+    }
+
+    const refreshPayload = await verifyRefreshToken(token);
+
+    if (!refreshPayload) {
+        throw new InvalidCredentialsException("Unauthorized.");
+    }
+
+    const {userId, email, role} = refreshPayload;
     const refreshToken = generateRefreshToken(userId, email, role);
     const accessToken = generateAccessToken(userId, email, role);
 

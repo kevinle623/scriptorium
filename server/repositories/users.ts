@@ -38,13 +38,15 @@ export async function findUserById(prismaClient: any, userId: number): Promise<U
     }
 }
 
-export async function findUserByEmail(prismaClient: any, email: string): Promise<User> {
+export async function findUserByEmail(prismaClient: any, email: string): Promise<User | null> {
     try {
         const user = await prismaClient.user.findUnique({
             where: {
                 email: email,
             }
         }) as UserModel
+
+        if (!user) return null
         return deserializeUser(user)
     } catch (error) {
         console.error("Database Error", error)

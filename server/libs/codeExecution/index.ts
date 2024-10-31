@@ -5,31 +5,33 @@ import { CodingLanguage } from "@server/types/dtos/codeTemplates";
 import { CodeExecutionException } from "@server/types/exceptions";
 
 const MAX_CODE_EXECUTION_TIMEOUT = 5000;
+const MAX_RECURSION_DEPTH = 1000;
 
 export async function runCode(
     language: CodingLanguage,
     code: string,
     stdin?: string
 ): Promise<string> {
-    try {
-        const filePath = await createTempFile(language, code);
-        let stdinFilePath: string | undefined = undefined;
+    let filePath: string;
+    let stdinFilePath: string | undefined;
 
-        if (stdin) {
-            stdinFilePath = await createTempStdinFile(stdin);
+    try {
+        // Add recursion limit adjustment for Python code
+        if (language === CodingLanguage.PYTHON) {
+            code = `import sys\nsys.setrecursionlimit(${MAX_RECURSION_DEPTH})\n` + code;
         }
+
+        filePath = await createTempFile(language, code);
+        stdinFilePath = stdin ? await createTempStdinFile(stdin) : undefined;
 
         const stdout = await executeCode(language, filePath, stdinFilePath);
-
-        await fs.unlink(filePath);
-        if (stdinFilePath) {
-            await fs.unlink(stdinFilePath);
-        }
-
         return stdout;
     } catch (error) {
-        console.error(error)
-        throw new CodeExecutionException(`Error executing code`);
+        console.error(error);
+        throw new CodeExecutionException(`Code execution error: ${error}`);
+    } finally {
+        if (filePath) await fs.unlink(filePath).catch(console.error);
+        if (stdinFilePath) await fs.unlink(stdinFilePath).catch(console.error);
     }
 }
 
@@ -37,6 +39,11 @@ async function createTempFile(language: CodingLanguage, code: string): Promise<s
     const extension = getFileExtension(language);
     const fileName = `temp_${Date.now()}.${extension}`;
     const filePath = path.join('/tmp', fileName);
+
+    if (language === CodingLanguage.JAVA) {
+        code = code.replace(/public\s+class\s+(\w+)/, `public class ${fileName.replace(`.${extension}`, '')}`);
+    }
+
     await fs.writeFile(filePath, code);
     return filePath;
 }
@@ -83,7 +90,8 @@ function getExecCommand(language: CodingLanguage, filePath: string, stdinFilePat
         case CodingLanguage.CPLUSPLUS:
             return `g++ ${filePath} -o ${filePath}.out && ${filePath}.out ${stdinRedirect}`;
         case CodingLanguage.JAVA:
-            return `javac ${filePath} && java ${filePath.replace('.java', '')} ${stdinRedirect}`;
+            const className = path.basename(filePath, '.java');
+            return `javac ${filePath} && java -Xss256k -cp /tmp ${className} ${stdinRedirect}`;
         case CodingLanguage.PYTHON:
             return `python3 ${filePath} ${stdinRedirect}`;
         case CodingLanguage.JAVASCRIPT:
@@ -98,8 +106,10 @@ async function runWithExec(command: string): Promise<string> {
         exec(command, { timeout: MAX_CODE_EXECUTION_TIMEOUT }, (error, stdout, stderr) => {
             if (error) {
                 reject(new CodeExecutionException(`Error executing code: ${stderr || error.message}`));
+            } else if (stderr) {
+                reject(new CodeExecutionException(`Execution error: ${stderr}`));
             } else {
-                resolve(stdout);
+                resolve(stdout.trim());
             }
         });
     });

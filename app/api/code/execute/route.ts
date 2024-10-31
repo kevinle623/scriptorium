@@ -1,6 +1,11 @@
 import {NextResponse} from "next/server";
 import * as codeTemplateService from "@server/services/codeTemplates";
-import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
+import {
+    CodeExecutionException,
+    DatabaseIntegrityException,
+    InvalidCredentialsException,
+    ServiceException
+} from "@server/types/exceptions";
 
 export async function POST(req: Request) {
     try {
@@ -13,13 +18,19 @@ export async function POST(req: Request) {
         const result =  await codeTemplateService.executeCodeSnippet(language, code, stdin)
         return NextResponse.json(
             {
-                message: "Comment executed successfully",
+                message: "Code executed successfully",
                 result: result
             },
             {status: 201}
         );
     } catch (error) {
-        if (error instanceof DatabaseIntegrityException) {
+        if (error instanceof CodeExecutionException) {
+            return NextResponse.json(
+                {error: error.message},
+                {status: 400}
+            );
+        }
+        else if (error instanceof DatabaseIntegrityException) {
             return NextResponse.json({error: error.message}, {status: 400});
         } else if (error instanceof InvalidCredentialsException) {
             return NextResponse.json({error: error.message}, {status: 401});

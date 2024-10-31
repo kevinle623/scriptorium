@@ -1,6 +1,5 @@
 import { DatabaseIntegrityException, InvalidCredentialsException } from "@server/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
-import { verifyRefreshToken } from "@server/utils/jwt_utils";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -10,12 +9,6 @@ export async function POST(req: Request) {
 
         if (!refreshToken) {
             return NextResponse.json({ error: 'Refresh token not provided' }, { status: 400 });
-        }
-
-        const refreshPayload = verifyRefreshToken(refreshToken);
-
-        if (!refreshPayload) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const tokens = await authorizationService.refreshTokens(refreshToken);

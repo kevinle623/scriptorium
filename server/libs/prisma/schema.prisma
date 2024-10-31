@@ -143,3 +143,11 @@ model Vote {
   @@unique([userId, blogPostId], name: "unique_blog_vote")
   @@unique([userId, commentId], name: "unique_comment_vote")
 }
+
+model RevokedToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  tokenType String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}

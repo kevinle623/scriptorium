@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import * as revokedTokenRepository from "@server/repositories/revokedTokens";
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const ACCESS_TOKEN_SECRET_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN;
@@ -35,10 +36,10 @@ export function verifyToken(token, JWT_SECRET) {
     }
 }
 
-export function verifyRefreshToken(token) {
+export async function verifyRefreshToken(token) {
     return verifyToken(token, REFRESH_TOKEN_SECRET)
 }
 
-export function verifyAccessToken(token) {
+export async function verifyAccessToken(token) {
     return verifyToken(token, ACCESS_TOKEN_SECRET)
 }

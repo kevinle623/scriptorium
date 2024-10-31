@@ -2,8 +2,14 @@ import * as userRepository from '@server/repositories/users'
 import {InvalidCredentialsException, NotFoundException, ServiceException} from "../types/exceptions";
 import {prisma} from "@server/libs/prisma/client";
 import {comparePassword, hashPassword} from "@server/utils/password_utils";
-import {generateAccessToken, generateRefreshToken } from "@server/utils/jwt_utils";
+import {
+    generateAccessToken,
+    generateRefreshToken,
+    verifyAccessToken,
+    verifyRefreshToken
+} from "@server/utils/jwt_utils";
 import {CreateUserRequest, EditUserRequest} from "@server/types/dtos/user";
+import * as revokedTokenRepository from '@server/repositories/revokedTokens'
 
 export async function registerUser(createUserRequest: CreateUserRequest) {
     try {
@@ -71,6 +77,25 @@ export async function editUser(editUserRequest: EditUserRequest){
     } catch (error) {
         throw error
     }
+}
 
+export async function logoutUser(accessToken: string, refreshToken: string) {
+    try {
+        const accessTokenPayload = verifyAccessToken(accessToken)
+        const refreshTokenPayload = verifyRefreshToken(refreshToken);
+        if (!accessTokenPayload || !refreshTokenPayload) {
+            throw new InvalidCredentialsException("Invalid or expired tokens.");
+        }
 
+        if (!revokedTokenRepository.isTokenRevoked(prisma, accessToken, 'access')) {
+            await revokedTokenRepository.revokeToken(prisma, accessToken, 'access', new Date(refreshTokenPayload.exp * 1000));
+        }
+        if (!revokedTokenRepository.isTokenRevoked(prisma, refreshToken, 'refresh')) {
+            await revokedTokenRepository.revokeToken(prisma, refreshToken, 'refresh', new Date(refreshTokenPayload.exp * 1000));
+        }
+
+        return;
+    } catch (error) {
+        throw error;
+    }
 }
