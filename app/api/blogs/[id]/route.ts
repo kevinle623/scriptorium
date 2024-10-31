@@ -34,6 +34,8 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
                     codeTemplateIds: blogPost.codeTemplateIds,
                     createdAt: blogPost.createdAt,
                     updatedAt: blogPost.updatedAt,
+                    upVotes: blogPost.upVotes,
+                    downVotes: blogPost.downVotes,
                     tags: blogPost.tags,
                     commentIds: blogPost.commentIds,
                 },

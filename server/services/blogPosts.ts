@@ -12,7 +12,7 @@ import {NotFoundException} from "@server/types/exceptions";
 import {Comment, GetCommentsResult} from "@server/types/dtos/comments";
 import * as commentRepository from "@server/repositories/comments";
 import * as reportRepository from "@server/repositories/reports";
-import {VoteType} from "@server/types/dtos/votes";
+import {Vote, VoteType} from "@server/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
 import * as codeTemplateRepository from "@server/repositories/codeTemplates"
 
@@ -161,6 +161,18 @@ export async function toggleBlogPostVote(
 ) {
     try {
         return await voteRepository.toggleVote(prisma, userId, voteType, blogPostId, undefined);
+    } catch (e) {
+        throw e
+    }
+
+}
+
+export async function getBlogPostVoteByUserId(
+    userId: number,
+    blogPostId: number,
+): Promise<Vote | null> {
+    try {
+        await voteRepository.getBlogPostVoteByUserId(prisma, userId, blogPostId)
     } catch (e) {
         throw e
     }

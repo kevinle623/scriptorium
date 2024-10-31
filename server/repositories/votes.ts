@@ -103,6 +103,26 @@ export async function getVoteCountsByCommentId(
     }
 }
 
+export async function getBlogPostVoteByUserId(
+    prismaClient: any,
+    userId: number,
+    blogPostId: number
+): Promise<Vote | null> {
+    try {
+        const vote = await prismaClient.vote.findFirst({
+            where: {
+                userId: userId,
+                blogPostId: blogPostId,
+            },
+        }) as VoteModel | null;
+
+        return vote ? deserializeVote(vote) : null;
+    } catch (error) {
+        console.error("Database Error", error);
+        throw new DatabaseIntegrityException("Database error: Failed to fetch vote by user ID for blog post");
+    }
+}
+
 function deserializeVote(voteModel: VoteModel): Vote {
     return {
         id: voteModel.id,

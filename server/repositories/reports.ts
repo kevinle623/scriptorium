@@ -1,6 +1,46 @@
 import { DatabaseIntegrityException } from "@server/types/exceptions";
-import {PrismaClient, Report as ReportModel} from "@prisma/client";
+import {Report as ReportModel} from "@prisma/client";
 import { Report } from "@server/types/dtos/reports";
+
+export async function getBlogPostReportByUser(
+    prismaClient: any,
+    userId: number,
+    blogPostId: number
+): Promise<Report | null> {
+    try {
+        const report = await prismaClient.report.findFirst({
+            where: {
+                userId: userId,
+                blogPostId: blogPostId,
+            },
+        }) as ReportModel | null;
+
+        return report ? deserializeReport(report) : null;
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to fetch blog post report by user");
+    }
+}
+
+export async function getCommentReportByUser(
+    prismaClient: any,
+    userId: number,
+    commentId: number
+): Promise<Report | null> {
+    try {
+        const report = await prismaClient.report.findFirst({
+            where: {
+                userId: userId,
+                commentId: commentId,
+            },
+        }) as ReportModel | null;
+
+        return report ? deserializeReport(report) : null;
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to fetch comment report by user");
+    }
+}
 
 export async function createReport(
     prismaClient: any,

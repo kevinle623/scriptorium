@@ -69,6 +69,14 @@ export async function verifyMatchingUserAuthorization(req: Request, userId: numb
     return tokenPayload;
 }
 
+export async function verifyBasicAuthorization(req: Request) {
+    const authorizationHeader = req.headers.get("authorization");
+
+    const tokenPayload = await verifyAuthorizationHeader(authorizationHeader);
+    return tokenPayload
+
+}
+
 export async function verifyRole(tokenPayload: any, requiredRole: Role) {
     if (tokenPayload.role !== requiredRole) {
         throw new InsufficientPermissionsException("Forbidden. Insufficient permissions.");
