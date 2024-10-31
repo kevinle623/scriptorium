@@ -43,7 +43,7 @@ export async function cleanUpExpiredTokens(
         const now = new Date();
         await prismaClient.revokedToken.deleteMany({
             where: {
-                expiresAt: { lte: now },
+                createdAt: { lte: now },
             },
         });
     } catch (e) {

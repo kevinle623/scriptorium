@@ -12,11 +12,10 @@ export async function runCode(
     code: string,
     stdin?: string
 ): Promise<string> {
-    let filePath: string;
-    let stdinFilePath: string | undefined;
+    let filePath: string = ''
+    let stdinFilePath: string | undefined = undefined;
 
     try {
-        // Add recursion limit adjustment for Python code
         if (language === CodingLanguage.PYTHON) {
             code = `import sys\nsys.setrecursionlimit(${MAX_RECURSION_DEPTH})\n` + code;
         }

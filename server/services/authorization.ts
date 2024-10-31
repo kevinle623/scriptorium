@@ -31,7 +31,7 @@ export async function verifyAuthorizationHeader(authorizationHeader: string | nu
         return payload;
     } catch (error) {
         console.error("verifyAuthorizationHeader", error);
-        throw new InvalidCredentialsException("Forbidden");
+        throw error
     }
 }
 
