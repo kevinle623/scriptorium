@@ -19,7 +19,7 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
             hidden,
         } = await req.json()
 
-        await blogPostService.toggleHiddenBlogPost(blogPostId, hidden)
+        await blogPostService.toggleHiddenBlogPost(blogPostId, hidden || false)
         return NextResponse.json(
             {
                 message: "Blog Post hidden status has been updated",

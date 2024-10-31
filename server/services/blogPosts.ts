@@ -222,25 +222,3 @@ export async function toggleHiddenBlogPost(blogPostId: number, hidden: boolean) 
     }
 
 }
-
-export async function getMostReportedBlogPosts(
-    page?: number,
-    limit?: number,
-): Promise<{totalCount: number, blogPosts: BlogPost[]}> {
-    try {
-        const { totalCount, blogPostIds } = await reportRepository.getBlogPostIdsByReportCount(prisma, page, limit)
-
-        const blogPosts = await blogPostRepository.getBlogPostsByIds(prisma, blogPostIds)
-
-        const populatedBlogPosts = await Promise.all(
-            blogPosts.map(async (blogPost) => {
-                return {
-                    ...await populateBlogPost(blogPost),
-                };
-            })
-        );
-        return { totalCount, blogPosts: populatedBlogPosts }
-    } catch (e) {
-        throw e
-    }
-}

@@ -141,8 +141,7 @@ export async function getMostReportedComments(
     limit?: number,
 ): Promise<{totalCount: number, comments: Comment[]}> {
     try {
-        const {totalCount, commentIds} = await reportRepository.getCommentIdsByReportCount(prisma, page, limit)
-        const comments = await commentRepository.getCommentsByIds(prisma, commentIds)
+        const {totalCount, comments} = await commentRepository.getMostReportedComments(prisma, page, limit)
         const populatedComments = await Promise.all(
             comments.map(async (comment: Comment) => {
                 return await populateComment(comment);
