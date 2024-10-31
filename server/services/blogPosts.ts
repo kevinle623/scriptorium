@@ -21,7 +21,8 @@ export async function createBlogPost(createBlogPostRequest: CreateBlogPostReques
         const newBlogPost = await prisma.$transaction(async (prismaTx) => {
             const createdBlogPost = await blogPostRepository.createBlogPost(prismaTx, createBlogPostRequest);
             if (createBlogPostRequest.tags && createBlogPostRequest.tags.length > 0) {
-                await tagRepository.createBlogPostTags(prismaTx, createdBlogPost.id, createBlogPostRequest.tags);
+                const tags = await tagRepository.createBlogPostTags(prismaTx, createdBlogPost.id, createBlogPostRequest.tags);
+                createdBlogPost.tags = tags
             }
             return createdBlogPost;
         });
@@ -63,6 +64,10 @@ export async function updateBlogPost(editBlogPostRequest: EditBlogPostRequest): 
             return await blogPostRepository.getBlogPostById(prismaTx, blogPostId);
         });
 
+        if (!updatedBlogPost) {
+            throw new NotFoundException("Blog Post not found");
+        }
+
         return updatedBlogPost;
     } catch (e) {
         console.error("Error updating blog post: ", e);
@@ -73,12 +78,13 @@ export async function updateBlogPost(editBlogPostRequest: EditBlogPostRequest): 
 export async function getBlogPostById(blogPostId: number) {
     try {
         const blogPost = await blogPostRepository.getBlogPostById(prisma, blogPostId)
-        blogPost.tags = await tagRepository.getTagNamesByBlogPostId(prisma, blogPostId)
-        blogPost.commentIds = await commentRepository.getCommentIdsByBlogPostId(prisma, blogPostId)
-        blogPost.codeTemplateIds = await codeTemplateRepository.getCodeTemplateIdsByBlogPostId(prisma, blogPostId)
         if (!blogPost) {
             throw new NotFoundException("Blog Post does not exist")
         }
+        blogPost.tags = await tagRepository.getTagNamesByBlogPostId(prisma, blogPostId)
+        blogPost.commentIds = await commentRepository.getCommentIdsByBlogPostId(prisma, blogPostId)
+        blogPost.codeTemplateIds = await codeTemplateRepository.getCodeTemplateIdsByBlogPostId(prisma, blogPostId)
+
         return blogPost
     } catch (e) {
         throw e

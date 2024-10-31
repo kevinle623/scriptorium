@@ -32,13 +32,14 @@ export async function createBlogPost(prismaClient: any, createBlogPostRequest: C
     }
 }
 
-export async function getBlogPostById(prismaClient: any, blogPostId: number) {
+export async function getBlogPostById(prismaClient: any, blogPostId: number): Promise<BlogPost | null> {
     try {
         const blogPost = await prismaClient.blogPost.findUnique({
             where: {
                 id: blogPostId,
             }
         }) as BlogPostModel
+        if (!blogPost) return null
         return deserializeBlogPost(blogPost)
     } catch (error) {
         console.error("Database Error", error)

@@ -1,6 +1,11 @@
 import {NextResponse} from "next/server";
 import * as blogPostService from "@server/services/blogPosts";
-import {DatabaseIntegrityException, InvalidCredentialsException, ServiceException} from "@server/types/exceptions";
+import {
+    DatabaseIntegrityException,
+    InsufficientPermissionsException,
+    InvalidCredentialsException,
+    ServiceException
+} from "@server/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
 import {BlogPost} from "@server/types/dtos/blogPosts";
 
@@ -92,7 +97,10 @@ export async function POST(req: Request) {
             return NextResponse.json({error: error.message}, {status: 401});
         } else if (error instanceof ServiceException) {
             return NextResponse.json({error: error.message}, {status: 400});
+        } else if (error instanceof InsufficientPermissionsException) {
+            return NextResponse.json({error: error.message}, {status: 401});
         }
+        console.log("bruh", error)
         return NextResponse.json({error: "Internal server error"}, {status: 500});
     }
 }

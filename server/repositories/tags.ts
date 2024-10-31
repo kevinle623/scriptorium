@@ -39,7 +39,7 @@ export async function createBlogPostTags(
     prismaClient: any,
     blogPostId: number,
     newTagNames: string[]
-): Promise<void> {
+): Promise<string[]> {
     try {
         for (const tagName of newTagNames) {
             let tag = await prismaClient.tag.findUnique({
@@ -63,6 +63,7 @@ export async function createBlogPostTags(
                 },
             });
         }
+        return newTagNames
 
     } catch (error) {
         console.error("Database Error", error);
