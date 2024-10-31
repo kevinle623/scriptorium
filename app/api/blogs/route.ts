@@ -7,23 +7,41 @@ import {
     ServiceException
 } from "@server/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
-import {BlogPost} from "@server/types/dtos/blogPosts";
+import {BlogPost, BlogPostOrderType} from "@server/types/dtos/blogPosts";
 
 export async function GET(req: Request) {
     try {
         const url = new URL(req.url);
+
         const page = url.searchParams.get('page') ? parseInt(url.searchParams.get('page')!) : undefined;
         const limit = url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!) : undefined;
-        const tagsList = url.searchParams.get('tagsList') ? url.searchParams.get('tagsList')!.split(',') : undefined;
-        const sortBy = url.searchParams.get('sortBy') || undefined;
-        const sortOrd = url.searchParams.get('sortOrd') || undefined;
+
+        const title = url.searchParams.get('title') || undefined;
+        const content = url.searchParams.get('content') || undefined;
+
+        const codeTemplateIds = url.searchParams.getAll('codeTemplateIds').length > 0
+            ? url.searchParams.getAll('codeTemplateIds').flatMap(ids => ids.split(',').map(id => parseInt(id, 10)))
+            : undefined;
+
+        const tagsList = url.searchParams.getAll('tags').length > 0
+            ? url.searchParams.getAll('tags').flatMap(tags => tags.split(','))
+            : undefined;
+
+        const orderBy = url.searchParams.get('orderBy') || undefined;
+
+        let parsedOrderBy = orderBy
+        if (parsedOrderBy === 'mostReported') {
+            parsedOrderBy = undefined
+        }
 
         const getBlogPostRequest = {
             page,
             limit,
+            title,
+            content,
+            codeTemplateIds,
             tagsList,
-            sortBy,
-            sortOrd,
+            orderBy: parsedOrderBy as BlogPostOrderType,
         };
 
         const {totalCount, blogPosts} = await blogPostService.getBlogPosts(getBlogPostRequest);

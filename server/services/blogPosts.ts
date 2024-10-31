@@ -106,7 +106,19 @@ export async function getBlogPosts(
     getBlogPostsRequest: GetBlogPostRequest
 ): Promise<GetBlogPostsResult> {
     try {
-        const { totalCount, blogPosts } = await blogPostRepository.getBlogPosts(prisma, getBlogPostsRequest);
+        const { orderBy } = getBlogPostsRequest;
+
+        let totalCount, blogPosts;
+
+        if (orderBy) {
+            if (orderBy === 'mostReported') {
+                ({ totalCount, blogPosts } = await blogPostRepository.getMostReportedBlogPosts(prisma, getBlogPostsRequest))
+            } else {
+                ({ totalCount, blogPosts } = await blogPostRepository.getOrderedBlogPosts(prisma, getBlogPostsRequest));
+            }
+        } else {
+            ({ totalCount, blogPosts } = await blogPostRepository.getBlogPosts(prisma, getBlogPostsRequest));
+        }
 
         const populatedBlogPosts = await Promise.all(
             blogPosts.map(async (blogPost) => {

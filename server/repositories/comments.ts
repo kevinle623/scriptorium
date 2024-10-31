@@ -1,5 +1,5 @@
 import {DatabaseIntegrityException} from "@server/types/exceptions";
-import {Comment as CommentModel, PrismaClient} from "@prisma/client"
+import {Comment as CommentModel} from "@prisma/client"
 import {Comment, EditCommentRequest, GetCommentsResult} from "@server/types/dtos/comments"
 
 export async function getCommentById(
@@ -181,7 +181,7 @@ export async function getDirectCommentsFromBlogPost(
 }
 
 export async function getCommentIdsByParentCommentId(
-    prismaClient: PrismaClient,
+    prismaClient: any,
     parentCommentId: number
 ): Promise<number[]> {
     try {
@@ -202,7 +202,7 @@ export async function getCommentIdsByParentCommentId(
 }
 
 export async function getCommentIdsByBlogPostId(
-    prismaClient: PrismaClient,
+    prismaClient: any,
     blogPostId: number
 ): Promise<number[]> {
     try {
@@ -288,6 +288,53 @@ export async function getDirectRepliesFromComment(
         throw new DatabaseIntegrityException("Database error: Failed to fetch direct replies");
     }
 }
+
+export async function getMostReportedComments(
+    prismaClient: any,
+    page: number = 1,
+    limit: number = 10
+) {
+    try {
+        const skip = (page - 1) * limit;
+
+        const mostReportedComments = await prismaClient.comment.findMany({
+            where: {
+                reports: {
+                    some: {},
+                },
+            },
+            include: {
+                reports: true,
+            },
+            orderBy: {
+                reports: {
+                    _count: 'desc',
+                },
+            },
+            skip,
+            take: limit,
+        });
+
+        const result = mostReportedComments.map(comment => ({
+            ...deserializeComment(comment),
+            reportCount: comment.reports.length,
+        }));
+
+        const totalCount = await prismaClient.comment.count({
+            where: {
+                reports: {
+                    some: {},
+                },
+            },
+        });
+
+        return { totalCount, comments: result };
+    } catch (error) {
+        console.error("Database Error", error);
+        throw new DatabaseIntegrityException("Database error: Failed to fetch most reported comments");
+    }
+}
+
 
 function deserializeComment(commentModel: CommentModel): Comment {
     return {

@@ -8,6 +8,50 @@ import {
     GetBlogPostsResult
 } from "@server/types/dtos/blogPosts";
 
+export function buildBlogPostWhereCondition(getBlogPostsRequest: GetBlogPostRequest) {
+    const { tagsList, content, title, codeTemplateIds } = getBlogPostsRequest;
+
+    const whereCondition: any = {};
+
+    if (tagsList && tagsList.length > 0) {
+        whereCondition.tags = {
+            some: {
+                tag: {
+                    name: {
+                        in: tagsList,
+                    },
+                },
+            },
+        };
+    }
+
+    if (content) {
+        whereCondition.content = {
+            contains: content,
+            mode: "insensitive",
+        };
+    }
+
+    if (title) {
+        whereCondition.title = {
+            contains: title,
+            mode: "insensitive",
+        };
+    }
+
+    if (codeTemplateIds && codeTemplateIds.length > 0) {
+        whereCondition.codeTemplates = {
+            some: {
+                codeTemplateId: {
+                    in: codeTemplateIds,
+                },
+            },
+        };
+    }
+
+    return whereCondition;
+}
+
 export async function createBlogPost(prismaClient: any, createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
     try {
         const blogPost = await prismaClient.blogPost.create({
@@ -134,23 +178,13 @@ export async function getBlogPosts(
     getBlogPostsRequest: GetBlogPostRequest
 ): Promise<GetBlogPostsResult> {
     try {
-        const { page, limit, tagsList, sortBy, sortOrd } = getBlogPostsRequest
+        const { page,
+            limit,
+        } = getBlogPostsRequest
         const skip = page && limit ? (page - 1) * limit : undefined;
         const take = limit || undefined;
 
-        const whereCondition: any = {};
-
-        if (tagsList && tagsList.length > 0) {
-            whereCondition.tags = {
-                some: {
-                    tag: {
-                        name: {
-                            in: tagsList,
-                        },
-                    },
-                },
-            };
-        }
+        const whereCondition: any = buildBlogPostWhereCondition(getBlogPostsRequest)
 
         const totalCount = await prismaClient.blogPost.count({
             where: whereCondition,
@@ -160,9 +194,6 @@ export async function getBlogPosts(
             skip,
             take,
             where: whereCondition,
-            ...(sortBy && sortOrd && {orderBy: {
-                [sortBy]: sortOrd === 'desc' ? 'desc' : 'asc',
-            }})
         });
 
         return {totalCount: totalCount, blogPosts: blogPosts.map(deserializeBlogPost)};
@@ -171,6 +202,105 @@ export async function getBlogPosts(
         throw new Error('Failed to fetch blog posts');
     }
 }
+
+export async function getMostReportedBlogPosts(
+    prismaClient: any,
+    getBlogPostsRequest: GetBlogPostRequest
+) {
+    try {
+        let {page, limit} = getBlogPostsRequest
+        page = page || 1
+        limit = limit || 10
+        const skip = (page - 1) * limit;
+
+        const mostReportedBlogPosts = await prismaClient.blogPost.findMany({
+            where: {
+                report: {
+                    some: {},
+                },
+            },
+            include: {
+                report: true,
+            },
+            orderBy: {
+                report: {
+                    _count: 'desc',
+                },
+            },
+            skip,
+            take: limit,
+        });
+
+        const result = mostReportedBlogPosts.map(blogPost => ({
+            ...blogPost,
+            reportCount: blogPost.report.length,
+        }));
+
+        const totalCount = await prismaClient.blogPost.count({
+            where: {
+                report: {
+                    some: {},
+                },
+            },
+        });
+
+        return { totalCount, blogPosts: result };
+    } catch (error) {
+        console.error("Database Error", error);
+        throw new Error("Failed to fetch most reported blog posts");
+    }
+}
+
+
+export async function getOrderedBlogPosts(
+    prismaClient: any,
+    getBlogPostsRequest: GetBlogPostRequest
+) {
+    try {
+        const { page, limit, orderBy } = getBlogPostsRequest;
+
+        const whereCondition: any = buildBlogPostWhereCondition(getBlogPostsRequest)
+
+        let blogPosts = await prismaClient.blogPost.findMany({
+            where: whereCondition,
+            include: {
+                votes: true,
+            },
+        });
+
+        if (orderBy === 'mostControversial' || orderBy === 'mostValued') {
+            blogPosts = blogPosts.map(blogPost => {
+                const upVotes = blogPost.votes.filter(vote => vote.voteType === 'UP').length;
+                const downVotes = blogPost.votes.filter(vote => vote.voteType === 'DOWN').length;
+
+                return {
+                    ...blogPost,
+                    totalVotes: upVotes + downVotes,
+                    voteDifference: upVotes - downVotes,
+                };
+            });
+
+            if (orderBy === 'mostControversial') {
+
+                blogPosts.sort((a, b) => b.totalVotes - a.totalVotes);
+            } else if (orderBy === 'mostValued') {
+                blogPosts.sort((a, b) => b.voteDifference - a.voteDifference);
+            }
+        }
+
+        const skip = page && limit ? (page - 1) * limit : undefined;
+        const paginatedPosts = blogPosts.slice(skip, skip !== undefined ? skip + limit : undefined);
+
+        const totalCount = blogPosts.length;
+        return { totalCount, blogPosts: paginatedPosts.map(deserializeBlogPost) };
+    } catch (e) {
+        console.error('Database Error', e);
+        throw new Error('Failed to fetch blog posts');
+    }
+}
+
+
+
 function deserializeBlogPost(blogPost: BlogPostModel): BlogPost {
     return {
         id: blogPost.id,

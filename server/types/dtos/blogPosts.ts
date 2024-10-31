@@ -42,12 +42,16 @@ export interface EditBlogPostRequest {
     hidden?: boolean
 }
 
+export type BlogPostOrderType = undefined | 'mostValued' | 'mostControversial' | 'mostReported'
+
 export interface GetBlogPostRequest {
     page?: number,
     limit?: number,
+    title?: string,
+    content?: string,
+    codeTemplateIds?: number[],
     tagsList?: string[],
-    sortBy?: string,
-    sortOrd?: string
+    orderBy: BlogPostOrderType
 }
 
 export interface GetBlogPostsResult {
