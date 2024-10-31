@@ -5,6 +5,14 @@ import * as reportRepository from "@server/repositories/reports";
 import {VoteType} from "@server/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
 import {NotFoundException} from "@server/types/exceptions";
+async function populateComment(comment: Comment): Promise<Comment> {
+    const commentId = comment.id
+    comment.replyIds = await commentRepository.getCommentIdsByParentCommentId(prisma, comment.id)
+    const {upVotes, downVotes} = await voteRepository.getVoteCountsByBlogPostId(prisma, commentId)
+    comment.upVotes = upVotes || 0
+    comment.downVotes = downVotes || 0
+    return comment
+}
 
 export async function addCommentToComment(
     parentCommentId: number,
@@ -18,7 +26,7 @@ export async function addCommentToComment(
             userId,
             content
         );
-        return comment;
+        return await populateComment(comment);
     } catch (error) {
         throw error;
     }
@@ -42,8 +50,7 @@ export async function getCommentById(commentId: number): Promise<Comment> {
             throw new NotFoundException("Comment not found")
         }
 
-        comment.replyIds = await commentRepository.getCommentIdsByParentCommentId(prisma, comment.id)
-        return comment
+        return await populateComment(comment)
 
     } catch (e) {
         throw (e)
@@ -101,7 +108,14 @@ export async function getDirectRepliesFromComment(
 
         }
         const { comments, totalCount } = await commentRepository.getDirectRepliesFromComment(prisma, commentId, page, limit);
-        return { comments, totalCount }
+
+        const populatedComments = await Promise.all(
+            comments.map(async (comment: Comment) => {
+                return await populateComment(comment);
+            })
+        );
+
+        return { comments: populatedComments, totalCount };
     } catch (error) {
         throw error
     }
