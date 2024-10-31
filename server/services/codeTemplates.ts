@@ -2,7 +2,7 @@ import * as codeExecutionLibrary from "@server/libs/codeExecution";
 import {
     CodeTemplate,
     CodingLanguage,
-    CreateCodeTemplateRequest, GetCodeTemplatesResult,
+    CreateCodeTemplateRequest, GetCodeTemplatesRequest, GetCodeTemplatesResult,
     UpdateCodeTemplateRequest
 } from "@server/types/dtos/codeTemplates";
 import * as codeTemplateRepository from "@server/repositories/codeTemplates"
@@ -11,7 +11,13 @@ import * as tagRepository from "@server/repositories/tags"
 import {prisma} from "@server/libs/prisma/client";
 import {NotFoundException} from "@server/types/exceptions";
 
-export async function createCodeTemplate(createCodeTemplateRequest: CreateCodeTemplateRequest) {
+async function populateCodeTemplate(codeTemplate: CodeTemplate): Promise<CodeTemplate> {
+    const codeTemplateId = codeTemplate.id
+    codeTemplate.tags = await tagRepository.getTagNamesByCodeTemplateId(prisma, codeTemplateId)
+    return codeTemplate
+}
+
+export async function createCodeTemplate(createCodeTemplateRequest: CreateCodeTemplateRequest): Promise<CodeTemplate> {
     try {
         const codeTemplate = await prisma.$transaction(async (prismaTx) => {
             const newCodeTemplate = await codeTemplateRepository.createCodeTemplate(prismaTx, createCodeTemplateRequest);
@@ -20,14 +26,7 @@ export async function createCodeTemplate(createCodeTemplateRequest: CreateCodeTe
             }
             return newCodeTemplate;
         });
-
-        const updatedCodeTemplate = await codeTemplateRepository.getCodeTemplateById(prisma, codeTemplate.id);
-
-        if (!updatedCodeTemplate) {
-            throw new NotFoundException("Code template not found.")
-        }
-
-        return updatedCodeTemplate;
+        return await populateCodeTemplate(codeTemplate);
     } catch(e) {
         throw e;
     }
@@ -39,7 +38,7 @@ export async function getCodeTemplateById(codeTemplateId: number): Promise<CodeT
         if (!codeTemplate) {
             throw new NotFoundException("Code Template Not Found")
         }
-        return codeTemplate
+        return await populateCodeTemplate(codeTemplate)
     } catch (e) {
         throw e
     }
@@ -59,20 +58,23 @@ export async function updateCodeTemplate(updateCodeTemplateRequest: UpdateCodeTe
             }
             return updatedTemplate;
         });
-
-        return updatedCodeTemplate;
+        return await populateCodeTemplate(updatedCodeTemplate);
     } catch (error) {
         throw error;
     }
 }
 
 export async function getCodeTemplatesByUserId(
-    userId: number,
-    page?: number,
-    limit?: number,
+    getCodeTemplatesRequest: GetCodeTemplatesRequest
 ): Promise<GetCodeTemplatesResult> {
     try {
-        return await codeTemplateRepository.getCodeTemplatesByUserId(prisma, userId, page, limit)
+        const { totalCount, codeTemplates } = await codeTemplateRepository.getCodeTemplatesByUserId(prisma, getCodeTemplatesRequest);
+
+        const populatedCodeTemplates = await Promise.all(
+            codeTemplates.map(async (codeTemplate) => await populateCodeTemplate(codeTemplate))
+        );
+
+        return { totalCount, codeTemplates: populatedCodeTemplates };
     } catch (e) {
         throw e
     }

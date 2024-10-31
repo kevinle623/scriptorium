@@ -16,7 +16,6 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
         const codeTemplateId = parseInt(params.id, 10)
 
         const codeTemplate = await codeTemplateService.getCodeTemplateById(codeTemplateId)
-        const newTags = await tagService.getTagNamesByIds(codeTemplate.tagIds)
         return NextResponse.json(
             {
                 message: "Code template fetched successfully",
@@ -27,7 +26,7 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
                     code: codeTemplate.code,
                     language: codeTemplate.language,
                     explanation: codeTemplate.explanation,
-                    tags: newTags,
+                    tags: codeTemplate.tags,
                 },
             },
             {status: 201}
@@ -75,7 +74,6 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
         }
 
         const updatedCodeTemplate = await codeTemplateService.updateCodeTemplate(updateCodeTemplateRequest)
-        const newTags = await tagService.getTagNamesByIds(updatedCodeTemplate.tagIds)
         return NextResponse.json(
             {
                 message: "Code template updated successfully",
@@ -86,7 +84,7 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
                     code: updatedCodeTemplate.code,
                     language: updatedCodeTemplate.language,
                     explanation: updatedCodeTemplate.explanation,
-                    tags: newTags,
+                    tags: updatedCodeTemplate.tags,
                 },
             },
             {status: 201}

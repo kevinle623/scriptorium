@@ -16,7 +16,7 @@ export interface CodeTemplate {
     explanation?: string;
     userId: number;
     parentTemplateId?: number;
-    tagIds?: number[];
+    tags: string[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -53,10 +53,13 @@ export interface CreateCodeTemplateRequest {
     tags: string[];
 }
 
-export interface ForkCodeTemplateRequest {
-    title: string;
-    userId: number;
-    parentTemplateId: number;
+export interface GetCodeTemplatesRequest {
+    title?: string;
+    userId?: string;
+    tags?: string[];
+    content?: string;
+    page?: number;
+    limit?: number;
 }
 
 export interface GetCodeTemplatesResult {

@@ -39,7 +39,7 @@ export async function createBlogPost(createBlogPostRequest: CreateBlogPostReques
             }
             return createdBlogPost;
         });
-        return newBlogPost;
+        return populateBlogPost(newBlogPost);
     } catch (e) {
         throw e;
     }

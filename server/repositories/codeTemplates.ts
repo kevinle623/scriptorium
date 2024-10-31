@@ -1,7 +1,7 @@
 import {CodeTemplate as CodeTemplateModel, PrismaClient} from "@prisma/client";
 import {
     CodeTemplate, CodingLanguage,
-    CreateCodeTemplateRequest,
+    CreateCodeTemplateRequest, GetCodeTemplatesRequest,
     GetCodeTemplatesResult,
     UpdateCodeTemplateRequest
 } from "@server/types/dtos/codeTemplates"
@@ -76,28 +76,74 @@ export async function getCodeTemplateById(
 }
 
 export async function getCodeTemplatesByUserId(
-    prismaClient: any,
-    userId: number,
-    page?: number,
-    limit?: number
+    prismaClient: PrismaClient,
+    getCodeTemplatesRequest: GetCodeTemplatesRequest
 ): Promise<GetCodeTemplatesResult> {
     try {
-        const skip = page && limit ? (page - 1) * limit : undefined;
-        const take = limit ?? undefined;
+        const { title, userId, tags, content, page = 1, limit = 10 } = getCodeTemplatesRequest;
+
+        const skip = (page - 1) * limit;
+        const take = limit;
+
+        const whereCondition: any = {};
+
+        if (userId) {
+            whereCondition.userId = parseInt(userId, 10);
+        }
+
+        if (title) {
+            whereCondition.title = {
+                contains: title,
+            };
+        }
+
+        if (content) {
+            whereCondition.OR = [
+                {
+                    code: {
+                        contains: content,
+                    },
+                },
+                {
+                    description: {
+                        contains: content,
+                    },
+                },
+            ];
+        }
+
+        if (tags && tags.length > 0) {
+            whereCondition.tags = {
+                some: {
+                    tag: {
+                        name: {
+                            in: tags,
+                        },
+                    },
+                },
+            };
+        }
 
         const totalCount = await prismaClient.codeTemplate.count({
-            where: { userId: userId },
+            where: whereCondition,
         });
 
         const codeTemplates = await prismaClient.codeTemplate.findMany({
-            where: { userId: userId },
-            skip: skip,
-            take: take
+            where: whereCondition,
+            skip,
+            take,
+            include: {
+                tags: {
+                    include: {
+                        tag: true,
+                    },
+                },
+            },
         });
 
         return {
-            codeTemplates: codeTemplates.map((codeTemplate: CodeTemplateModel) => deserializeCodeTemplate(codeTemplate)),
-            totalCount
+            codeTemplates: codeTemplates.map(deserializeCodeTemplate),
+            totalCount,
         };
     } catch (e) {
         console.error("Database error: ", e);
