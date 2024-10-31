@@ -1,0 +1,1476 @@
+{
+	"info": {
+		"_postman_id": "00c0689b-beae-4a39-8929-4059abee70ee",
+		"name": "scriptorium",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30523314"
+	},
+	"item": [
+		{
+			"name": "live",
+			"item": [
+				{
+					"name": "hello world",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/live",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"live"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@gmail.com\",\n    \"phone\": \"+16472966289\",\n    \"firstName\": \"admin\",\n    \"lastName\": \"admin\",\n    \"password\": \"12345\",\n    \"role\": \"admin\",\n    \"avatar\": \"https://example.com/avatar.png\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"kevle123\",\n    \"password\": \"12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDIwMzUsImV4cCI6MTczMDM0NTYzNX0.12YQ1Vbx2F5FAHQ3N3miUGaDSdnB8Q9t9M590s-GDVo\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/refresh",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDIwNDQsImV4cCI6MTczMDM0NTY0NH0.Wsl8Zvgioc4-2vOyjhaAXnXoslVQyRVEY5oaE0AWeAA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDIwMzUsImV4cCI6MTczMDM0NTYzNX0.12YQ1Vbx2F5FAHQ3N3miUGaDSdnB8Q9t9M590s-GDVo\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "toggle hide comment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMwMzU5NDA1LCJleHAiOjE3MzA0NDU4MDV9.UWhr7o1jrwvbfpPi5qlrlO1eQr3K9CiY0AKx3lfaqu0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"hidden\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/admin/comments/2/hide",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"comments",
+								"2",
+								"hide"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "toggle hide blog post",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMwMzU5NDA1LCJleHAiOjE3MzA0NDU4MDV9.UWhr7o1jrwvbfpPi5qlrlO1eQr3K9CiY0AKx3lfaqu0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"hidden\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/admin/blogs/2/hide",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"blogs",
+								"2",
+								"hide"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get most reported blog posts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMwMzU5NDA1LCJleHAiOjE3MzA0NDU4MDV9.UWhr7o1jrwvbfpPi5qlrlO1eQr3K9CiY0AKx3lfaqu0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/admin/blogs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"blogs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get most reported comments",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMwMzU5NDA1LCJleHAiOjE3MzA0NDU4MDV9.UWhr7o1jrwvbfpPi5qlrlO1eQr3K9CiY0AKx3lfaqu0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/admin/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "blog posts",
+			"item": [
+				{
+					"name": "comments",
+					"item": [
+						{
+							"name": "comment on blog post",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDI2ODYsImV4cCI6MTczMDM0NjI4Nn0.HDcN1URgh3LI7swbCe3VP4etfgQAWLyw8d436dfopK0",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\": 1,\n    \"content\": \"Wow!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/blogs/3/comment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"blogs",
+										"3",
+										"comment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get direct comments from blog post",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/blogs/2/comment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"blogs",
+										"2",
+										"comment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "reply to comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDY0NjMsImV4cCI6MTczMDM1MDA2M30.mNB5jjs1aDejgWV4L_HiLwSH-fgVAPyO4Fqye-_ktdo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\": 1,\n    \"content\": \"you said the same thing before!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/comments/2/comment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"comments",
+										"2",
+										"comment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get direct replies from comments",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/comments/2/comment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"comments",
+										"2",
+										"comment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get comment",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/comments/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"comments",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"content\": \"wow edited!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/comments/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"comments",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/comments/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"comments",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "report comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\": 1,\n    \"reason\": \"hurt my feelings\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/comments/2/report",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"comments",
+										"2",
+										"report"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "vote comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\": 1,\n    \"voteType\": \"UP\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/comments/2/rate",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"comments",
+										"2",
+										"rate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get vote for comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/comments/2/rate",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"comments",
+										"2",
+										"rate"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "fetch sorted blog posts",
+					"item": [
+						{
+							"name": "search blog posts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/blogs",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"blogs"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "tags",
+											"value": "Async",
+											"disabled": true
+										},
+										{
+											"key": "codeTemplateIds",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "content",
+											"value": "programming",
+											"disabled": true
+										},
+										{
+											"key": "title",
+											"value": "typescript",
+											"disabled": true
+										},
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fetch most controversial blog posts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/blogs?orderBy=mostControversial",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"blogs"
+									],
+									"query": [
+										{
+											"key": "orderBy",
+											"value": "mostControversial"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fetch most valued blog posts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/blogs?orderBy=mostValued",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"blogs"
+									],
+									"query": [
+										{
+											"key": "orderBy",
+											"value": "mostValued"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "create blog post",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNTg5MzQsImV4cCI6MTczMDQ0NTMzNH0.Hqyzmv-1YeOrHzhO7dQsa8fV0KBgb-g0-pNTgtNFLLI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Exploring TIKTOK\",\n    \"description\": \"A deep dive into async programming in JavaScript, covering callbacks, promises, and async/await.\",\n    \"content\": \"Asynchronous programming is crucial for developing responsive applications. In this post, we'll explore various approaches to handle async operations in JavaScript, including callbacks, promises, and async/await...\",\n    \"userId\": 1, \n    \"codeTemplateIds\": [1,2],\n    \"tags\": [\"JavaScript\", \"Async\", \"Programming\", \"Web Development\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/blogs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"blogs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get blog post",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/blogs/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"blogs",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete blog post",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDI2ODYsImV4cCI6MTczMDM0NjI4Nn0.HDcN1URgh3LI7swbCe3VP4etfgQAWLyw8d436dfopK0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/blogs/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"blogs",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vote blog post",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 1,\n    \"voteType\": \"DOWN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/blogs/2/rate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"blogs",
+								"2",
+								"rate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get vote for blog post",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/blogs/2/rate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"blogs",
+								"2",
+								"rate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "report blog post",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 1,\n    \"reason\": \"hurt my feelings\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/blogs/2/report",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"blogs",
+								"2",
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update blog post",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"new description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/blogs/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"blogs",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "code templates",
+			"item": [
+				{
+					"name": "execute",
+					"item": [
+						{
+							"name": "python",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"language\": \"python\",\n    \"code\": \"print(input().strip())\",\n    \"stdin\": \"Hello, World!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/code/execute",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"code",
+										"execute"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "c++",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"language\": \"c++\",\n    \"code\": \"#include <iostream>\\n#include <string>\\nint main() {\\n    std::string input;\\n    std::getline(std::cin, input);\\n    std::cout << input << std::endl;\\n    return 0;\\n}\",\n    \"stdin\": \"Hello, World!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/code/execute",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"code",
+										"execute"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "c",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"language\": \"c\",\n    \"code\": \"#include <stdio.h>\\n#define BUFFER_SIZE 100\\nint main() {\\n    char input[BUFFER_SIZE];\\n    if (fgets(input, BUFFER_SIZE, stdin) != NULL) {\\n        printf(\\\"%s\\\", input);\\n    }\\n    return 0;\\n}\",\n    \"stdin\": \"Hello, World!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/code/execute",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"code",
+										"execute"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "javascript",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"language\": \"javascript\",\n    \"code\": \"process.stdin.on('data', data => {\\n    console.log(data.toString().trim());\\n    process.exit();\\n});\",\n    \"stdin\": \"Hello, World!\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/code/execute",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"code",
+										"execute"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "java",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"language\": \"java\",\n    \"code\": \"import java.util.Scanner;\\n\\npublic class Main {\\n    public static void main(String[] args) {\\n        Scanner scanner = new Scanner(System.in);\\n        String input = scanner.nextLine();\\n        System.out.println(\\\"You entered: \\\" + input);\\n        scanner.close();\\n    }\\n}\",\n    \"stdin\": \"Hello, Java!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/code/execute",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"code",
+										"execute"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "save / create code template",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Hello World 2 Example\",\n    \"userId\": 1,\n    \"code\": \"print('Hello, World!')\",\n    \"parentTemplateId\": null,\n    \"language\": \"Python\",\n    \"explanation\": \"This code prints 'Hello, World!' to the console.\",\n    \"tags\": [\"basic\", \"hello world\", \"python\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/code/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"code",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "fork code template",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Hello World 2 Example FORKED\",\n    \"userId\": 1,\n    \"code\": \"print('Hello, World!')\",\n    \"parentTemplateId\": 1,\n    \"language\": \"Python\",\n    \"explanation\": \"This code prints 'Hello, World!' to the console.\",\n    \"tags\": [\"basic\", \"hello world\", \"python\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/code/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"code",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update code template",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"new title\",\n    \"tags\": [\"new\", \"basic\", \"python\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/code/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"code",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get code template",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/code/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"code",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get saved code templates",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDkwMzYsImV4cCI6MTczMDQzNTQzNn0.a5yVhpSina5aN3vPf2b1z1u2wifSdPjvWCRZj8pKf6M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/code/?userId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"code",
+								""
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get code templates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/code/?tag=python",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"code",
+								""
+							],
+							"query": [
+								{
+									"key": "tag",
+									"value": "python"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "get user profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDI2ODYsImV4cCI6MTczMDM0NjI4Nn0.HDcN1URgh3LI7swbCe3VP4etfgQAWLyw8d436dfopK0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoia2V2aW5AZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MzAzNDI2ODYsImV4cCI6MTczMDM0NjI4Nn0.HDcN1URgh3LI7swbCe3VP4etfgQAWLyw8d436dfopK0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Kevin2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
