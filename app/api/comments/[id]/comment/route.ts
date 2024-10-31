@@ -57,7 +57,9 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
 
         const commentId = parseInt(params.id, 10)
 
-        const {page, limit} = await req.json();
+        const url = new URL(req.url);
+        const page = parseInt(url.searchParams.get("page") || "1", 10);
+        const limit = parseInt(url.searchParams.get("limit") || "10", 10);
 
         const { comments, totalCount } = await commentService.getDirectRepliesFromComment(commentId, page, limit)
 
@@ -77,6 +79,7 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
         } else if (error instanceof ServiceException) {
             return NextResponse.json({error: error.message}, {status: 400});
         }
+        console.log("error")
         return NextResponse.json({error: "Internal server error"}, {status: 500});
     }
 }

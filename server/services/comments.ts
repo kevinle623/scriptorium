@@ -41,6 +41,8 @@ export async function getCommentById(commentId: number): Promise<Comment> {
         if (!comment){
             throw new NotFoundException("Comment not found")
         }
+
+        comment.replyIds = await commentRepository.getCommentIdsByParentCommentId(prisma, comment.id)
         return comment
 
     } catch (e) {
