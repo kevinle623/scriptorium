@@ -17,7 +17,7 @@ import * as voteRepository from "@server/repositories/votes";
 import * as codeTemplateRepository from "@server/repositories/codeTemplates"
 
 
-async function populationBlogPost(blogPost: BlogPost) {
+async function populateBlogPost(blogPost: BlogPost): Promise<BlogPost> {
     const blogPostId = blogPost.id
     blogPost.tags = await tagRepository.getTagNamesByBlogPostId(prisma, blogPostId)
     blogPost.commentIds = await commentRepository.getCommentIdsByBlogPostId(prisma, blogPostId)
@@ -26,6 +26,7 @@ async function populationBlogPost(blogPost: BlogPost) {
     const {upVotes, downVotes} = await voteRepository.getVoteCountsByBlogPostId(prisma, blogPostId)
     blogPost.upVotes = upVotes || 0
     blogPost.downVotes = downVotes || 0
+    return blogPost
 }
 
 export async function createBlogPost(createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
@@ -95,7 +96,7 @@ export async function getBlogPostById(blogPostId: number) {
         }
 
 
-        return populationBlogPost(blogPost)
+        return populateBlogPost(blogPost)
     } catch (e) {
         throw e
     }
@@ -110,7 +111,7 @@ export async function getBlogPosts(
         const populatedBlogPosts = await Promise.all(
             blogPosts.map(async (blogPost) => {
                 return {
-                    ...await populationBlogPost(blogPost),
+                    ...await populateBlogPost(blogPost),
                 };
             })
         );
@@ -206,7 +207,7 @@ export async function getMostReportedBlogPosts(
         const populatedBlogPosts = await Promise.all(
             blogPosts.map(async (blogPost) => {
                 return {
-                    ...await populationBlogPost(blogPost),
+                    ...await populateBlogPost(blogPost),
                 };
             })
         );

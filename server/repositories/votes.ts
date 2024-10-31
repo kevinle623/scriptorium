@@ -99,7 +99,7 @@ export async function getVoteCountsByCommentId(
         return { upVotes, downVotes };
     } catch (error) {
         console.error("Database Error", error);
-        throw new DatabaseIntegrityException("Database error: Failed to fetch vote counts by blog post ID");
+        throw new DatabaseIntegrityException("Database error: Failed to fetch vote counts by comment ID");
     }
 }
 
