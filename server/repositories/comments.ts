@@ -5,7 +5,7 @@ import {Comment, EditCommentRequest, GetCommentsResult} from "@server/types/dtos
 export async function getCommentById(
     prismaClient: any,
     commentId: number,
-): Promise<Comment> {
+): Promise<Comment | null> {
     try {
         const comment = await prismaClient.comment.findUnique({
             where: {
@@ -15,7 +15,8 @@ export async function getCommentById(
                 votes: true,
                 replies: true,
             },
-        }) as CommentModel;
+        });
+        if (!comment) return null
         return deserializeComment(comment)
     } catch (e) {
         console.error("Database error: ", e)
