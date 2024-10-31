@@ -6,14 +6,12 @@ export async function revokeToken(
     prismaClient: PrismaClient,
     token: string,
     tokenType: TokenType,
-    expiresAt: Date
 ): Promise<RevokedTokenModel> {
     try {
         return await prismaClient.revokedToken.create({
             data: {
                 token,
                 tokenType,
-                expiresAt,
             },
         });
     } catch (e) {

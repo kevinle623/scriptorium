@@ -87,11 +87,11 @@ export async function logoutUser(accessToken: string, refreshToken: string) {
             throw new InvalidCredentialsException("Invalid or expired tokens.");
         }
 
-        if (!revokedTokenRepository.isTokenRevoked(prisma, accessToken, 'access')) {
-            await revokedTokenRepository.revokeToken(prisma, accessToken, 'access', new Date(refreshTokenPayload.exp * 1000));
+        if (!await revokedTokenRepository.isTokenRevoked(prisma, accessToken, 'access')) {
+            await revokedTokenRepository.revokeToken(prisma, accessToken, 'access');
         }
-        if (!revokedTokenRepository.isTokenRevoked(prisma, refreshToken, 'refresh')) {
-            await revokedTokenRepository.revokeToken(prisma, refreshToken, 'refresh', new Date(refreshTokenPayload.exp * 1000));
+        if (!await revokedTokenRepository.isTokenRevoked(prisma, refreshToken, 'refresh')) {
+            await revokedTokenRepository.revokeToken(prisma, refreshToken, 'refresh');
         }
 
         return;

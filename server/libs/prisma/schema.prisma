@@ -148,6 +148,5 @@ model RevokedToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
   tokenType String
-  expiresAt DateTime
   createdAt DateTime @default(now())
 }
