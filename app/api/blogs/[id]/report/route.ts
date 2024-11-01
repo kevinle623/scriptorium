@@ -32,6 +32,6 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
             {status: 201}
         );
     } catch (error) {
-        routeHandlerException(error)
+        return routeHandlerException(error)
     }
 }

@@ -19,5 +19,6 @@ export function routeHandlerException(error: any) {
     } else if (error instanceof NotFoundException) {
         return NextResponse.json({ error: error.message }, { status: 401 });
     }
+    console.error("Unhandled Error", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 }

@@ -17,6 +17,6 @@ export async function POST(req: Request) {
         await userService.logoutUser(accessToken, refreshToken);
         return NextResponse.json({message: "Logged out successfully"}, { status: 200 });
     } catch (error) {
-        routeHandlerException(error)
+        return routeHandlerException(error)
     }
 }

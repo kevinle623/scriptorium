@@ -34,7 +34,7 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
             {status: 201}
         );
     } catch (error) {
-        routeHandlerException(error)
+        return routeHandlerException(error)
     }
 }
 
@@ -69,6 +69,6 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
         );
 
     } catch (error) {
-        routeHandlerException(error)
+        return routeHandlerException(error)
     }
 }

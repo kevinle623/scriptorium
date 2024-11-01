@@ -15,6 +15,6 @@ export async function POST(req: Request) {
 
         return NextResponse.json(tokens, { status: 200 });
     } catch (error) {
-        routeHandlerException(error)
+        return routeHandlerException(error)
     }
 }

@@ -1,5 +1,5 @@
 import {DatabaseIntegrityException} from "../types/exceptions";
-import {PrismaClient, User as UserModel} from "@prisma/client";
+import {User as UserModel} from "@prisma/client";
 import {Role} from "@server/types/dtos/roles"
 
 import {CreateUserRequest, EditUserRequest, User} from "@server/types/dtos/user"

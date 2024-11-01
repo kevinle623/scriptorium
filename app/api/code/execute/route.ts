@@ -28,7 +28,7 @@ export async function POST(req: Request) {
                 {status: 400}
             );
         } else {
-            routeHandlerException(error)
+            return routeHandlerException(error)
         }
     }
 }

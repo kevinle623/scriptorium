@@ -53,7 +53,7 @@ export async function GET(req: Request) {
             {status: 201}
         );
     } catch (error) {
-        routeHandlerException(error)
+        return routeHandlerException(error)
     }
 }
 
@@ -100,6 +100,6 @@ export async function POST(req: Request) {
             {status: 201}
         );
     } catch (error) {
-        routeHandlerException(error)
+        return routeHandlerException(error)
     }
 }

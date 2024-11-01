@@ -43,6 +43,6 @@ export async function POST(req: Request) {
             { status: 201 }
         );
     } catch (error) {
-        routeHandlerException(error)
+        return routeHandlerException(error)
     }
 }
