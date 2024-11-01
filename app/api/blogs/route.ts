@@ -72,7 +72,7 @@ export async function POST(req: Request) {
             title,
             description,
             content,
-            userId,
+            userId: Number(userId),
             codeTemplateIds,
             tags,
         }

@@ -12,8 +12,14 @@ export async function POST(req: Request) {
             );
         }
 
-        const tokens = await userService.loginUser(email, password);
-        return NextResponse.json(tokens, { status: 200 });
+        const tokensAndUser = await userService.loginUser(email, password);
+        return NextResponse.json({
+            ...tokensAndUser,
+            user: {
+                ...tokensAndUser.user,
+                password: undefined
+            }
+        }, { status: 200 });
     } catch (error) {
         return routeHandlerException(error)
     }

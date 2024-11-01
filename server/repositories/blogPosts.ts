@@ -37,14 +37,12 @@ export function buildBlogPostWhereCondition(getBlogPostsRequest: GetBlogPostRequ
     if (content) {
         whereCondition.content = {
             contains: content,
-            mode: "insensitive",
         };
     }
 
     if (title) {
         whereCondition.title = {
             contains: title,
-            mode: "insensitive",
         };
     }
 
@@ -68,7 +66,7 @@ export async function createBlogPost(prismaClient: any, createBlogPostRequest: C
                 title: createBlogPostRequest.title,
                 description: createBlogPostRequest.description,
                 content: createBlogPostRequest.content,
-                userId: createBlogPostRequest.userId,
+                userId: Number(createBlogPostRequest.userId),
                 codeTemplates: {
                     create: createBlogPostRequest.codeTemplateIds.map((id) => ({
                         codeTemplate: {

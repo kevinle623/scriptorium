@@ -127,6 +127,10 @@ export async function getDirectRepliesFromComment(
 
 export async function toggleHiddentComment(commentId: number, hidden: boolean) {
     try {
+        const comment = await commentRepository.getCommentById(prisma, commentId)
+        if (!comment) {
+            throw new NotFoundException("Comment does not exist.")
+        }
         const updateCommentRequest = {
             commentId,
             hidden: hidden

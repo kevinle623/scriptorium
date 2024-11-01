@@ -85,7 +85,7 @@ export async function verifyRole(tokenPayload: any, requiredRole: Role) {
 }
 
 export async function verifyMatchingUser(tokenPayload: any, userId: number) {
-    if (Number(tokenPayload.userId) !== userId) {
+    if (Number(tokenPayload.userId) !== Number(userId)) {
         throw new InsufficientPermissionsException("Forbidden. User ID does not match.");
     }
     return tokenPayload;

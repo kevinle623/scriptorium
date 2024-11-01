@@ -45,7 +45,8 @@ export async function loginUser(email: string, password: string) {
 
         return {
             accessToken,
-            refreshToken
+            refreshToken,
+            user,
         }
     } catch (error) {
         throw error

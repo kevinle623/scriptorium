@@ -213,6 +213,8 @@ export async function getDirectCommentsFromBlogPost(
 
 export async function toggleHiddenBlogPost(blogPostId: number, hidden: boolean) {
     try {
+        const blogPost = await blogPostRepository.getBlogPostById(prisma, blogPostId)
+        if (!blogPost) throw new NotFoundException("Blog post does not exist")
         const updateBlogPostRequest = {
             blogPostId,
             hidden: hidden
