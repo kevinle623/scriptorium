@@ -31,6 +31,12 @@ async function populateBlogPost(blogPost: BlogPost): Promise<BlogPost> {
 
 export async function createBlogPost(createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
     try {
+        const codeTemplateIds = createBlogPostRequest.codeTemplateIds
+        for (const id of codeTemplateIds) {
+            const codeTemplate = await codeTemplateRepository.getCodeTemplateById(prisma, id);
+            if (!codeTemplate) throw new NotFoundException("Code template does not exist.");
+        }
+
         const newBlogPost = await prisma.$transaction(async (prismaTx) => {
             const createdBlogPost = await blogPostRepository.createBlogPost(prismaTx, createBlogPostRequest);
             if (createBlogPostRequest.tags && createBlogPostRequest.tags.length > 0) {

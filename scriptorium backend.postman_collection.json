@@ -2,6 +2,7 @@
 	"info": {
 		"_postman_id": "00c0689b-beae-4a39-8929-4059abee70ee",
 		"name": "scriptorium backend",
+		"description": "Author: Kevin Le 1007952805\n\nTo first introduce the context of the app, it is a blog post platform that allows users to share code and run code all in one app. This is the documentation for the backend server of the app.\n\n# Getting Started\n\nIMPORTANT NOTE: - please ready the directories of each endpoint section as it will help explain some prerequisites, order of execution for requests etc.\n\n### Pre-reqs:\n\nPlease ensure you have ran the ./startup.sh to set up a fresh new environment with fresh data and an admin account. After so, run ./run.sh to start up the backend server to start calling the endpoints.\n\n### Admin Account:\n\nBelow is the admin account that should have been generated / created upon running the ./startup.sh script. Just for reference and whenever needed.\n\n- email: [admin@gmail.com](https://mailto:admin@gmail.com)\n    \n- password: 12345\n    \n\n### First Steps:\n\n- To start, please head to the live folder to ensure that the app is running. This is just a health check endpoint to ensure that everything is up and running.\n    \n- Next, head over to the auth folder where you can start logging in/ registering new users to initialize postman environment variables that will be propped to the other endpoint folders.\n    \n    - Register the user register user , there is already data there for you to register immediately.\n        \n    - The creds of the user email and passwordwill automatically be passed into the login user postman request\n        \n    - There is also a login admin request that prefills the admin creds to log in with the user.\n        \n    - Important Note: the tokens are set to expire in a 24h window for both access and login\n        \n- This is a good chance to try out the logout request and refresh request features\n    \n\nWith these, now you can navigate to specific directories with more information of the different endpoints. Again, please refer to the respective directory documentation for more information about order of execution and such.\n\nHowever, the order of execution should be top to bottom respective in context of the requests with in the level of the directory.\n\n# Data Models\n\nHere is a brief skim of the database models that helps orchestrate all the endpoints together.\n\n### 1\\. User\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - email (String): Unique email identifier for each user.\n        \n    - password (String): Hashed password for authentication.\n        \n    - firstName (String): User's first name.\n        \n    - lastName (String): User's last name.\n        \n    - avatar (String?): Optional URL to the user's profile image.\n        \n    - phone (String): Contact phone number.\n        \n    - role (String): Role of the user, default is \"user\".\n        \n- Relationships:\n    \n    - codeTemplates (CodeTemplate\\[\\]): Code templates created by the user.\n        \n    - blogs (BlogPost\\[\\]): Blog posts created by the user.\n        \n    - comments (Comment\\[\\]): Comments created by the user.\n        \n    - reports (Report\\[\\]): Reports created by the user.\n        \n    - votes (Vote\\[\\]): Votes cast by the user.\n        \n\n### 2\\. CodeTemplate\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - title (String): Title of the code template.\n        \n    - code (String): The code content.\n        \n    - language (String): Programming language of the code.\n        \n    - explanation (String?): Optional explanation or documentation for the code.\n        \n    - userId (Int): Foreign key linking to the user who created the template.\n        \n    - createdAt (DateTime): Timestamp when the template was created.\n        \n    - updatedAt (DateTime): Timestamp when the template was last updated.\n        \n    - parentTemplateId (Int?): Optional ID of the parent template if the code is a fork.\n        \n- Relationships:\n    \n    - user (User): The user who created the template.\n        \n    - tags (CodeTemplateTag\\[\\]): Tags associated with the template.\n        \n    - blogPosts (BlogPostCodeTemplate\\[\\]): Blog posts associated with the template.\n        \n    - forkedTemplates (CodeTemplate\\[\\]): Templates forked from this template.\n        \n\n### 3\\. BlogPost\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - title (String): Title of the blog post.\n        \n    - description (String): Short description or excerpt.\n        \n    - content (String): Full content of the blog post.\n        \n    - userId (Int): Foreign key linking to the author.\n        \n    - createdAt (DateTime): Timestamp when the post was created.\n        \n    - updatedAt (DateTime): Timestamp when the post was last updated.\n        \n    - hidden (Boolean): Flag indicating if the post is hidden due to reports or moderation.\n        \n- Relationships:\n    \n    - user (User): The author of the blog post.\n        \n    - tags (BlogPostTag\\[\\]): Tags associated with the blog post.\n        \n    - codeTemplates (BlogPostCodeTemplate\\[\\]): Code templates linked to this post.\n        \n    - comments (Comment\\[\\]): Comments on this post.\n        \n    - votes (Vote\\[\\]): Votes on this post.\n        \n    - report (Report\\[\\]): Reports filed against the post.\n        \n\n### 4\\. BlogPostCodeTemplate (Relationship Table)\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - blogPostId (Int): Foreign key linking to the blog post.\n        \n    - codeTemplateId (Int): Foreign key linking to the code template.\n        \n- Relationships:\n    \n    - blogPost (BlogPost): The blog post associated with the template.\n        \n    - codeTemplate (CodeTemplate): The code template associated with the blog post.\n        \n\n### 5\\. Comment\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - content (String): Text content of the comment.\n        \n    - userId (Int): Foreign key linking to the author of the comment.\n        \n    - blogPostId (Int?): Foreign key linking to the blog post, if the comment is on a post.\n        \n    - parentId (Int?): Foreign key linking to the parent comment, if it is a reply.\n        \n    - createdAt (DateTime): Timestamp when the comment was created.\n        \n    - hidden (Boolean): Flag indicating if the comment is hidden due to reports or moderation.\n        \n- Relationships:\n    \n    - user (User): The author of the comment.\n        \n    - blogPost (BlogPost?): The blog post associated with the comment, if applicable.\n        \n    - parent (Comment?): The parent comment if it is a reply.\n        \n    - replies (Comment\\[\\]): Replies to the comment.\n        \n    - votes (Vote\\[\\]): Votes on this comment.\n        \n    - reports (Report\\[\\]): Reports filed against the comment.\n        \n\n### 6\\. Report\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - reason (String): Reason for reporting the content.\n        \n    - userId (Int): Foreign key linking to the user who reported the content.\n        \n    - blogPostId (Int?): Foreign key linking to the blog post if it was reported.\n        \n    - commentId (Int?): Foreign key linking to the comment if it was reported.\n        \n    - createdAt (DateTime): Timestamp when the report was created.\n        \n- Relationships:\n    \n    - user (User): The user who reported the content.\n        \n    - blogPost (BlogPost?): The blog post being reported, if applicable.\n        \n    - comment (Comment?): The comment being reported, if applicable.\n        \n\n### 7\\. Tag\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - name (String): Unique name of the tag.\n        \n- Relationships:\n    \n    - codeTags (CodeTemplateTag\\[\\]): Tags associated with code templates.\n        \n    - blogTags (BlogPostTag\\[\\]): Tags associated with blog posts.\n        \n\n### 8\\. CodeTemplateTag (Relationship Table)\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - codeTemplateId (Int): Foreign key linking to the code template.\n        \n    - tagId (Int): Foreign key linking to the tag.\n        \n- Relationships:\n    \n    - codeTemplate (CodeTemplate): The code template associated with the tag.\n        \n    - tag (Tag): The tag associated with the code template.\n        \n\n### 9\\. BlogPostTag (Relationship Table)\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - blogPostId (Int): Foreign key linking to the blog post.\n        \n    - tagId (Int): Foreign key linking to the tag.\n        \n- Relationships:\n    \n    - blogPost (BlogPost): The blog post associated with the tag.\n        \n    - tag (Tag): The tag associated with the blog post.\n        \n\n### 10\\. Vote\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - userId (Int): Foreign key linking to the user who cast the vote.\n        \n    - blogPostId (Int?): Foreign key linking to the blog post, if applicable.\n        \n    - commentId (Int?): Foreign key linking to the comment, if applicable.\n        \n    - voteType (String): Type of vote (UP or DOWN).\n        \n- Relationships:\n    \n    - user (User): The user who cast the vote.\n        \n    - blogPost (BlogPost?): The blog post associated with the vote.\n        \n    - comment (Comment?): The comment associated with the vote.\n        \n\n### 11\\. RevokedToken\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - token (String): Unique identifier for the revoked token.\n        \n    - tokenType (String): Type of token (e.g., \"access\" or \"refresh\").\n        \n\ncreatedAt (DateTime): Timestamp when the token was revoked.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "30523314"
 	},
@@ -87,7 +88,8 @@
 								"users",
 								"register"
 							]
-						}
+						},
+						"description": "Registers a new user, supporting both user and admin roles\n\n{  \n\"email\": \"user@example.com\",  \n\"phone\": \"+123456789\",  \n\"firstName\": \"John\",  \n\"lastName\": \"Doe\",  \n\"password\": \"your_password\",  \n\"role\": \"user\",  \n\"avatar\": \"https://example.com/avatar.png\"  \n}\n\n**Required Fields**: `email`, `phone`, `firstName`, `lastName`, `password`, `role`\n\n**Optional Field**: `avatar`\n\n{  \n\"message\": \"User registered successfully\",  \n\"user\": {  \n\"id\": 1,  \n\"email\": \"user@example.com\",  \n\"phone\": \"+123456789\",  \n\"firstName\": \"John\",  \n\"lastName\": \"Doe\",  \n\"avatar\": \"https://example.com/avatar.png\"  \n}  \n}"
 					},
 					"response": []
 				},
@@ -140,7 +142,8 @@
 								"users",
 								"login"
 							]
-						}
+						},
+						"description": "Authenticates a user and returns access and refresh tokens if credentials are valid.\n\n**Required Fields**: `email`, `password`\n\nreturns:\n\n{  \n\"accessToken\": \"your_access_token\",  \n\"refreshToken\": \"your_refresh_token\",  \n\"user\": {  \n\"id\": 1,  \n\"email\": \"user@example.com\",  \n\"phone\": \"+123456789\",  \n\"firstName\": \"John\",  \n\"lastName\": \"Doe\",  \n\"avatar\": \"https://example.com/avatar.png\",  \n\"role\": \"user\"  \n}  \n}"
 					},
 					"response": []
 				},
@@ -200,7 +203,8 @@
 								"users",
 								"login"
 							]
-						}
+						},
+						"description": "same as `login user` but here to login to admin user to test admin operations later on (down below in `admin` directory)"
 					},
 					"response": []
 				},
@@ -255,7 +259,8 @@
 								"users",
 								"refresh"
 							]
-						}
+						},
+						"description": "Refreshes the access token using a valid, non-revoked refresh token. If the refresh token is not revoked and valid, new tokens are issued\n\n**Required Field**: `refreshToken`\n\nreturns\n\n{  \n\"accessToken\": \"new_access_token\",  \n\"refreshToken\": \"new_refresh_token\"  \n}"
 					},
 					"response": []
 				},
@@ -314,7 +319,8 @@
 								"users",
 								"logout"
 							]
-						}
+						},
+						"description": "Logs out the user by revoking both the access token provided in the request headers and the refresh token in the request body.\n\n**Headers**\n\n- `Authorization`: `Bearer`\n    \n\nBody:\n\n**Required Field**: `refreshToken`\n\nreturns\n\n{  \n\"message\": \"Logged out successfully\"  \n}"
 					},
 					"response": []
 				}
@@ -357,7 +363,8 @@
 								"users",
 								"{{userId}}"
 							]
-						}
+						},
+						"description": "Fetches the user profile by ID. This endpoint performs an identity check by matching the `idToken` in the request headers with the user ID in the path. If the IDs do not match, access is denied.\n\n#### Request\n\n- **Headers**\n    \n    - `Authorization`: `Bearer`\n        \n- **Path Parameters**\n    \n    - `id`: The ID of the user to fetch.\n        \n\nreturns\n\n{  \n\"message\": \"User fetched successfully\",  \n\"user\": {  \n\"id\": 1,  \n\"email\": \"user@example.com\",  \n\"phone\": \"+123456789\",  \n\"firstName\": \"John\",  \n\"lastName\": \"Doe\",  \n\"avatar\": \"https://example.com/avatar.png\"  \n}  \n}"
 					},
 					"response": []
 				},
@@ -403,12 +410,13 @@
 								"users",
 								"{{userId}}"
 							]
-						}
+						},
+						"description": "Updates the user's profile details based on provided fields. This endpoint also performs an identity check by matching the `idToken` in the request headers with the user ID in the path, ensuring only the respective user can modify their data.\n\n#### Request\n\n- **Headers**\n    \n    - `Authorization`: `Bearer`\n        \n- **Path Parameters**\n    \n    - `id`: The ID of the user to update.\n        \n- **Body Parameters** (at least one field is required)\n    \n    - `email` _(optional)_: Updated email address.\n        \n    - `phone` _(optional)_: Updated phone number.\n        \n    - `firstName` _(optional)_: Updated first name.\n        \n    - `lastName` _(optional)_: Updated last name.\n        \n    - `avatar` _(optional)_: Updated avatar URL.\n        \n\nreturns\n\n{  \n\"message\": \"User updated successfully\",  \n\"user\": {  \n\"id\": 1,  \n\"email\": \"updated@example.com\",  \n\"phone\": \"+123456789\",  \n\"firstName\": \"John\",  \n\"lastName\": \"Doe\",  \n\"avatar\": \"https://example.com/new-avatar.png\"  \n}  \n}"
 					},
 					"response": []
 				}
 			],
-			"description": "Before trying requests in this user folder, make sure you have ran any of the login requests in the auth folder of this postman request."
+			"description": "Before trying requests in this user folder, make sure you have ran any of the login requests in the auth folder of this postman request to make sure postman environment variables as respective `userId` , `tokens` etc."
 		},
 		{
 			"name": "code templates",
@@ -442,7 +450,8 @@
 										"code",
 										"execute"
 									]
-								}
+								},
+								"description": "This endpoint allows users to execute a code snippet in a specified programming language with optional input. If the execution is successful, it returns the output of the code; otherwise, it returns an error message.\n\n**Body Parameters** (all required):\n\n- `language`: The programming language to execute the code in. Supported values might include `python`, `javascript`, `c`, `cpp`, or `java`.\n    \n- `code`: The code snippet to be executed.\n    \n- `stdin` _(optional)_: Standard input to provide to the code during execution (useful for interactive programs).\n    \n\nreturns {  \n\"message\": \"Code executed successfully\",  \n\"result\": \"Hello, World!\"  \n}\n\nreturns a 400 if there is a code execution error and the logs will be sent in the response body"
 							},
 							"response": []
 						},
@@ -472,7 +481,8 @@
 										"code",
 										"execute"
 									]
-								}
+								},
+								"description": "This endpoint allows users to execute a code snippet in a specified programming language with optional input. If the execution is successful, it returns the output of the code; otherwise, it returns an error message.\n\n**Body Parameters** (all required):\n\n- `language`: The programming language to execute the code in. Supported values might include `python`, `javascript`, `c`, `cpp`, or `java`.\n    \n- `code`: The code snippet to be executed.\n    \n- `stdin` _(optional)_: Standard input to provide to the code during execution (useful for interactive programs).\n    \n\nreturns {  \n\"message\": \"Code executed successfully\",  \n\"result\": \"Hello, World!\"  \n}\n\nreturns a 400 if there is a code execution error and the logs will be sent in the response body"
 							},
 							"response": []
 						},
@@ -502,7 +512,8 @@
 										"code",
 										"execute"
 									]
-								}
+								},
+								"description": "This endpoint allows users to execute a code snippet in a specified programming language with optional input. If the execution is successful, it returns the output of the code; otherwise, it returns an error message.\n\n**Body Parameters** (all required):\n\n- `language`: The programming language to execute the code in. Supported values might include `python`, `javascript`, `c`, `cpp`, or `java`.\n    \n- `code`: The code snippet to be executed.\n    \n- `stdin` _(optional)_: Standard input to provide to the code during execution (useful for interactive programs).\n    \n\nreturns {  \n\"message\": \"Code executed successfully\",  \n\"result\": \"Hello, World!\"  \n}\n\nreturns a 400 if there is a code execution error and the logs will be sent in the response body"
 							},
 							"response": []
 						},
@@ -532,7 +543,8 @@
 										"code",
 										"execute"
 									]
-								}
+								},
+								"description": "This endpoint allows users to execute a code snippet in a specified programming language with optional input. If the execution is successful, it returns the output of the code; otherwise, it returns an error message.\n\n**Body Parameters** (all required):\n\n- `language`: The programming language to execute the code in. Supported values might include `python`, `javascript`, `c`, `cpp`, or `java`.\n    \n- `code`: The code snippet to be executed.\n    \n- `stdin` _(optional)_: Standard input to provide to the code during execution (useful for interactive programs).\n    \n\nreturns {  \n\"message\": \"Code executed successfully\",  \n\"result\": \"Hello, World!\"  \n}\n\nreturns a 400 if there is a code execution error and the logs will be sent in the response body"
 							},
 							"response": []
 						},
@@ -562,11 +574,13 @@
 										"code",
 										"execute"
 									]
-								}
+								},
+								"description": "This endpoint allows users to execute a code snippet in a specified programming language with optional input. If the execution is successful, it returns the output of the code; otherwise, it returns an error message.\n\n**Body Parameters** (all required):\n\n- `language`: The programming language to execute the code in. Supported values might include `python`, `javascript`, `c`, `cpp`, or `java`.\n    \n- `code`: The code snippet to be executed.\n    \n- `stdin` _(optional)_: Standard input to provide to the code during execution (useful for interactive programs).\n    \n\nreturns {  \n\"message\": \"Code executed successfully\",  \n\"result\": \"Hello, World!\"  \n}\n\nreturns a 400 if there is a code execution error and the logs will be sent in the response body"
 							},
 							"response": []
 						}
-					]
+					],
+					"description": "no auth required to run these."
 				},
 				{
 					"name": "save / create code template",
@@ -619,7 +633,8 @@
 								"code",
 								""
 							]
-						}
+						},
+						"description": "- **Description**: Creates a new code template for a user, requiring `userId`, `title`, `language`, and `code` fields. The user's authorization is validated based on `userId` from the request.\n    \n- **Authorization**: Requires identity verification to ensure `userId` in the request matches the authenticated user.\n    \n\n##### Request Body:\n\n- `userId` _(required)_: ID of the user creating the template.\n    \n- `title` _(required)_: Title of the code template.\n    \n- `language` _(required)_: Programming language of the template.\n    \n- `code` _(required)_: The code snippet content.\n    \n- `tags` _(optional)_: Tags associated with the code template.\n    \n- `parentTemplateId` _(optional)_: ID of the parent template if this is a forked template.\n    \n\nreturns\n\n{  \n\"message\": \"Code Template created successfully\",  \n\"codeTemplate\": {  \n\"id\": 2,  \n\"userId\": 1,  \n\"title\": \"New JavaScript Template\",  \n\"language\": \"javascript\",  \n\"code\": \"console.log('Hello World');\",  \n\"tags\": \\[\"javascript\", \"console\"\\],  \n\"createdAt\": \"2023-01-01T00:00:00Z\",  \n\"updatedAt\": \"2023-01-01T00:00:00Z\"  \n}  \n}"
 					},
 					"response": []
 				},
@@ -659,7 +674,8 @@
 								"code",
 								""
 							]
-						}
+						},
+						"description": "- **Description**: Creates a new code template for a user, requiring `userId`, `title`, `language`, and `code` fields. The user's authorization is validated based on `userId` from the request.\n    \n- **Authorization**: Requires identity verification to ensure `userId` in the request matches the authenticated user.\n    \n\n##### Request Body:\n\n- `userId` _(required)_: ID of the user creating the template.\n    \n- `title` _(required)_: Title of the code template.\n    \n- `language` _(required)_: Programming language of the template.\n    \n- `code` _(required)_: The code snippet content.\n    \n- `tags` _(optional)_: Tags associated with the code template.\n    \n- `parentTemplateId` _(optional)_: ID of the parent template if this is a forked template.\n    \n\nreturns\n\n{  \n\"message\": \"Code Template created successfully\",  \n\"codeTemplate\": {  \n\"id\": 2,  \n\"userId\": 1,  \n\"title\": \"New JavaScript Template\",  \n\"language\": \"javascript\",  \n\"code\": \"console.log('Hello World');\",  \n\"tags\": \\[\"javascript\", \"console\"\\],  \n\"createdAt\": \"2023-01-01T00:00:00Z\",  \n\"updatedAt\": \"2023-01-01T00:00:00Z\"  \n}  \n}"
 					},
 					"response": []
 				},
@@ -699,7 +715,8 @@
 								"code",
 								"{{codeTemplateId}}"
 							]
-						}
+						},
+						"description": "- **Description**: Updates an existing code template by ID, modifying attributes like title, code, language, and tags. Only the original author (identified by `userId`) is permitted to update.\n    \n- **Authorization**: Requires user identity verification to ensure the `userId` in the request matches the template's creator.\n    \n\n- Path Parameters:Request Body:\n    \n    - `id` _(required)_: The unique identifier for the code template to be updated.\n        \n    \n    - `title` _(optional)_: New title for the code template.\n        \n    - `code` _(optional)_: Updated code snippet.\n        \n    - `language` _(optional)_: Programming language.\n        \n    - `explanation` _(optional)_: Explanation for the code template.\n        \n    - `tags` _(optional)_: Updated tags for the code template.\n        \n\nreturns\n\n{  \n\"message\": \"Code template updated successfully\",  \n\"codeTemplate\": {  \n\"id\": 1,  \n\"userId\": 1,  \n\"title\": \"Updated Template Title\",  \n\"code\": \"console.log('Updated Code');\",  \n\"language\": \"javascript\",  \n\"explanation\": \"Logs an updated message.\",  \n\"tags\": \\[\"javascript\", \"update\"\\]  \n}  \n}"
 					},
 					"response": []
 				},
@@ -730,7 +747,8 @@
 								"code",
 								"{{codeTemplateId}}"
 							]
-						}
+						},
+						"description": "- **Description**: Fetches a code template by its ID, returning all relevant details including tags, language, and explanation if provided.\n    \n- **Authorization**: No authorization check for this endpoint; anyone can access code templates by ID.\n    \n\n- Path Parameters:\n    \n    - `id` _(required)_: The unique identifier for the code template.\n        \n\nreturns\n\n{  \n\"message\": \"Code template fetched successfully\",  \n\"codeTemplate\": {  \n\"id\": 1,  \n\"userId\": 1,  \n\"title\": \"Example Template\",  \n\"code\": \"console.log('Hello World');\",  \n\"language\": \"javascript\",  \n\"explanation\": \"Logs a message to the console.\",  \n\"tags\": \\[\"javascript\", \"console\"\\]  \n}  \n}"
 					},
 					"response": []
 				},
@@ -767,7 +785,8 @@
 									"value": "{{userId}}"
 								}
 							]
-						}
+						},
+						"description": "- For this example, we filter by userId for when we want to fetch a user's saved code templates\n    \n- **Description**: Fetches code templates based on optional filters like `title`, `content`, `tags`, `userId`, `page`, and `limit`.\n    \n- **Authorization**: Requires user identity verification if `userId` is provided to ensure only authorized users can access data.\n    \n- Query Parameters:\n    \n    - `page` _(optional)_: Page number for pagination (e.g., `1`, `2`).\n        \n    - `limit` _(optional)_: Number of templates per page.\n        \n    - `userId` _(optional)_: User ID to filter code templates by a specific user.\n        \n    - `title` _(optional)_: Filters by title.\n        \n    - `content` _(optional)_: Searches templates containing specific content.\n        \n    - `tags` _(optional)_: Comma-separated list of tags to filter templates (e.g., `javascript,api`)."
 					},
 					"response": []
 				},
@@ -804,12 +823,13 @@
 									"value": "python"
 								}
 							]
-						}
+						},
+						"description": "- **Description**: Fetches code templates based on optional filters like `title`, `content`, `tags`, `userId`, `page`, and `limit`.\n    \n- **Authorization**: Requires user identity verification if `userId` is provided to ensure only authorized users can access data.\n    \n- Query Parameters:\n    \n    - `page` _(optional)_: Page number for pagination (e.g., `1`, `2`).\n        \n    - `limit` _(optional)_: Number of templates per page.\n        \n    - `userId` _(optional)_: User ID to filter code templates by a specific user.\n        \n    - `title` _(optional)_: Filters by title.\n        \n    - `content` _(optional)_: Searches templates containing specific content.\n        \n    - `tags` _(optional)_: Comma-separated list of tags to filter templates (e.g., `javascript,api`).\n        \n\nreturns {  \n\"message\": \"Code templates fetched successfully\",  \n\"codeTemplates\": \\[  \n{  \n\"id\": 1,  \n\"userId\": 1,  \n\"title\": \"Sample Template\",  \n\"language\": \"javascript\",  \n\"code\": \"console.log('Hello World');\",  \n\"tags\": \\[\"javascript\", \"console\"\\],  \n\"createdAt\": \"2023-01-01T00:00:00Z\",  \n\"updatedAt\": \"2023-01-01T00:00:00Z\"  \n}  \n\\],  \n\"totalCount\": 50  \n}"
 					},
 					"response": []
 				}
 			],
-			"description": "Before trying requests in this folder, make sure you have ran any of the login requests in the auth folder of this postman request."
+			"description": "Before trying requests in this folder, make sure you have ran any of the login requests in the auth folder of this postman request to ensure that the environment variables for `userId` , `accessToken` etc are. set."
 		},
 		{
 			"name": "blog posts",
@@ -876,7 +896,8 @@
 											"disabled": true
 										}
 									]
-								}
+								},
+								"description": "- **Description**: Retrieves a list of blog posts, with options to filter by title, content, tags, and associated code templates. Supports pagination and sorting.\n    \n- **Authorization**: Checks the user ID from the request header and filters blog posts accordingly.\n    \n- Query Parameters:\n    \n    - `page` _(optional)_: Page number for pagination.\n        \n    - `limit` _(optional)_: Number of blog posts per page.\n        \n    - `title` _(optional)_: Filter blog posts by title.\n        \n    - `content` _(optional)_: Filter blog posts by content.\n        \n    - `codeTemplateIds` _(optional)_: Comma-separated list of code template IDs to filter by.\n        \n    - `tags` _(optional)_: Comma-separated list of tags to filter by.\n        \n    - `orderBy` _(optional)_: Sort blog posts by `mostReported`, `mostValued`, or `mostControversial`. (NOTE mostValued is only available to be used in admin endpoint, so it will be canceled / nulled at this endpoint)\n        \n\nreturns {  \n\"message\": \"Blog Posts fetched successfully\",  \n\"blogPosts\": \\[  \n{  \n\"id\": 1,  \n\"userId\": 2,  \n\"title\": \"Understanding Async in JavaScript\",  \n\"description\": \"An intro to asynchronous programming in JS.\",  \n\"content\": \"Content goes here...\",  \n\"hidden\": false,  \n\"codeTemplateIds\": \\[1, 3\\],  \n\"createdAt\": \"2024-11-01T12:00:00Z\",  \n\"updatedAt\": \"2024-11-01T12:30:00Z\",  \n\"tags\": \\[\"javascript\", \"async\"\\],  \n\"commentIds\": \\[10, 11\\]  \n}  \n\\],  \n\"totalCount\": 1  \n}"
 							},
 							"response": []
 						},
@@ -912,7 +933,8 @@
 											"value": "mostControversial"
 										}
 									]
-								}
+								},
+								"description": "same as `search blog posts` but this time just an example of the orderBy usage for most controversial blog posts which means most impressions (upvotes and downvotes)"
 							},
 							"response": []
 						},
@@ -948,11 +970,13 @@
 											"value": "mostValued"
 										}
 									]
-								}
+								},
+								"description": "same as `search blog posts` but this time just an example of the orderBy usage for most valued which is the highest positive difference between upvotes and downvotes."
 							},
 							"response": []
 						}
-					]
+					],
+					"description": "before fetching blogposts make sure to have created some blog posts to see results and such"
 				},
 				{
 					"name": "comments",
@@ -1009,7 +1033,8 @@
 										"{{blogPostId}}",
 										"comment"
 									]
-								}
+								},
+								"description": "- **Description**: Allows an authorized user to add a comment to a specific blog post by `id`. This endpoint ensures the user making the comment matches the `userId` specified in the request.\n    \n- **Authorization**: Requires an identity check to confirm that the user making the request matches the `userId` associated with the comment.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the blog post to comment on.\n    \n\n##### Request Body:\n\n- `userId` _(required)_: The ID of the user adding the comment.\n    \n- `content` _(required)_: The content of the comment.\n    \n\nreturn {  \n\"message\": \"Blog Post successfully commented on\",  \n\"comment\": {  \n\"id\": 45,  \n\"userId\": 3,  \n\"blogPostId\": 12,  \n\"content\": \"Great post!\",  \n\"createdAt\": \"2024-10-01T12:00:00.000Z\"  \n}  \n}"
 							},
 							"response": []
 						},
@@ -1053,7 +1078,8 @@
 										"{{blogPostId}}",
 										"comment"
 									]
-								}
+								},
+								"description": "- **Description**: Retrieves a paginated list of direct comments for a specific blog post by `id`. Optionally filters comments to only include those visible to the `userId` making the request.\n    \n- **Authorization**: Requires an identity check to confirm that the requesting user has permission to view comments on the blog post if any comments are restricted.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the blog post for which to retrieve comments.\n    \n\n##### Query Parameters:\n\n- `page` _(optional)_: The page number to fetch (default: `1`).\n    \n- `limit` _(optional)_: The number of comments per page (default: `10`).\n    \n\n{  \n\"message\": \"Blog Post direct comments fetched successfully\",  \n\"comments\": \\[  \n{  \n\"id\": 45,  \n\"userId\": 3,  \n\"blogPostId\": 12,  \n\"content\": \"Great post!\",  \n\"createdAt\": \"2024-10-01T12:00:00.000Z\"  \n}  \n\\],  \n\"totalCount\": 25  \n}"
 							},
 							"response": []
 						},
@@ -1094,7 +1120,8 @@
 										"{{commentId}}",
 										"comment"
 									]
-								}
+								},
+								"description": "- **Description**: Allows an authorized user to add a reply to a specific comment by `id`. The endpoint ensures that the user making the request matches the `userId` specified in the request.\n    \n- **Authorization**: Requires an identity check to confirm that the user making the request matches the `userId` associated with the reply; otherwise, the request is rejected.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the comment to reply to.\n    \n\n##### Request Body:\n\n- `userId` _(required)_: The ID of the user adding the reply.\n    \n- `content` _(required)_: The content of the reply.\n    \n\nreturns {  \n\"message\": \"Comment successfully replied\",  \n\"comment\": {  \n\"id\": 78,  \n\"userId\": 3,  \n\"parentId\": 45,  \n\"content\": \"Thanks for the insight!\"  \n}  \n}"
 							},
 							"response": []
 						},
@@ -1126,7 +1153,8 @@
 										"{{commentId}}",
 										"comment"
 									]
-								}
+								},
+								"description": "- **Description**: Retrieves a paginated list of direct replies for a specific comment by `id`. Optionally filters replies to only include those visible to the `userId` making the request.\n    \n- **Authorization**: Requires an identity check to confirm that the requesting user has permission to view replies on the comment if any replies are restricted.\n    \n\n- Path Parameters:Query Parameters:\n    \n    - `id` _(required)_: The ID of the comment for which to retrieve replies.\n        \n    \n    - `page` _(optional)_: The page number to fetch (default: `1`).\n        \n    - `limit` _(optional)_: The number of replies per page (default: `10`).\n        \n\nreturns {  \n\"message\": \"Comment direct replies fetched successfully\",  \n\"comments\": \\[  \n{  \n\"id\": 78,  \n\"userId\": 3,  \n\"parentId\": 45,  \n\"content\": \"Thanks for the insight!\"  \n}  \n\\],  \n\"totalCount\": 5  \n}"
 							},
 							"response": []
 						},
@@ -1157,7 +1185,8 @@
 										"comments",
 										"{{commentId}}"
 									]
-								}
+								},
+								"description": "- **Description**: Retrieves details of a specific comment by `id`. If the comment is hidden, only the comment owner can access it.\n    \n- **Authorization**: If the comment is hidden, the authorization check ensures only the comment owner can view it.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the comment to retrieve.\n    \n\nreturn {  \n\"message\": \"Comment fetched successfully\",  \n\"comment\": {  \n\"id\": 12,  \n\"content\": \"This is a comment.\",  \n\"userId\": 3,  \n\"blogPostId\": 5,  \n\"parentId\": null,  \n\"createdAt\": \"2023-10-31T10:00:00Z\",  \n\"hidden\": false,  \n\"replyIds\": \\[13, 14\\],  \n\"upVotes\": 10,  \n\"downVotes\": 2,  \n\"reportIds\": \\[21, 22\\]  \n}  \n}"
 							},
 							"response": []
 						},
@@ -1197,7 +1226,8 @@
 										"comments",
 										"{{commentId}}"
 									]
-								}
+								},
+								"description": "- **Description**: Updates the content of a specific comment by `id`. Only the comment owner can update it.\n    \n- **Authorization**: Requires an identity check to confirm that the user making the request matches the comment's `userId`.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the comment to update.\n    \n\n##### Request Body:\n\n- `content` _(required)_: The updated content of the comment.\n    \n\nreturn {  \n\"message\": \"Comment updated successfully\",  \n\"comment\": {  \n\"id\": 12,  \n\"userId\": 3,  \n\"content\": \"Updated comment content.\"  \n}  \n}"
 							},
 							"response": []
 						},
@@ -1238,7 +1268,8 @@
 										"{{commentId}}",
 										"report"
 									]
-								}
+								},
+								"description": "- **Description**: Allows a user to report a specific comment by `id`, specifying a reason for the report. Only accessible if the user matches the `userId` provided in the request.\n    \n- **Authorization**: Requires an identity check to confirm that the user making the request matches the `userId` associated with the report.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the comment to be reported.\n    \n\n##### Request Body:\n\n- `userId` _(required)_: The ID of the user reporting the comment.\n    \n- `reason` _(required)_: The reason for reporting the comment (e.g., \"Spam,\" \"Inappropriate content\").\n    \n\nreturn {  \n\"message\": \"Comment successfully reported\",  \n\"report\": {  \n\"id\": 45,  \n\"userId\": 3,  \n\"commentId\": 12,  \n\"reason\": \"Inappropriate content\"  \n}  \n}"
 							},
 							"response": []
 						},
@@ -1279,7 +1310,8 @@
 										"{{commentId}}",
 										"rate"
 									]
-								}
+								},
+								"description": "- **Description**: Allows an authorized user to toggle a vote on a specific comment by `id`. The endpoint verifies that the user making the request is the same as the `userId` specified.\n    \n- **Authorization**: Requires an identity check to confirm that the `userId` in the request matches the authenticated user.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the comment to vote on.\n    \n\n##### Request Body:\n\n- `userId` _(required)_: The ID of the user toggling the vote.\n    \n- `voteType` _(required)_: The type of vote to toggle, such as `upvote` or `downvote`.\n    \n\nreturn {  \n\"message\": \"Comment vote toggle successfully applied\",  \n\"vote\": {  \n\"id\": 123,  \n\"userId\": 1,  \n\"commentId\": 456,  \n\"voteType\": \"upvote\"  \n}  \n}"
 							},
 							"response": []
 						},
@@ -1311,7 +1343,8 @@
 										"2",
 										"rate"
 									]
-								}
+								},
+								"description": "- **Description**: Fetches the current vote of an authenticated user for a specific comment by `id`.\n    \n- **Authorization**: Requires that the user be authenticated, and the user ID must match the user associated with the vote.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the comment for which to fetch the vote.\n    \n\nreturn {  \n\"message\": \"Comment vote successfully fetched for user\",  \n\"vote\": {  \n\"id\": 123,  \n\"userId\": 1,  \n\"commentId\": 456,  \n\"voteType\": \"upvote\"  \n}  \n}"
 							},
 							"response": []
 						},
@@ -1342,7 +1375,8 @@
 										"comments",
 										"{{commentId}}"
 									]
-								}
+								},
+								"description": "- **Description**: Deletes a specific comment by `id`.\n    \n- **Authorization**: Only accessible if the user has permission to delete the comment.\n    \n\n- Path Parameters:\n    \n    - `id` _(required)_: The ID of the comment to delete.\n        \n\nreturn {  \n\"message\": \"Comment deleted successfully\"  \n}"
 							},
 							"response": []
 						}
@@ -1399,7 +1433,8 @@
 								"api",
 								"blogs"
 							]
-						}
+						},
+						"description": "- **Description**: Creates a new blog post with the provided details and associates it with code templates and tags. The request is authorized by checking the `userId` in the request with the authenticated user ID.\n    \n- **Authorization**: Verifies that the `userId` in the request body matches the authorized user.\n    \n- Request Body:\n    \n    - `title` _(required)_: Title of the blog post.\n        \n    - `description` _(required)_: Short description of the blog post.\n        \n    - `content` _(required)_: Main content of the blog post.\n        \n    - `userId` _(required)_: ID of the user creating the post.\n        \n    - `codeTemplateIds` _(optional)_: Array of code template IDs associated with the blog post.\n        \n    - `tags` _(optional)_: Array of tags associated with the blog post.\n        \n\nreturn {  \n\"message\": \"Blog Post created successfully\",  \n\"blogPost\": {  \n\"id\": 1,  \n\"userId\": 2,  \n\"title\": \"Getting Started with REST APIs\",  \n\"description\": \"A beginner's guide to REST APIs.\",  \n\"content\": \"Content of the blog post...\",  \n\"hidden\": false,  \n\"codeTemplateIds\": \\[1, 2\\],  \n\"createdAt\": \"2024-11-01T12:00:00Z\",  \n\"updatedAt\": \"2024-11-01T12:30:00Z\",  \n\"tags\": \\[\"REST\", \"API\", \"backend\"\\],  \n\"commentIds\": \\[\\]  \n}  \n}"
 					},
 					"response": []
 				},
@@ -1430,7 +1465,8 @@
 								"blogs",
 								"{{blogPostId}}"
 							]
-						}
+						},
+						"description": "- **Description**: Retrieves a specific blog post by ID. If the post is hidden, the endpoint verifies the user’s authorization to view it.\n    \n- **Authorization**: If the blog post is hidden, the `userId` of the request must match the `userId` of the post.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the blog post to fetch.\n    \n\nreturns {  \n\"message\": \"Blog Post fetched successfully\",  \n\"blogPost\": {  \n\"id\": 1,  \n\"userId\": 2,  \n\"title\": \"Understanding REST APIs\",  \n\"description\": \"Introduction to REST principles\",  \n\"content\": \"Content of the post...\",  \n\"hidden\": false,  \n\"codeTemplateIds\": \\[1, 2\\],  \n\"createdAt\": \"2024-11-01T12:00:00Z\",  \n\"updatedAt\": \"2024-11-01T12:30:00Z\",  \n\"upVotes\": 10,  \n\"downVotes\": 3,  \n\"tags\": \\[\"API\", \"REST\"\\],  \n\"commentIds\": \\[101, 102\\]  \n}  \n}"
 					},
 					"response": []
 				},
@@ -1471,7 +1507,8 @@
 								"{{blogPostId}}",
 								"rate"
 							]
-						}
+						},
+						"description": "- **Description**: Allows a user to toggle their vote on a specific blog post. The `voteType` specifies whether the vote is an upvote, downvote, or a removal of an existing vote.\n    \n- **Authorization**: Requires an identity check by validating the `userId` in the request body against the authenticated user's ID in the authorization header.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the blog post to vote on.\n    \n\n##### Request Body:\n\n- `userId` _(required)_: The ID of the user casting the vote.\n    \n- `voteType` _(optional)_: The type of vote, either `\"upvote\"`, `\"downvote\"`, or `null` to remove the vote.\n    \n\nreturns {  \n\"message\": \"Blog Post vote toggle successfully applied\",  \n\"vote\": {  \n\"id\": 45,  \n\"userId\": 2,  \n\"blogPostId\": 1,  \n\"voteType\": \"upvote\"  \n}  \n}\n\nif the user doesn't have a vote or canceled out then the vote would be returned null"
 					},
 					"response": []
 				},
@@ -1504,7 +1541,7 @@
 								"rate"
 							]
 						},
-						"description": "The endpoint performs an HTTP GET request to rate a specific blog post identified by the blogPostId parameter in the URL. The response returned a status code of 201 and a JSON object with the following schema:"
+						"description": "- **Description**: Retrieves the vote of the currently authenticated user on the specified blog post.\n    \n- **Authorization**: Requires authorization to fetch the current user's vote on the blog post.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the blog post to retrieve the vote for.\n    \n\nreturns {  \n\"message\": \"Blog Post vote successfully fetched for user\",  \n\"vote\": {  \n\"id\": 45,  \n\"userId\": 2,  \n\"blogPostId\": 1,  \n\"voteType\": \"downvote\"  \n}  \n}"
 					},
 					"response": []
 				},
@@ -1545,7 +1582,8 @@
 								"{{blogPostId}}",
 								"report"
 							]
-						}
+						},
+						"description": "- **Description**: Reports a blog post by its ID, providing a reason for the report. The endpoint creates a new report entry for the specified blog post.\n    \n- **Authorization**: Requires `userId` from the request body, which should be the ID of the user submitting the report.\n    \n- Path Parameters:Request Body:\n    \n    - `id` _(required)_: The ID of the blog post to report.\n        \n    - `userId` _(required)_: The ID of the user reporting the blog post.\n        \n    - `reason` _(required)_: A string describing the reason for reporting the blog post.\n        \n\nreturn {  \n\"message\": \"Blog Post successfully reported\",  \n\"report\": {  \n\"id\": 123,  \n\"userId\": 2,  \n\"blogPostId\": 1,  \n\"reason\": \"Inappropriate content\"  \n}  \n}"
 					},
 					"response": []
 				},
@@ -1585,7 +1623,8 @@
 								"blogs",
 								"{{blogPostId}}"
 							]
-						}
+						},
+						"description": "- **Description**: Updates an existing blog post. Ensures the `userId` from the request header matches the `userId` of the blog post.\n    \n- **Authorization**: Only the post author (matching `userId`) can update the blog post.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the blog post to update.\n    \n\n##### Request Body:\n\n- `title` _(optional)_: New title for the blog post.\n    \n- `description` _(optional)_: New description for the blog post.\n    \n- `content` _(optional)_: New content for the blog post.\n    \n- `codeTemplateIds` _(optional)_: List of associated code template IDs.\n    \n- `tags` _(optional)_: List of associated tags.\n    \n\nreturns {  \n\"message\": \"Blog Post updated successfully\",  \n\"blogPost\": {  \n\"id\": 1,  \n\"userId\": 2,  \n\"title\": \"Updated REST API Guide\",  \n\"description\": \"Updated description for REST guide\",  \n\"content\": \"Updated content...\",  \n\"hidden\": false,  \n\"codeTemplateIds\": \\[1, 3\\],  \n\"createdAt\": \"2024-11-01T12:00:00Z\",  \n\"updatedAt\": \"2024-11-01T13:00:00Z\",  \n\"tags\": \\[\"API\", \"REST\", \"Backend\"\\],  \n\"commentIds\": \\[101, 102\\]  \n}  \n}"
 					},
 					"response": []
 				},
@@ -1616,7 +1655,8 @@
 								"blogs",
 								"{{blogPostId}}"
 							]
-						}
+						},
+						"description": "- **Description**: Deletes a specific blog post by ID after verifying that the `userId` matches the post author’s ID.\n    \n- **Authorization**: Only the post author (matching `userId`) can delete the blog post.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the blog post to delete.\n    \n\n##### return {\n\n\"message\": \"Blog Post deleted successfully\"  \n}"
 					},
 					"response": []
 				}
@@ -1627,7 +1667,7 @@
 			"name": "admin",
 			"item": [
 				{
-					"name": "toggle hide comment",
+					"name": "set hidden status for comment",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1664,12 +1704,13 @@
 								"2",
 								"hide"
 							]
-						}
+						},
+						"description": "- **Description**: This endpoint allows an administrator to toggle the `hidden` status of a comment. Setting a comment to `hidden` will make it invisible to regular users, while administrators will still be able to access it. Only users with admin privileges are authorized to perform this action.**Authorization**: Requires an admin-level authorization.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the comment whose hidden status is to be toggled.\n    \n\n##### Request Body:\n\n- `hidden` _(required)_: A boolean value to set the comment as hidden (`true`) or visible (`false`).\n    \n\nreturn {  \n\"message\": \"Comment hidden status has been updated\",  \n\"commentId\": 123,  \n\"hidden\": true  \n}"
 					},
 					"response": []
 				},
 				{
-					"name": "toggle hide blog post",
+					"name": "set hidden status for blog post",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1706,7 +1747,8 @@
 								"2",
 								"hide"
 							]
-						}
+						},
+						"description": "- **Description**: Allows an administrator to update the `hidden` status of a blog post. This is intended to hide or unhide blog posts as needed. Only users with admin privileges are authorized to perform this action.\n    \n- **Authorization**: Requires an admin-level authorization.\n    \n\n##### Path Parameters:\n\n- `id` _(required)_: The ID of the blog post whose hidden status is to be toggled.\n    \n\n##### Request Body:\n\n- `hidden` _(optional)_: A boolean value to set the blog post as hidden (`true`) or visible (`false`). If not provided, the default is `false`.\n    \n\nreturn {  \n\"message\": \"Blog Post hidden status has been updated\",  \n\"blogPostId\": 123,  \n\"hidden\": true  \n}"
 					},
 					"response": []
 				},
@@ -1738,7 +1780,7 @@
 								"blogs"
 							]
 						},
-						"description": "this endpoint only returns blogposts in sorted order and only of REPORTED blog posts. Thus to properly test, I suggest ensuring at least 1 blog post has been reported."
+						"description": "- **Description**: Retrieves blog posts with the highest number of reports, allowing administrators to review potentially inappropriate or flagged content. Only posts that have received user reports are included in the response.\n    \n- **Authorization**: Requires an admin-level authorization.\n    \n- `page` _(optional)_: Specifies the page number of results to retrieve. Defaults to the first page if not provided.\n    \n- `limit` _(optional)_: Specifies the maximum number of blog posts to retrieve per page. Defaults to a preset limit if not provided.\n    \n\nreturns {  \n\"message\": \"Most reported blog posts fetched successfully\",  \n\"blogPosts\": \\[  \n{  \n\"id\": 123,  \n\"userId\": 1,  \n\"title\": \"Inappropriate Post\",  \n\"content\": \"Flagged content\",  \n\"reportCount\": 10,  \n\"createdAt\": \"2024-01-01T12:00:00Z\"  \n},  \n{  \n\"id\": 456,  \n\"userId\": 3,  \n\"title\": \"Reported Post\",  \n\"content\": \"Content flagged by multiple users\",  \n\"reportCount\": 7,  \n\"createdAt\": \"2024-01-03T09:20:00Z\"  \n}  \n\\],  \n\"totalCount\": 2  \n}"
 					},
 					"response": []
 				},
@@ -1770,12 +1812,12 @@
 								"comments"
 							]
 						},
-						"description": "this endpoint only returns commnet in sorted order and only of REPORTED comment. Thus to properly test, I suggest ensuring at least 1 comment has been reported."
+						"description": "- **Description**: This endpoint retrieves the most reported comments to assist administrators in reviewing flagged content. Only comments that have one or more reports will be included in the results. Access to this endpoint is restricted to users with admin privileges.\n    \n- **Authorization**: Requires an admin-level authorization.\n    \n\n##### Query Parameters:\n\n- `page` _(optional)_: The page number to fetch. Defaults to the first page if not provided.\n    \n- `limit` _(optional)_: The maximum number of comments to return per page. Defaults to a set limit if not provided.\n    \n\nreturn {  \n\"message\": \"Most reported comments fetched successfully\",  \n\"comments\": \\[  \n{  \n\"id\": 123,  \n\"userId\": 1,  \n\"content\": \"Inappropriate content\",  \n\"reportCount\": 5,  \n\"createdAt\": \"2024-01-01T12:00:00Z\"  \n},  \n{  \n\"id\": 124,  \n\"userId\": 2,  \n\"content\": \"Another reported comment\",  \n\"reportCount\": 3,  \n\"createdAt\": \"2024-01-02T15:30:00Z\"  \n}  \n\\]  \n}"
 					},
 					"response": []
 				}
 			],
-			"description": "IN ORDER TO RUN THESE ADMIN ENDPOINTS YOU MUST BE LOGGED IN AS ADMIN\n\nBefore trying requests in this folder, make sure you have ran the admin login requests in the auth folder of this postman request - `login admin`"
+			"description": "IN ORDER TO RUN THESE ADMIN ENDPOINTS YOU MUST BE LOGGED IN AS ADMIN\n\nBefore trying requests in this folder, make sure you have ran the admin login requests in the auth folder of this postman request - `login admin`\n\nRunning `login admin` request in the `auth` directory will set idTokens and userIds to an ADMIN role user to run these requests within this directory"
 		}
 	],
 	"event": [
