@@ -36,13 +36,8 @@ cd server/libs || exit 1
 npx prisma migrate deploy
 cd - || exit 1
 
-
-echo "Clearing sqlite database..."
-npx node scripts/clearDatabase.js
-
 echo "Creating admin user in the database..."
 npx node scripts/createAdminUser.js
-
 
 echo "Setup complete. You can now start the server with ./run.sh"
 
