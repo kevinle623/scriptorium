@@ -34,14 +34,12 @@ fi
 echo "Running Prisma migrations..."
 cd server/libs || exit 1
 npx prisma migrate deploy
-cd - || exit 1
+
+echo "Generating Prisma client..."
+npx prisma generate
 
 echo "Creating admin user in the database..."
 npx node scripts/createAdminUser.js
-
-
-echo "Building Scriptorium Backend server..."
-npm run build
 
 echo "Setup complete. You can now start the server with ./run.sh"
 
