@@ -37,6 +37,7 @@ npx prisma migrate deploy
 
 echo "Generating Prisma client..."
 npx prisma generate
+cd - || exit 1
 
 echo "Creating admin user in the database..."
 npx node scripts/createAdminUser.js
