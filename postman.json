@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "00c0689b-beae-4a39-8929-4059abee70ee",
 		"name": "scriptorium backend",
-		"description": "Author: Kevin Le 1007952805\n\nTo first introduce the context of the app, it is a blog post platform that allows users to share code and run code all in one app. This is the documentation for the backend server of the app.\n\n# Getting Started\n\nIMPORTANT NOTE: - please ready the directories of each endpoint section as it will help explain some prerequisites, order of execution for requests etc.\n\n### Pre-reqs:\n\nPlease ensure you have ran the ./startup.sh to set up a fresh new environment with fresh data and an admin account. After so, run ./run.sh to start up the backend server to start calling the endpoints.\n\n### Admin Account:\n\nBelow is the admin account that should have been generated / created upon running the ./startup.sh script. Just for reference and whenever needed.\n\n- email: [admin@gmail.com](https://mailto:admin@gmail.com)\n    \n- password: 12345\n    \n\n### First Steps:\n\n- To start, please head to the live folder to ensure that the app is running. This is just a health check endpoint to ensure that everything is up and running.\n    \n- Next, head over to the auth folder where you can start logging in/ registering new users to initialize postman environment variables that will be propped to the other endpoint folders.\n    \n    - Register the user register user , there is already data there for you to register immediately.\n        \n    - The creds of the user email and passwordwill automatically be passed into the login user postman request\n        \n    - There is also a login admin request that prefills the admin creds to log in with the user.\n        \n    - Important Note: the tokens are set to expire in a 24h window for both access and login\n        \n- This is a good chance to try out the logout request and refresh request features\n    \n\nWith these, now you can navigate to specific directories with more information of the different endpoints. Again, please refer to the respective directory documentation for more information about order of execution and such.\n\nHowever, the order of execution should be top to bottom respective in context of the requests with in the level of the directory.\n\n# Data Models\n\nHere is a brief skim of the database models that helps orchestrate all the endpoints together.\n\n### 1\\. User\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - email (String): Unique email identifier for each user.\n        \n    - password (String): Hashed password for authentication.\n        \n    - firstName (String): User's first name.\n        \n    - lastName (String): User's last name.\n        \n    - avatar (String?): Optional URL to the user's profile image.\n        \n    - phone (String): Contact phone number.\n        \n    - role (String): Role of the user, default is \"user\".\n        \n- Relationships:\n    \n    - codeTemplates (CodeTemplate\\[\\]): Code templates created by the user.\n        \n    - blogs (BlogPost\\[\\]): Blog posts created by the user.\n        \n    - comments (Comment\\[\\]): Comments created by the user.\n        \n    - reports (Report\\[\\]): Reports created by the user.\n        \n    - votes (Vote\\[\\]): Votes cast by the user.\n        \n\n### 2\\. CodeTemplate\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - title (String): Title of the code template.\n        \n    - code (String): The code content.\n        \n    - language (String): Programming language of the code.\n        \n    - explanation (String?): Optional explanation or documentation for the code.\n        \n    - userId (Int): Foreign key linking to the user who created the template.\n        \n    - createdAt (DateTime): Timestamp when the template was created.\n        \n    - updatedAt (DateTime): Timestamp when the template was last updated.\n        \n    - parentTemplateId (Int?): Optional ID of the parent template if the code is a fork.\n        \n- Relationships:\n    \n    - user (User): The user who created the template.\n        \n    - tags (CodeTemplateTag\\[\\]): Tags associated with the template.\n        \n    - blogPosts (BlogPostCodeTemplate\\[\\]): Blog posts associated with the template.\n        \n    - forkedTemplates (CodeTemplate\\[\\]): Templates forked from this template.\n        \n\n### 3\\. BlogPost\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - title (String): Title of the blog post.\n        \n    - description (String): Short description or excerpt.\n        \n    - content (String): Full content of the blog post.\n        \n    - userId (Int): Foreign key linking to the author.\n        \n    - createdAt (DateTime): Timestamp when the post was created.\n        \n    - updatedAt (DateTime): Timestamp when the post was last updated.\n        \n    - hidden (Boolean): Flag indicating if the post is hidden due to reports or moderation.\n        \n- Relationships:\n    \n    - user (User): The author of the blog post.\n        \n    - tags (BlogPostTag\\[\\]): Tags associated with the blog post.\n        \n    - codeTemplates (BlogPostCodeTemplate\\[\\]): Code templates linked to this post.\n        \n    - comments (Comment\\[\\]): Comments on this post.\n        \n    - votes (Vote\\[\\]): Votes on this post.\n        \n    - report (Report\\[\\]): Reports filed against the post.\n        \n\n### 4\\. BlogPostCodeTemplate (Relationship Table)\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - blogPostId (Int): Foreign key linking to the blog post.\n        \n    - codeTemplateId (Int): Foreign key linking to the code template.\n        \n- Relationships:\n    \n    - blogPost (BlogPost): The blog post associated with the template.\n        \n    - codeTemplate (CodeTemplate): The code template associated with the blog post.\n        \n\n### 5\\. Comment\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - content (String): Text content of the comment.\n        \n    - userId (Int): Foreign key linking to the author of the comment.\n        \n    - blogPostId (Int?): Foreign key linking to the blog post, if the comment is on a post.\n        \n    - parentId (Int?): Foreign key linking to the parent comment, if it is a reply.\n        \n    - createdAt (DateTime): Timestamp when the comment was created.\n        \n    - hidden (Boolean): Flag indicating if the comment is hidden due to reports or moderation.\n        \n- Relationships:\n    \n    - user (User): The author of the comment.\n        \n    - blogPost (BlogPost?): The blog post associated with the comment, if applicable.\n        \n    - parent (Comment?): The parent comment if it is a reply.\n        \n    - replies (Comment\\[\\]): Replies to the comment.\n        \n    - votes (Vote\\[\\]): Votes on this comment.\n        \n    - reports (Report\\[\\]): Reports filed against the comment.\n        \n\n### 6\\. Report\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - reason (String): Reason for reporting the content.\n        \n    - userId (Int): Foreign key linking to the user who reported the content.\n        \n    - blogPostId (Int?): Foreign key linking to the blog post if it was reported.\n        \n    - commentId (Int?): Foreign key linking to the comment if it was reported.\n        \n    - createdAt (DateTime): Timestamp when the report was created.\n        \n- Relationships:\n    \n    - user (User): The user who reported the content.\n        \n    - blogPost (BlogPost?): The blog post being reported, if applicable.\n        \n    - comment (Comment?): The comment being reported, if applicable.\n        \n\n### 7\\. Tag\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - name (String): Unique name of the tag.\n        \n- Relationships:\n    \n    - codeTags (CodeTemplateTag\\[\\]): Tags associated with code templates.\n        \n    - blogTags (BlogPostTag\\[\\]): Tags associated with blog posts.\n        \n\n### 8\\. CodeTemplateTag (Relationship Table)\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - codeTemplateId (Int): Foreign key linking to the code template.\n        \n    - tagId (Int): Foreign key linking to the tag.\n        \n- Relationships:\n    \n    - codeTemplate (CodeTemplate): The code template associated with the tag.\n        \n    - tag (Tag): The tag associated with the code template.\n        \n\n### 9\\. BlogPostTag (Relationship Table)\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - blogPostId (Int): Foreign key linking to the blog post.\n        \n    - tagId (Int): Foreign key linking to the tag.\n        \n- Relationships:\n    \n    - blogPost (BlogPost): The blog post associated with the tag.\n        \n    - tag (Tag): The tag associated with the blog post.\n        \n\n### 10\\. Vote\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - userId (Int): Foreign key linking to the user who cast the vote.\n        \n    - blogPostId (Int?): Foreign key linking to the blog post, if applicable.\n        \n    - commentId (Int?): Foreign key linking to the comment, if applicable.\n        \n    - voteType (String): Type of vote (UP or DOWN).\n        \n- Relationships:\n    \n    - user (User): The user who cast the vote.\n        \n    - blogPost (BlogPost?): The blog post associated with the vote.\n        \n    - comment (Comment?): The comment associated with the vote.\n        \n\n### 11\\. RevokedToken\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - token (String): Unique identifier for the revoked token.\n        \n    - tokenType (String): Type of token (e.g., \"access\" or \"refresh\").\n        \n\ncreatedAt (DateTime): Timestamp when the token was revoked.",
+		"description": "Author: Kevin Le 1007952805\n\nTo first introduce the context of the app, it is a blog post platform that allows users to share code and run code all in one app. This is the documentation for the backend server of the app.\n\n# Getting Started\n\nIMPORTANT NOTE: - please read the directories of each endpoint section as it will help explain some prerequisites, order of execution for requests etc.\n\n### Pre-reqs:\n\nPlease ensure you have ran the `./startup.sh` to set up a fresh new environment with fresh data and an admin account. After so, run `./run.sh` to start up the backend server to start calling the endpoints.\n\nIf you run into permission issues running the scripts please run the following command: `chmod +x ./startup.sh ./run.sh`\n\n### Admin Account:\n\nBelow is the admin account that should have been generated / created upon running the `./startup.sh` script. Just for reference and whenever needed.\n\n- email: [admin@gmail.com](https://mailto:admin@gmail.com)\n    \n- password: 12345\n    \n\n### First Steps:\n\n- To start, please head to the live folder to ensure that the app is running. This is just a health check endpoint to ensure that everything is up and running.\n    \n- Next, head over to the auth folder where you can start logging in/ registering new users to initialize postman environment variables that will be propped to the other endpoint folders.\n    \n    - Register the user register user , there is already data there for you to register immediately.\n        \n    - The creds of the user email and passwordwill automatically be passed into the login user postman request\n        \n    - There is also a login admin request that prefills the admin creds to log in with the user.\n        \n    - Important Note: the tokens are set to expire in a 24h window for both access and login\n        \n- This is a good chance to try out the logout request and refresh request features\n    \n\nWith these, now you can navigate to specific directories with more information of the different endpoints. Again, please refer to the respective directory documentation for more information about order of execution and such.\n\nHowever, the order of execution should be top to bottom respective in context of the requests with in the level of the directory.\n\n# Data Models\n\nHere is a brief skim of the database models that helps orchestrate all the endpoints together.\n\n### 1\\. User\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - email (String): Unique email identifier for each user.\n        \n    - password (String): Hashed password for authentication.\n        \n    - firstName (String): User's first name.\n        \n    - lastName (String): User's last name.\n        \n    - avatar (String?): Optional URL to the user's profile image.\n        \n    - phone (String): Contact phone number.\n        \n    - role (String): Role of the user, default is \"user\".\n        \n- Relationships:\n    \n    - codeTemplates (CodeTemplate\\[\\]): Code templates created by the user.\n        \n    - blogs (BlogPost\\[\\]): Blog posts created by the user.\n        \n    - comments (Comment\\[\\]): Comments created by the user.\n        \n    - reports (Report\\[\\]): Reports created by the user.\n        \n    - votes (Vote\\[\\]): Votes cast by the user.\n        \n\n### 2\\. CodeTemplate\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - title (String): Title of the code template.\n        \n    - code (String): The code content.\n        \n    - language (String): Programming language of the code.\n        \n    - explanation (String?): Optional explanation or documentation for the code.\n        \n    - userId (Int): Foreign key linking to the user who created the template.\n        \n    - createdAt (DateTime): Timestamp when the template was created.\n        \n    - updatedAt (DateTime): Timestamp when the template was last updated.\n        \n    - parentTemplateId (Int?): Optional ID of the parent template if the code is a fork.\n        \n- Relationships:\n    \n    - user (User): The user who created the template.\n        \n    - tags (CodeTemplateTag\\[\\]): Tags associated with the template.\n        \n    - blogPosts (BlogPostCodeTemplate\\[\\]): Blog posts associated with the template.\n        \n    - forkedTemplates (CodeTemplate\\[\\]): Templates forked from this template.\n        \n\n### 3\\. BlogPost\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - title (String): Title of the blog post.\n        \n    - description (String): Short description or excerpt.\n        \n    - content (String): Full content of the blog post.\n        \n    - userId (Int): Foreign key linking to the author.\n        \n    - createdAt (DateTime): Timestamp when the post was created.\n        \n    - updatedAt (DateTime): Timestamp when the post was last updated.\n        \n    - hidden (Boolean): Flag indicating if the post is hidden due to reports or moderation.\n        \n- Relationships:\n    \n    - user (User): The author of the blog post.\n        \n    - tags (BlogPostTag\\[\\]): Tags associated with the blog post.\n        \n    - codeTemplates (BlogPostCodeTemplate\\[\\]): Code templates linked to this post.\n        \n    - comments (Comment\\[\\]): Comments on this post.\n        \n    - votes (Vote\\[\\]): Votes on this post.\n        \n    - report (Report\\[\\]): Reports filed against the post.\n        \n\n### 4\\. BlogPostCodeTemplate (Relationship Table)\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - blogPostId (Int): Foreign key linking to the blog post.\n        \n    - codeTemplateId (Int): Foreign key linking to the code template.\n        \n- Relationships:\n    \n    - blogPost (BlogPost): The blog post associated with the template.\n        \n    - codeTemplate (CodeTemplate): The code template associated with the blog post.\n        \n\n### 5\\. Comment\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - content (String): Text content of the comment.\n        \n    - userId (Int): Foreign key linking to the author of the comment.\n        \n    - blogPostId (Int?): Foreign key linking to the blog post, if the comment is on a post.\n        \n    - parentId (Int?): Foreign key linking to the parent comment, if it is a reply.\n        \n    - createdAt (DateTime): Timestamp when the comment was created.\n        \n    - hidden (Boolean): Flag indicating if the comment is hidden due to reports or moderation.\n        \n- Relationships:\n    \n    - user (User): The author of the comment.\n        \n    - blogPost (BlogPost?): The blog post associated with the comment, if applicable.\n        \n    - parent (Comment?): The parent comment if it is a reply.\n        \n    - replies (Comment\\[\\]): Replies to the comment.\n        \n    - votes (Vote\\[\\]): Votes on this comment.\n        \n    - reports (Report\\[\\]): Reports filed against the comment.\n        \n\n### 6\\. Report\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - reason (String): Reason for reporting the content.\n        \n    - userId (Int): Foreign key linking to the user who reported the content.\n        \n    - blogPostId (Int?): Foreign key linking to the blog post if it was reported.\n        \n    - commentId (Int?): Foreign key linking to the comment if it was reported.\n        \n    - createdAt (DateTime): Timestamp when the report was created.\n        \n- Relationships:\n    \n    - user (User): The user who reported the content.\n        \n    - blogPost (BlogPost?): The blog post being reported, if applicable.\n        \n    - comment (Comment?): The comment being reported, if applicable.\n        \n\n### 7\\. Tag\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - name (String): Unique name of the tag.\n        \n- Relationships:\n    \n    - codeTags (CodeTemplateTag\\[\\]): Tags associated with code templates.\n        \n    - blogTags (BlogPostTag\\[\\]): Tags associated with blog posts.\n        \n\n### 8\\. CodeTemplateTag (Relationship Table)\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - codeTemplateId (Int): Foreign key linking to the code template.\n        \n    - tagId (Int): Foreign key linking to the tag.\n        \n- Relationships:\n    \n    - codeTemplate (CodeTemplate): The code template associated with the tag.\n        \n    - tag (Tag): The tag associated with the code template.\n        \n\n### 9\\. BlogPostTag (Relationship Table)\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - blogPostId (Int): Foreign key linking to the blog post.\n        \n    - tagId (Int): Foreign key linking to the tag.\n        \n- Relationships:\n    \n    - blogPost (BlogPost): The blog post associated with the tag.\n        \n    - tag (Tag): The tag associated with the blog post.\n        \n\n### 10\\. Vote\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - userId (Int): Foreign key linking to the user who cast the vote.\n        \n    - blogPostId (Int?): Foreign key linking to the blog post, if applicable.\n        \n    - commentId (Int?): Foreign key linking to the comment, if applicable.\n        \n    - voteType (String): Type of vote (UP or DOWN).\n        \n- Relationships:\n    \n    - user (User): The user who cast the vote.\n        \n    - blogPost (BlogPost?): The blog post associated with the vote.\n        \n    - comment (Comment?): The comment associated with the vote.\n        \n\n### 11\\. RevokedToken\n\n- Fields:\n    \n    - id (Int): Primary key, automatically increments.\n        \n    - token (String): Unique identifier for the revoked token.\n        \n    - tokenType (String): Type of token (e.g., \"access\" or \"refresh\").\n        \n\ncreatedAt (DateTime): Timestamp when the token was revoked.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "30523314"
 	},
@@ -16,12 +16,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/live",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/live",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"live"
@@ -77,12 +75,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/users/register",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/users/register",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"users",
@@ -131,12 +127,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/users/login",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/users/login",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"users",
@@ -184,7 +178,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"{{adminUser}}\",\n    \"password\": \"{{adminPassword}}\"\n}",
+							"raw": "{\n    \"email\": \"{{adminEmail}}\",\n    \"password\": \"{{adminPassword}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -192,12 +186,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/users/login",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/users/login",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"users",
@@ -248,12 +240,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/users/refresh",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/users/refresh",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"users",
@@ -308,12 +298,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/users/logout",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/users/logout",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"users",
@@ -352,12 +340,10 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:3000/api/users/{{userId}}",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/users/{{userId}}",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"users",
@@ -399,12 +385,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/users/{{userId}}",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/users/{{userId}}",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"users",
@@ -439,12 +423,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/code/execute",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/code/execute",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"code",
@@ -470,12 +452,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/code/execute",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/code/execute",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"code",
@@ -501,12 +481,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/code/execute",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/code/execute",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"code",
@@ -532,12 +510,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/code/execute",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/code/execute",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"code",
@@ -563,12 +539,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/code/execute",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/code/execute",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"code",
@@ -622,12 +596,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/code/",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/code/",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"code",
@@ -663,12 +635,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/code/",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/code/",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"code",
@@ -704,12 +674,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/code/{{codeTemplateId}}",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/code/{{codeTemplateId}}",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"code",
@@ -736,12 +704,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/code/{{codeTemplateId}}",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/code/{{codeTemplateId}}",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"code",
@@ -768,12 +734,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/code/?userId={{userId}}",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/code/?userId={{userId}}",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"code",
@@ -806,12 +770,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/code/?tag=python",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/code/?tag=python",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"code",
@@ -853,12 +815,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/api/blogs?tags=Async&codeTemplateIds=1&content=programming&title=typescript",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/blogs?title=timeless&tags=Async",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"blogs"
@@ -875,25 +835,12 @@
 											"disabled": true
 										},
 										{
+											"key": "title",
+											"value": "timeless"
+										},
+										{
 											"key": "tags",
 											"value": "Async"
-										},
-										{
-											"key": "codeTemplateIds",
-											"value": "1"
-										},
-										{
-											"key": "content",
-											"value": "programming"
-										},
-										{
-											"key": "title",
-											"value": "typescript"
-										},
-										{
-											"key": "",
-											"value": "",
-											"disabled": true
 										}
 									]
 								},
@@ -917,12 +864,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/api/blogs?orderBy=mostControversial",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/blogs?orderBy=mostControversial",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"blogs"
@@ -954,12 +899,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/api/blogs?orderBy=mostValued",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/blogs?orderBy=mostValued",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"blogs"
@@ -1021,12 +964,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/blogs/{{blogPostId}}/comment",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/blogs/{{blogPostId}}/comment",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"blogs",
@@ -1066,12 +1007,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/blogs/{{blogPostId}}/comment",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/blogs/{{blogPostId}}/comment",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"blogs",
@@ -1108,12 +1047,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/comments/{{commentId}}/comment",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/comments/{{commentId}}/comment",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"comments",
@@ -1141,12 +1078,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/api/comments/{{commentId}}/comment",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/comments/{{commentId}}/comment",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"comments",
@@ -1174,12 +1109,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/api/comments/{{commentId}}",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/comments/{{commentId}}",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"comments",
@@ -1215,12 +1148,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/comments/{{commentId}}",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/comments/{{commentId}}",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"comments",
@@ -1248,7 +1179,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"userId\": {{commentId}},\n    \"reason\": \"hurt my feelings\"\n}",
+									"raw": "{\n    \"userId\": {{userId}},\n    \"reason\": \"hurt my feelings\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1256,12 +1187,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/comments/{{commentId}}/report",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/comments/{{commentId}}/report",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"comments",
@@ -1298,12 +1227,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/comments/{{commentId}}/rate",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/comments/{{commentId}}/rate",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"comments",
@@ -1331,16 +1258,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/api/comments/2/rate",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/comments/{{commentId}}/rate",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"comments",
-										"2",
+										"{{commentId}}",
 										"rate"
 									]
 								},
@@ -1364,12 +1289,10 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/api/comments/{{commentId}}",
-									"protocol": "http",
+									"raw": "{{baseUrl}}/api/comments/{{commentId}}",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "3000",
 									"path": [
 										"api",
 										"comments",
@@ -1423,12 +1346,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/blogs",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/blogs",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"blogs"
@@ -1454,12 +1375,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/blogs/{{blogPostId}}",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/blogs/{{blogPostId}}",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"blogs",
@@ -1495,12 +1414,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/blogs/{{blogPostId}}/rate",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/blogs/{{blogPostId}}/rate",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"blogs",
@@ -1528,12 +1445,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/blogs/{{blogPostId}}/rate",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/blogs/{{blogPostId}}/rate",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"blogs",
@@ -1570,12 +1485,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/blogs/{{blogPostId}}/report",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/blogs/{{blogPostId}}/report",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"blogs",
@@ -1612,12 +1525,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/blogs/{{blogPostId}}",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/blogs/{{blogPostId}}",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"blogs",
@@ -1644,12 +1555,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/blogs/{{blogPostId}}",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/blogs/{{blogPostId}}",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"blogs",
@@ -1683,7 +1592,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"hidden\": false\n}",
+							"raw": "{\n    \"hidden\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1691,12 +1600,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/admin/comments/2/hide",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/admin/comments/2/hide",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"admin",
@@ -1726,7 +1633,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"hidden\": false\n}",
+							"raw": "{\n    \"hidden\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1734,12 +1641,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/admin/blogs/2/hide",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/admin/blogs/2/hide",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"admin",
@@ -1768,12 +1673,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/admin/blogs",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/admin/blogs",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"admin",
@@ -1800,12 +1703,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/admin/comments",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/admin/comments",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"admin",
@@ -1861,6 +1762,11 @@
 		{
 			"key": "userPassword",
 			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
 			"type": "string"
 		}
 	]

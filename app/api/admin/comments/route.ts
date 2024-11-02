@@ -9,11 +9,12 @@ export async function GET(req: Request) {
         const url = new URL(req.url);
         const page = url.searchParams.get('page') ? parseInt(url.searchParams.get('page')!) : undefined;
         const limit = url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!) : undefined;
-        const comments = await commentService.getMostReportedComments(page, limit)
+        const {comments, totalCount} = await commentService.getMostReportedComments(page, limit)
         return NextResponse.json(
             {
                 message: "Most reported comments fetched successfully",
                 comments: comments,
+                totalCount: totalCount,
             },
             {status: 201}
         );
