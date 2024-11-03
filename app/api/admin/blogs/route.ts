@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import * as blogPostService from "@server/services/blogPosts";
 import {NextResponse} from "next/server";
 import * as authorizationService from "@server/services/authorization";
