@@ -79,6 +79,25 @@ export async function getCodeTemplatesByUserId(
         throw e
     }
 }
+
+export async function deleteCodeTemplateById(
+    codeTemplateId: number
+): Promise<void> {
+    try {
+        await prisma.$transaction(async (prismaTx) => {
+            const existingCodeTemplate = await codeTemplateRepository.getCodeTemplateById(prismaTx, codeTemplateId);
+            if (!existingCodeTemplate) {
+                throw new NotFoundException("Code template does not exist");
+            }
+            await codeTemplateRepository.deleteCodeTemplateRelationsByCodeTemplateId(prismaTx, codeTemplateId);
+            await tagRepository.deleteCodeTemplateTags(prismaTx, codeTemplateId);
+            await codeTemplateRepository.deleteCodeTemplateById(prismaTx, codeTemplateId);
+        });
+        return
+    } catch (error) {
+        throw error
+    }
+}
 export async function executeCodeSnippet(
     language: CodingLanguage,
     code: string,

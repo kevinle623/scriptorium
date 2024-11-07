@@ -7,6 +7,7 @@ import {
     GetBlogPostRequest,
     GetBlogPostsResult
 } from "@server/types/dtos/blogPosts";
+import {prisma} from "@server/libs/prisma/client";
 
 export function buildBlogPostWhereCondition(getBlogPostsRequest: GetBlogPostRequest) {
     const { tagsList, content, title, codeTemplateIds, userId } = getBlogPostsRequest;
@@ -156,6 +157,14 @@ export async function editBlogPost(
         }
 
         if (editBlogPostRequest.codeTemplateIds !== undefined) {
+            await prismaClient.blogPostCodeTemplate.deleteMany({
+                where: {
+                    blogPostId: editBlogPostRequest.blogPostId,
+                },
+            });
+
+
+
             dataToUpdate.codeTemplates = {
                 set: [],
                 create: editBlogPostRequest.codeTemplateIds.map((id) => ({

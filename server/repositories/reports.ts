@@ -65,6 +65,45 @@ export async function createReport(
     }
 }
 
+export async function deleteReportByCommentId(
+    prismaClient: any,
+    commentId: number,
+    userId: number
+): Promise<boolean> {
+    try {
+        const deletedReport = await prismaClient.report.deleteMany({
+            where: {
+                commentId: commentId,
+                userId: userId,
+            },
+        });
+
+        return deletedReport.count > 0;
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to delete report by comment ID");
+    }
+}
+
+
+export async function deleteReportByBlogPostId(
+    prismaClient: any,
+    blogPostId: number,
+): Promise<boolean> {
+    try {
+        const deletedReport = await prismaClient.report.deleteMany({
+            where: {
+                blogPostId: blogPostId,
+            },
+        });
+
+        return deletedReport.count > 0;
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to delete report by blog post ID");
+    }
+}
+
 function deserializeReport(reportModel: ReportModel): Report {
     return {
         id: reportModel.id,

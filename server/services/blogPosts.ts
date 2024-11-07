@@ -58,6 +58,8 @@ export async function deleteBlogPost(blogPostId: number) {
             if (!existingBlogPost) {
                 throw new NotFoundException("Blog Post does not exist");
             }
+            await codeTemplateRepository.deleteCodeTemplateRelationsByBlogPostId(prismaTx, blogPostId)
+            await reportRepository.deleteReportByBlogPostId(prismaTx, blogPostId)
             await tagRepository.deleteBlogPostTags(prismaTx, blogPostId);
             await blogPostRepository.deleteBlogPost(prismaTx, blogPostId);
         });
@@ -76,11 +78,24 @@ export async function updateBlogPost(editBlogPostRequest: EditBlogPostRequest): 
             if (!existingBlogPost) {
                 throw new NotFoundException("Blog Post does not exist");
             }
+
+            const codeTemplateIds = editBlogPostRequest.codeTemplateIds ?? [];
+
+            for (const codeTemplateId of codeTemplateIds) {
+                const codeTemplate = await codeTemplateRepository.getCodeTemplateById(prismaTx, codeTemplateId);
+                if (!codeTemplate) throw new NotFoundException("Code Template not found");
+            }
+
             await blogPostRepository.editBlogPost(prismaTx, editBlogPostRequest);
             if (tags.length > 0) {
                 await tagRepository.updateBlogPostTags(prismaTx, blogPostId, tags);
             }
-            return await blogPostRepository.getBlogPostById(prismaTx, blogPostId);
+
+            const blogPost = await blogPostRepository.getBlogPostById(prismaTx, blogPostId);
+
+            if (!blogPost) throw new NotFoundException("Blog post not found")
+
+            return populateBlogPost(blogPost)
         });
 
         if (!updatedBlogPost) {

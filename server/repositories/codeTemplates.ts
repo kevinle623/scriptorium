@@ -174,6 +174,63 @@ export async function editCodeTemplate(
     }
 }
 
+export async function deleteCodeTemplateRelationsByBlogPostId(
+    prismaClient: any,
+    blogPostId: number
+): Promise<boolean> {
+    try {
+        const deletedRelations = await prismaClient.blogPostCodeTemplate.deleteMany({
+            where: {
+                blogPostId: blogPostId,
+            },
+        });
+
+        return deletedRelations.count > 0;
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to delete code template relations by blog post ID");
+    }
+}
+
+
+
+export async function deleteCodeTemplateById(
+    prismaClient: any,
+    codeTemplateId: number
+): Promise<boolean> {
+    try {
+        const deletedTemplate = await prismaClient.codeTemplate.delete({
+            where: {
+                id: codeTemplateId,
+            },
+        });
+
+        return !!deletedTemplate;
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to delete code template by ID");
+    }
+}
+
+export async function deleteCodeTemplateRelationsByCodeTemplateId(
+    prismaClient: any,
+    codeTemplateId: number
+): Promise<boolean> {
+    try {
+        const deletedRelations = await prismaClient.blogPostCodeTemplate.deleteMany({
+            where: {
+                codeTemplateId: codeTemplateId,
+            },
+        });
+
+        return deletedRelations.count > 0;
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to delete code template relations by code template ID");
+    }
+}
+
+
 
 function deserializeCodeTemplate(templateModel: CodeTemplateModel): CodeTemplate {
     return {

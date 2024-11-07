@@ -85,3 +85,25 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
         return routeHandlerException(error)
     }
 }
+
+export async function DELETE(req: Request, {params}: { params: { id: string } }) {
+    try {
+        if (!Number(params.id)) {
+            return NextResponse.json(
+                { message: "Invalid id" },
+                { status: 400 }
+            );
+        }
+
+        const codeTemplateId = parseInt(params.id, 10);
+        const currentCodeTemplate = await codeTemplateService.getCodeTemplateById(codeTemplateId);
+        await authorizationService.verifyMatchingUserAuthorization(req, currentCodeTemplate.userId);
+        await codeTemplateService.deleteCodeTemplateById(codeTemplateId);
+        return NextResponse.json(
+            { message: "Code template deleted successfully" },
+            { status: 200 }
+        );
+    } catch (error) {
+        return routeHandlerException(error);
+    }
+}
