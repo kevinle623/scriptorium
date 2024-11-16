@@ -1,10 +1,10 @@
 import * as commentRepository from "@server/repositories/comments";
-import {Comment, GetCommentsResult} from "@server/types/dtos/comments";
+import {Comment, GetCommentsResult} from "@/types/dtos/comments";
 import {prisma} from "@server/libs/prisma/client";
 import * as reportRepository from "@server/repositories/reports";
-import {Vote, VoteType} from "@server/types/dtos/votes";
+import {Vote, VoteType} from "@/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
-import {NotFoundException, ServiceException} from "@server/types/exceptions";
+import {NotFoundException, ServiceException} from "@/types/exceptions";
 async function populateComment(comment: Comment): Promise<Comment> {
     const commentId = comment.id
     comment.replyIds = await commentRepository.getCommentIdsByParentCommentId(prisma, comment.id)

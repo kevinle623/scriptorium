@@ -5,7 +5,7 @@ import {
     InsufficientPermissionsException,
     InvalidCredentialsException, NotFoundException,
     ServiceException
-} from "@server/types/exceptions";
+} from "@/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
 import {routeHandlerException} from "@server/utils/exception_utils";
 

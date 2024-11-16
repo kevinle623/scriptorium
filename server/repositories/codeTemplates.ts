@@ -4,8 +4,8 @@ import {
     CreateCodeTemplateRequest, GetCodeTemplatesRequest,
     GetCodeTemplatesResult,
     UpdateCodeTemplateRequest
-} from "@server/types/dtos/codeTemplates"
-import {DatabaseIntegrityException} from "@server/types/exceptions";
+} from "@/types/dtos/codeTemplates"
+import {DatabaseIntegrityException} from "@/types/exceptions";
 
 
 export async function createCodeTemplate(prismaClient: any, createCodeTemplateRequest: CreateCodeTemplateRequest) {

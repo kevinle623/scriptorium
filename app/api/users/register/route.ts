@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import * as userService from "@server/services/users";
-import {Role} from "@server/types/dtos/roles";
-import {CreateUserRequest} from "@server/types/dtos/user";
+import {Role} from "@/types/dtos/roles";
+import {CreateUserRequest} from "@/types/dtos/user";
 import {routeHandlerException} from "@server/utils/exception_utils";
 
 export async function POST(req: Request) {

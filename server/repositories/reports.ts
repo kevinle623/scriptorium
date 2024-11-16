@@ -1,6 +1,6 @@
-import { DatabaseIntegrityException } from "@server/types/exceptions";
+import { DatabaseIntegrityException } from "@/types/exceptions";
 import {Report as ReportModel} from "@prisma/client";
-import { Report } from "@server/types/dtos/reports";
+import { Report } from "@/types/dtos/reports";
 
 export async function getBlogPostReportByUser(
     prismaClient: any,

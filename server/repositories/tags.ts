@@ -1,6 +1,6 @@
-import {DatabaseIntegrityException} from "@server/types/exceptions";
+import {DatabaseIntegrityException} from "@/types/exceptions";
 import {PrismaClient, Tag as TagModel, BlogPostTag as BlogPostTagModel} from "@prisma/client"
-import {Tag} from "@server/types/dtos/tags"
+import {Tag} from "@/types/dtos/tags"
 
 export async function deleteBlogPostTags(
     prismaClient: any,

@@ -2,7 +2,7 @@ import {
     DatabaseIntegrityException,
     InvalidCredentialsException,
     ServiceException
-} from "@server/types/exceptions";
+} from "@/types/exceptions";
 import {NextResponse} from "next/server";
 
 import * as userService from "@server/services/users"

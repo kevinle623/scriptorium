@@ -4,8 +4,8 @@ import {
     verifyAccessToken,
     verifyRefreshToken
 } from "@server/utils/jwt_utils";
-import {InsufficientPermissionsException, InvalidCredentialsException} from "../types/exceptions";
-import {Role} from "@server/types/dtos/roles";
+import {InsufficientPermissionsException, InvalidCredentialsException} from "@/types/exceptions";
+import {Role} from "@/types/dtos/roles";
 import * as revokedTokenRepository from "@server/repositories/revokedTokens"
 import {prisma} from "@server/libs/prisma/client";
 

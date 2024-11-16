@@ -4,12 +4,12 @@ import {
     CodingLanguage,
     CreateCodeTemplateRequest, GetCodeTemplatesRequest, GetCodeTemplatesResult,
     UpdateCodeTemplateRequest
-} from "@server/types/dtos/codeTemplates";
+} from "@/types/dtos/codeTemplates";
 import * as codeTemplateRepository from "@server/repositories/codeTemplates"
 import * as tagRepository from "@server/repositories/tags"
 
 import {prisma} from "@server/libs/prisma/client";
-import {NotFoundException} from "@server/types/exceptions";
+import {NotFoundException} from "@/types/exceptions";
 
 async function populateCodeTemplate(codeTemplate: CodeTemplate): Promise<CodeTemplate> {
     const codeTemplateId = codeTemplate.id

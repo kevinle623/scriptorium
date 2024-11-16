@@ -2,7 +2,7 @@ import {NextResponse} from "next/server";
 import * as codeTemplateService from "@server/services/codeTemplates";
 import {
     CodeExecutionException,
-} from "@server/types/exceptions";
+} from "@/types/exceptions";
 import {routeHandlerException} from "@server/utils/exception_utils";
 
 export async function POST(req: Request) {

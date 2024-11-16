@@ -1,7 +1,7 @@
 
 import {Vote as VoteModel} from "@prisma/client"
-import {Vote, VoteType} from "@server/types/dtos/votes"
-import {DatabaseIntegrityException} from "@server/types/exceptions";
+import {Vote, VoteType} from "@/types/dtos/votes"
+import {DatabaseIntegrityException} from "@/types/exceptions";
 export async function toggleVote(
     prismaClient: any,
     userId: number,

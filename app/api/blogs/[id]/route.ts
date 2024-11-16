@@ -5,9 +5,9 @@ import {
     InvalidCredentialsException,
     NotFoundException,
     ServiceException
-} from "@server/types/exceptions";
+} from "@/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
-import {BlogPost} from "@server/types/dtos/blogPosts";
+import {BlogPost} from "@/types/dtos/blogPosts";
 import {routeHandlerException} from "@server/utils/exception_utils";
 
 export async function GET(req: Request, {params}: { params: { id: string } }) {

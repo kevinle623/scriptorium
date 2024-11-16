@@ -5,14 +5,14 @@ import {
     CreateBlogPostRequest,
     EditBlogPostRequest,
     GetBlogPostRequest, GetBlogPostsResult,
-} from "@server/types/dtos/blogPosts";
+} from "@/types/dtos/blogPosts";
 import * as blogPostRepository from "@server/repositories/blogPosts"
 import * as tagRepository from "@server/repositories/tags"
-import {NotFoundException, ServiceException} from "@server/types/exceptions";
-import {Comment, GetCommentsResult} from "@server/types/dtos/comments";
+import {NotFoundException, ServiceException} from "@/types/exceptions";
+import {Comment, GetCommentsResult} from "@/types/dtos/comments";
 import * as commentRepository from "@server/repositories/comments";
 import * as reportRepository from "@server/repositories/reports";
-import {Vote, VoteType} from "@server/types/dtos/votes";
+import {Vote, VoteType} from "@/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
 import * as codeTemplateRepository from "@server/repositories/codeTemplates"
 

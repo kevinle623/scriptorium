@@ -1,6 +1,6 @@
 import { PrismaClient, RevokedToken as RevokedTokenModel } from "@prisma/client";
-import { DatabaseIntegrityException } from "@server/types/exceptions";
-import {TokenType} from "@server/types/dtos/tokens";
+import { DatabaseIntegrityException } from "@/types/exceptions";
+import {TokenType} from "@/types/dtos/tokens";
 
 export async function revokeToken(
     prismaClient: PrismaClient,

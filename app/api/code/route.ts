@@ -1,7 +1,7 @@
 import {NextResponse} from "next/server";
 import * as codeTemplateService from "@server/services/codeTemplates";
 import * as authorizationService from "@server/services/authorization";
-import {GetCodeTemplatesRequest} from "@server/types/dtos/codeTemplates";
+import {GetCodeTemplatesRequest} from "@/types/dtos/codeTemplates";
 import {routeHandlerException} from "@server/utils/exception_utils";
 
 export async function GET(req: Request) {

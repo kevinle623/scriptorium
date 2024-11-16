@@ -1,4 +1,4 @@
-import {DatabaseIntegrityException} from "@server/types/exceptions";
+import {DatabaseIntegrityException} from "@/types/exceptions";
 import {BlogPost as BlogPostModel} from "@prisma/client"
 import {
     BlogPost,
@@ -6,7 +6,7 @@ import {
     EditBlogPostRequest,
     GetBlogPostRequest,
     GetBlogPostsResult
-} from "@server/types/dtos/blogPosts";
+} from "@/types/dtos/blogPosts";
 import {prisma} from "@server/libs/prisma/client";
 
 export function buildBlogPostWhereCondition(getBlogPostsRequest: GetBlogPostRequest) {

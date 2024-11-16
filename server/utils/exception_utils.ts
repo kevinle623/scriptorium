@@ -5,7 +5,7 @@ import {
     ServiceException,
     InsufficientPermissionsException,
     NotFoundException,
-} from "../types/exceptions";
+} from "@/types/exceptions";
 
 export function routeHandlerException(error: any) {
     if (error instanceof DatabaseIntegrityException) {

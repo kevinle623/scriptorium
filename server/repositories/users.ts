@@ -1,8 +1,8 @@
-import {DatabaseIntegrityException} from "../types/exceptions";
+import {DatabaseIntegrityException} from "@/types/exceptions";
 import {User as UserModel} from "@prisma/client";
-import {Role} from "@server/types/dtos/roles"
+import {Role} from "@/types/dtos/roles"
 
-import {CreateUserRequest, EditUserRequest, User} from "@server/types/dtos/user"
+import {CreateUserRequest, EditUserRequest, User} from "@/types/dtos/user"
 
 export async function createUser(prismaClient: any, createUserRequest: CreateUserRequest, hashedPassword: string): Promise<User> {
     try {

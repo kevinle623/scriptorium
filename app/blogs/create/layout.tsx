@@ -1,6 +1,6 @@
 "use client"
 
-export default function BlogPostsLayout(
+export default function BlogPostCreateLayout(
     {
         children,
     }: {

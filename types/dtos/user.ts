@@ -1,4 +1,4 @@
-import {Role} from "@server/types/dtos/roles";
+import {Role} from "@/types/dtos/roles";
 
 export interface User {
     id: number;

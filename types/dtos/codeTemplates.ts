@@ -1,4 +1,15 @@
-import {Tag} from "@prisma/client";
+import {Tag} from "@types/dtos/tags";
+
+export type ExecuteCodeRequest = {
+    language: string;
+    code: string;
+    stdin: string;
+};
+
+export type ExecuteCodeResponse = {
+    message: string;
+    result: string;
+};
 
 export enum CodingLanguage {
     JAVA = "java",

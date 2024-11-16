@@ -11,7 +11,21 @@ export interface Comment {
     downVotes?: number;
     reportIds?: number[];
 }
+export interface AddCommentRequest {
+    userId: string;
+    content: string;
+}
 
+export interface AddCommentResponse {
+    message: string;
+    comment: {
+        id: string;
+        userId: string;
+        blogPostId: number;
+        content: string;
+        createdAt: string;
+    };
+}
 export interface EditCommentRequest {
     commentId: number,
     content?: string,

@@ -1,8 +1,8 @@
 import { exec } from 'child_process';
 import fs from 'fs/promises';
 import path from 'path';
-import { CodingLanguage } from "@server/types/dtos/codeTemplates";
-import { CodeExecutionException } from "@server/types/exceptions";
+import { CodingLanguage } from "@/types/dtos/codeTemplates";
+import { CodeExecutionException } from "@/types/exceptions";
 
 const MAX_CODE_EXECUTION_TIMEOUT = 5000;
 const MAX_RECURSION_DEPTH = 1000;

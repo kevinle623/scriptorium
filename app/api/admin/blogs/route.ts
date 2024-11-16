@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 import * as blogPostService from "@server/services/blogPosts";
 import {NextResponse} from "next/server";
 import * as authorizationService from "@server/services/authorization";
-import {GetBlogPostRequest} from "@server/types/dtos/blogPosts";
+import {GetBlogPostRequest} from "@/types/dtos/blogPosts";
 import {routeHandlerException} from "@server/utils/exception_utils";
 
 export async function GET(req: Request) {

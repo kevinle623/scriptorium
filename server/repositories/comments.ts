@@ -1,6 +1,6 @@
-import {DatabaseIntegrityException} from "@server/types/exceptions";
+import {DatabaseIntegrityException} from "@/types/exceptions";
 import {Comment as CommentModel} from "@prisma/client"
-import {Comment, EditCommentRequest, GetCommentsResult} from "@server/types/dtos/comments"
+import {Comment, EditCommentRequest, GetCommentsResult} from "@/types/dtos/comments"
 
 export async function getCommentById(
     prismaClient: any,

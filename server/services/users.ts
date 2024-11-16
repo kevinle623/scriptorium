@@ -1,5 +1,5 @@
 import * as userRepository from '@server/repositories/users'
-import {InvalidCredentialsException, NotFoundException, ServiceException} from "../types/exceptions";
+import {InvalidCredentialsException, NotFoundException, ServiceException} from "@/types/exceptions";
 import {prisma} from "@server/libs/prisma/client";
 import {comparePassword, hashPassword} from "@server/utils/password_utils";
 import {
@@ -8,7 +8,7 @@ import {
     verifyAccessToken,
     verifyRefreshToken
 } from "@server/utils/jwt_utils";
-import {CreateUserRequest, EditUserRequest} from "@server/types/dtos/user";
+import {CreateUserRequest, EditUserRequest} from "@/types/dtos/user";
 import * as revokedTokenRepository from '@server/repositories/revokedTokens'
 
 export async function registerUser(createUserRequest: CreateUserRequest) {

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
+    "@monaco-editor/react": "^4.6.0",
     "@prisma/client": "^5.21.1",
     "@tanstack/react-query": "^5.60.5",
     "axios": "^1.7.7",

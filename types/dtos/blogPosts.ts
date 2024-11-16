@@ -1,4 +1,13 @@
-import {Tag} from "@server/types/dtos/tags";
+import {Tag} from "@/types/dtos/tags";
+
+export interface BlogPostFilters {
+    page?: number;
+    limit?: number;
+    title?: string;
+    content?: string;
+    tags?: string;
+    orderBy?: string;
+}
 
 export interface BlogPost {
     id: number;
@@ -58,4 +67,37 @@ export interface GetBlogPostRequest {
 export interface GetBlogPostsResult {
     totalCount: number,
     blogPosts: BlogPost[]
+}
+
+export interface CreateBlogPostResponse {
+    message: string;
+    blogPost: {
+        id: number;
+        userId: number;
+        title: string;
+        description: string;
+        content: string;
+        hidden: boolean;
+        codeTemplateIds: string[];
+        createdAt: string;
+        updatedAt: string;
+        tags: string[];
+        commentIds: string[];
+    };
+};
+
+
+export interface ReportBlogPostRequest {
+    userId: string;
+    reason: string;
+}
+
+export interface ReportBlogPostResponse {
+    message: string;
+    report: {
+        id: string;
+        userId: string;
+        blogPostId: number;
+        reason: string;
+    };
 }
