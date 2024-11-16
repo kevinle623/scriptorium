@@ -9,12 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
     "@prisma/client": "^5.21.1",
+    "@tanstack/react-query": "^5.60.5",
+    "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "jsonwebtoken": "^9.0.2",
     "next": "14.2.15",
+    "next-themes": "^0.4.3",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-hook-form": "^7.53.2",
+    "react-icons": "^5.3.0",
+    "styled-components": "^6.1.13"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

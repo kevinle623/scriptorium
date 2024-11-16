@@ -25,3 +25,25 @@ body {
     text-wrap: balance;
   }
 }
+
+h1, h2, h3, Title {
+  font-family: var(--font-space-grotesk), sans-serif;
+}
+
+body, p, span, div, a, button, li {
+  font-family: var(--font-manrope), sans-serif;
+}
+
+:root {
+  --background-light: #ffffff;
+  --foreground-light: #000000;
+  --primary: #2563eb;
+}
+
+html.dark {
+  --background-dark: #1a202c;
+  --foreground-dark: #ffffff;
+  --primary: #3b82f6;
+}
+
+
