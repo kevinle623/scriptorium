@@ -4,9 +4,15 @@ import React, { useState } from "react";
 import { useCodeTemplateById } from "@client/hooks/useCodeTemplateById";
 import { useExecuteCode } from "@client/hooks/useExecuteCode";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import {useRouter} from "next/navigation";
+import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
+import {useCodePlaygroundCache} from "@client/providers/CodePlaygroundCacheProvider";
 
 const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
     const id = parseInt(params.id, 10);
+    const router = useRouter()
+    const {triggerOnboarding} = useJitOnboarding()
+    const { setCode, setLanguage, resetPlayground } = useCodePlaygroundCache()
 
     const { data: codeTemplate, isLoading, error } = useCodeTemplateById(id);
     const { mutate: executeCode, data: executeResponse, isLoading: isExecuting } = useExecuteCode();
@@ -14,11 +20,15 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
     const [stdin, setStdin] = useState("");
 
     const handleFork = () => {
-        console.log("Forking template...");
+        console.log("hello?")
+        triggerOnboarding(() => router.push(`/code-templates/${id}/fork`))
     };
 
     const handleCopyToPlayground = () => {
-        console.log("Copying to playground...");
+        resetPlayground()
+        setCode(codeTemplate?.code)
+        setLanguage(codeTemplate?.language)
+        router.push(`/playground`)
     };
 
     const handleRunCode = () => {
