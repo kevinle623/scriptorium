@@ -23,29 +23,29 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags }) => {
     };
 
     return (
-        <div className="flex flex-wrap items-center gap-2 border border-gray-300 p-2 rounded-lg">
-            {tags.map((tag, index) => (
-                <span
-                    key={index}
-                    className="bg-blue-500 text-white px-2 py-1 rounded-full flex items-center gap-1"
+        <div className="flex items-center gap-2 flex-wrap border border-gray-300 p-2 rounded-lg">
+            {tags.map((tag) => (
+                <div
+                    key={tag}
+                    className="flex items-center bg-blue-500 text-white px-4 py-1 rounded-full"
                 >
                     {tag}
                     <button
                         type="button"
                         onClick={() => handleRemoveTag(tag)}
-                        className="ml-2 text-white font-bold hover:text-gray-300"
+                        className="ml-2 text-sm text-red-200 hover:text-red-500"
                     >
-                        &times;
+                        ×
                     </button>
-                </span>
+                </div>
             ))}
             <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Add a tag and press Enter"
-                className="flex-grow outline-none"
+                placeholder="Type a tag and press Enter"
+                className="flex-grow border-none outline-none"
             />
         </div>
     );

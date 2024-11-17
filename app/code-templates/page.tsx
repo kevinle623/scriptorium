@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useCodeTemplates } from "@client/hooks/useCodeTemplates";
 import { useRouter } from "next/navigation";
-import { GetCodeTemplatesRequest } from "@types/dtos/codeTemplates";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 import TagInput from "@client/components/tag-input/TagInput";
 
