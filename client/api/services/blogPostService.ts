@@ -52,16 +52,17 @@ export const fetchComments = async (blogPostId: string): Promise<Comment[]> => {
 export const voteBlogPost = async (
     payload: ToggleVoteRequest
 ): Promise<ToggleVoteResponse> => {
-    const { id, type, userId} = payload
-    const response = await axiosInstance.post(`/blogs/${id}/rate`, { type, userId });
+    const { id, type} = payload
+    const response = await axiosInstance.post(`/blogs/${id}/rate`, { type });
     return response.data
 };
 
 export const addCommentToBlogPost = async (
     payload: AddCommentRequest
 ): Promise<AddCommentResponse> => {
-    const {id, content, userId} = payload
-    const response = await axiosInstance.post(`/blogs/${id}/comment`, { content, userId });
+    console.log("hello world??", payload)
+    const {id, content} = payload
+    const response = await axiosInstance.post(`/blogs/${id}/comment`, { content });
     return response.data
 };
 

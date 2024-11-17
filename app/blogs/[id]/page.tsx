@@ -14,7 +14,6 @@ import {ReportBlogPostRequest} from "@types/dtos/blogPosts";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 
 const BlogPost = () => {
-    const userId = "temp"
     const params = useParams();
     const id = params?.id as string;
 
@@ -30,20 +29,20 @@ const BlogPost = () => {
     const { mutate: reportBlogPost } = useReportBlogPost();
 
     const handleVote = (type: "up" | "down") => {
-        const newVote = vote === type ? undefined : type;
+        const newVote = vote === type ? null : type;
         setVote(newVote);
-        voteBlogPost({id, vote, userId} as ToggleVoteRequest);
+        voteBlogPost({id, vote: newVote} as ToggleVoteRequest);
     }
 
     const handleAddComment = () => {
         if (!newComment.trim()) return;
-        addComment({id, newComment, userId} as AddCommentRequest);
+        addComment({id, content: newComment} as AddCommentRequest);
         setNewComment("");
     };
 
     const handleReport = () => {
         if (!reportReason.trim()) return alert("Please provide a reason for reporting.");
-        reportBlogPost({id, reportReason, userId} as ReportBlogPostRequest);
+        reportBlogPost({id, reason: reportReason} as ReportBlogPostRequest);
         setReportReason("");
     };
 

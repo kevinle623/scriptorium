@@ -97,7 +97,7 @@ export interface CreateBlogPostResponse {
 
 
 export interface ReportBlogPostRequest {
-    userId: string;
+    id: string;
     reason: string;
 }
 

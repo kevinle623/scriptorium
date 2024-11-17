@@ -12,7 +12,7 @@ export interface Comment {
     reportIds?: number[];
 }
 export interface AddCommentRequest {
-    userId: string;
+    id: string;
     content: string;
 }
 

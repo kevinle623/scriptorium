@@ -8,6 +8,7 @@ import NavBar from "@client/components/nav-bar/NavBar";
 import {customMetaData} from "@client/data/customMetaData";
 import {ToasterProvider} from "@client/providers/ToasterProvider";
 import {AuthProvider} from "@client/providers/AuthProvider";
+import {JitOnboardingProvider} from "@client/providers/JitOnboardingProvider";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -41,7 +42,9 @@ export default function RootLayout({
             <ToasterProvider>
               <AuthProvider>
                 <NavBar />
-                {children}
+                <JitOnboardingProvider>
+                  {children}
+                </JitOnboardingProvider>
               </AuthProvider>
             </ToasterProvider>
           </ReactQueryProvider>

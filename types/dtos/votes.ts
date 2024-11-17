@@ -14,7 +14,6 @@ export interface Vote {
 
 export interface ToggleVoteRequest {
     id: string;
-    userId: string;
     voteType: "up" | "down" | null;
 }
 

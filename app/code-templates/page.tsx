@@ -66,7 +66,7 @@ const CodeTemplates = () => {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Code Templates</h1>
                 <button
-                    onClick={() => router.push("/code-templates/create")}
+                    onClick={() => router.push("/playground")}
                     className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
                 >
                     Create New Template

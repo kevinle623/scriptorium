@@ -5,9 +5,11 @@ import { useBlogPosts } from "@client/hooks/useBlogPosts";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 import TagInput from "@client/components/tag-input/TagInput";
+import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
 
 const BlogPosts = () => {
     const router = useRouter();
+    const { triggerOnboarding } = useJitOnboarding();
 
     const [filters, setFilters] = useState({
         title: "",
@@ -68,7 +70,7 @@ const BlogPosts = () => {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Blog Posts</h1>
                 <button
-                    onClick={() => router.push("/blogs/create")}
+                    onClick={() => triggerOnboarding(() => router.push("/blogs/create"))}
                     className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
                 >
                     Create New Post
