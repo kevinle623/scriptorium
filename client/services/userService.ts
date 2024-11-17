@@ -1,36 +1,37 @@
-import {LoginRequest, LoginResponse} from "@types/dtos/user";
+import { LoginRequest, LoginResponse } from "@types/dtos/user";
 import { CreateUserRequest } from "@/types/dtos/user";
+import axios from "axios";
 
 export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await fetch("/api/users/login", {
-        method: "POST",
+    const response = await axios.post("/api/users/login", data, {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to log in.");
-    }
-
-    return response.json();
+    return response.data;
 };
 
 export const registerUser = async (data: CreateUserRequest) => {
-    const response = await fetch("/api/users/register", {
-        method: "POST",
+    const response = await axios.post("/api/users/register", data, {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to register user.");
-    }
+    return response.data;
+};
 
-    return response.json();
+export const logoutUser = async (accessToken: string, refreshToken: string) => {
+    const response = await axios.post(
+        "/api/logout",
+        { refreshToken },
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }
+    );
+
+    return response.data;
 };

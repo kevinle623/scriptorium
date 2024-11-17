@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FaBlog, FaCode, FaGamepad, FaPenNib, FaSignInAlt, FaUserPlus } from "react-icons/fa";
 import { useAuth } from "@client/providers/AuthProvider";
+import LogoutButton from "@client/components/button/LogoutButton";
 
 export default function Home() {
   const { isAuthed } = useAuth();
@@ -49,24 +50,28 @@ export default function Home() {
           </div>
 
           {/* Authentication Buttons */}
-          {!isAuthed && (
-              <div className="flex gap-4 items-center flex-wrap justify-center sm:justify-start mt-6">
-                <Link
-                    href="/login"
-                    className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-green-500 hover:bg-green-600 shadow-lg transition-all"
-                >
-                  <FaSignInAlt className="text-xl" />
-                  <span className="font-medium">Login</span>
-                </Link>
-                <Link
-                    href="/register"
-                    className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-purple-500 hover:bg-purple-600 shadow-lg transition-all"
-                >
-                  <FaUserPlus className="text-xl" />
-                  <span className="font-medium">Register</span>
-                </Link>
-              </div>
-          )}
+          <div className="flex gap-4 items-center flex-wrap justify-center sm:justify-start mt-6">
+            {!isAuthed ? (
+                <>
+                  <Link
+                      href="/login"
+                      className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-green-500 hover:bg-green-600 shadow-lg transition-all"
+                  >
+                    <FaSignInAlt className="text-xl" />
+                    <span className="font-medium">Login</span>
+                  </Link>
+                  <Link
+                      href="/register"
+                      className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-purple-500 hover:bg-purple-600 shadow-lg transition-all"
+                  >
+                    <FaUserPlus className="text-xl" />
+                    <span className="font-medium">Register</span>
+                  </Link>
+                </>
+            ) : (
+                <LogoutButton />
+            )}
+          </div>
         </main>
       </div>
   );

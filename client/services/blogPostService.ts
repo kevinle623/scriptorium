@@ -2,7 +2,7 @@ import axios from "axios";
 import {
     BlogPost,
     BlogPostFilters,
-    CreateBlogPostRequest,
+    CreateBlogPostRequest, CreateBlogPostResponse,
     ReportBlogPostRequest,
     ReportBlogPostResponse
 } from "@types/dtos/blogPosts";
@@ -28,20 +28,14 @@ export const fetchBlogPosts = async (filters: BlogPostFilters): Promise<{
     }
 };
 
-export const createBlogPost = async (data: CreateBlogPostRequest) => {
-    const response = await fetch("/api/blogs", {
-        method: "POST",
+export const createBlogPost = async (data: CreateBlogPostRequest): Promise<CreateBlogPostResponse> => {
+    const response = await axios.post("/api/blogs", data, {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-        throw new Error("Failed to create blog post");
-    }
-
-    return response.json();
+    return response.data;
 };
 
 export const fetchBlogPost = async (id: string): Promise<BlogPost> => {
