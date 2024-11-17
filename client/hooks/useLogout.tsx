@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@client/providers/AuthProvider";
 import { useToaster } from "@client/providers/ToasterProvider";
-import { logoutUser } from "@client/services/userService";
+import { logoutUser } from "@client/api/services/userService";
 
 export const useLogout = () => {
     const { clearAuth, getAccessToken, getRefreshToken } = useAuth();

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {fetchBlogPost} from "../services/blogPostService";
+import {fetchBlogPost} from "@client/api/services/blogPostService";
 import { BlogPost } from "@types/dtos/blogPosts";
 
 export const useBlogPost = (id: string) => {

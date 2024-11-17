@@ -1,9 +1,10 @@
 import {ExecuteCodeRequest, ExecuteCodeResponse, GetCodeTemplatesRequest} from "@types/dtos/codeTemplates";
-import axios from "axios";
+import axiosInstance from "@client/api/axiosInstance";
+
 
 
 export const fetchCodeTemplates = async (filters: GetCodeTemplatesRequest) => {
-    const { data } = await axios.get("/api/code", {
+    const { data } = await axiosInstance.get("/code", {
         params: filters,
     });
     return data;
@@ -11,6 +12,6 @@ export const fetchCodeTemplates = async (filters: GetCodeTemplatesRequest) => {
 export const executeCodeSnippet = async (
     payload: ExecuteCodeRequest
 ) => {
-    const {data} = await axios.post<ExecuteCodeResponse>("/api/code/execute", payload);
+    const {data} = await axiosInstance.post<ExecuteCodeResponse>("/code/execute", payload);
     return data
 };

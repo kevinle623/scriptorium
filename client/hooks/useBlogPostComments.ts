@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {fetchComments} from "../services/blogPostService";
+import {fetchComments} from "@client/api/services/blogPostService";
 import {Comment} from "@types/dtos/comments"
 
 export const useBlogPostComments = (id: string) => {

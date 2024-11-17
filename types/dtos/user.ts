@@ -47,3 +47,8 @@ export interface LoginResponse {
         role: Role,
     };
 }
+
+export interface RefreshResponse {
+    accessToken: string;
+    refreshToken: string;
+}

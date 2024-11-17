@@ -1,9 +1,10 @@
 import { LoginRequest, LoginResponse } from "@types/dtos/user";
-import { CreateUserRequest } from "@/types/dtos/user";
-import axios from "axios";
+import { CreateUserRequest, RefreshResponse } from "@types/dtos/user";
+import axiosInstance from "@client/api/axiosInstance";
+
 
 export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await axios.post("/api/users/login", data, {
+    const response = await axiosInstance.post("/users/login", data, {
         headers: {
             "Content-Type": "application/json",
         },
@@ -13,7 +14,7 @@ export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {
 };
 
 export const registerUser = async (data: CreateUserRequest) => {
-    const response = await axios.post("/api/users/register", data, {
+    const response = await axiosInstance.post("/users/register", data, {
         headers: {
             "Content-Type": "application/json",
         },
@@ -23,8 +24,8 @@ export const registerUser = async (data: CreateUserRequest) => {
 };
 
 export const logoutUser = async (accessToken: string, refreshToken: string) => {
-    const response = await axios.post(
-        "/api/users/logout",
+    const response = await axiosInstance.post(
+        "/users/logout",
         { refreshToken },
         {
             headers: {
@@ -34,4 +35,9 @@ export const logoutUser = async (accessToken: string, refreshToken: string) => {
     );
 
     return response.data;
+};
+
+export const refreshUser = async (refreshToken: string) => {
+    const { data } = await axiosInstance.post<RefreshResponse>("/refresh-tokens", { refreshToken });
+    return data;
 };

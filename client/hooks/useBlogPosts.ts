@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { BlogPost, BlogPostFilters } from "@/types/dtos/blogPosts";
-import { fetchBlogPosts} from "@client/services/blogPostService";
+import { fetchBlogPosts} from "@client/api/services/blogPostService";
 
 export const useBlogPosts = (filters: BlogPostFilters) => {
     return useQuery<{ blogPosts: BlogPost[]; totalCount: number }>({
