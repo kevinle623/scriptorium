@@ -15,11 +15,10 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
         const commentId = parseInt(params.id, 10)
 
         const {
-            userId,
             reason,
         } = await req.json()
 
-        await authorizationService.verifyMatchingUserAuthorization(req, userId)
+        const { userId } = await authorizationService.verifyBasicAuthorization(req)
 
         const report =  await commentService.reportComment(userId, commentId, reason)
         return NextResponse.json(

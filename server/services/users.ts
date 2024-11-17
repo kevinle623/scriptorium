@@ -20,7 +20,13 @@ export async function registerUser(createUserRequest: CreateUserRequest) {
         const hashedPassword = await hashPassword(createUserRequest.password)
 
         const user = await userRepository.createUser(prisma, createUserRequest, hashedPassword);
-        return user;
+        const accessToken = generateAccessToken(user.id, user.email, user.role)
+        const refreshToken = generateRefreshToken(user.id, user.email, user.role)
+        return {
+            accessToken,
+            refreshToken,
+            user,
+        }
     } catch (error) {
         throw error
     }

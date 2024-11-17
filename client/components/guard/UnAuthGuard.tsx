@@ -18,7 +18,6 @@ const UnAuthGuard = ({ children, reroute = "/" }: UnAuthGuardProps) => {
 
     useEffect(() => {
         if (isInitialized && isAuthed) {
-            setToaster("Not authorized to access this page. Redirecting...", "error");
             router.push(reroute || "/");
         }
     }, [isAuthed, reroute, router, setToaster]);

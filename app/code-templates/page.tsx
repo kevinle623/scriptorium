@@ -20,8 +20,6 @@ const CodeTemplates = () => {
 
     const [searchFilters, setSearchFilters] = useState(filters);
 
-    console.log("bruh")
-
     const { data = {}, isLoading, error } = useCodeTemplates({
         ...searchFilters,
         tags: searchFilters.tags && searchFilters.tags.length > 0 ? searchFilters.tags.join(",") : undefined,
@@ -120,7 +118,8 @@ const CodeTemplates = () => {
                 {codeTemplates.map((template) => (
                     <div
                         key={template.id}
-                        className="border border-gray-300 p-4 rounded-lg shadow-md"
+                        onClick={() => router.push(`/code-templates/${template.id}`)}
+                        className="cursor-pointer border border-gray-300 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
                     >
                         <h2 className="text-xl font-bold mb-2">{template.title}</h2>
                         <p className="text-gray-600 mb-2">{template.content}</p>

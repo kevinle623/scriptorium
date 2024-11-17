@@ -131,11 +131,14 @@ const BlogPosts = () => {
                 {blogPosts.map((post) => (
                     <div
                         key={post.id}
-                        className="border border-gray-300 p-4 rounded-lg shadow-md"
+                        className="border border-gray-300 dark:border-gray-700 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        onClick={() => router.push(`/blogs/${post.id}`)} // Navigate to /blogs/{blog.id}
                     >
-                        <h2 className="text-xl font-bold mb-2">{post.title}</h2>
-                        <p className="text-gray-600 mb-2">{post.description}</p>
-                        <div className="text-sm text-gray-500">
+                        <h2 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200">
+                            {post.title}
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-400 mb-2">{post.description}</p>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                             Tags: {post.tags?.join(", ")}
                         </div>
                     </div>
@@ -147,7 +150,7 @@ const BlogPosts = () => {
                 <button
                     disabled={searchFilters.page === 1}
                     onClick={() => handlePagination("prev")}
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
+                    className="bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 disabled:opacity-50"
                 >
                     Previous
                 </button>
@@ -157,7 +160,7 @@ const BlogPosts = () => {
                 <button
                     disabled={searchFilters.page >= totalPages}
                     onClick={() => handlePagination("next")}
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
+                    className="bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 disabled:opacity-50"
                 >
                     Next
                 </button>

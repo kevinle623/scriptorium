@@ -1,0 +1,126 @@
+"use client";
+
+import React, { useState } from "react";
+import { useCodeTemplateById } from "@client/hooks/useCodeTemplateById";
+import { useExecuteCode } from "@client/hooks/useExecuteCode";
+import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+
+const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
+    const id = parseInt(params.id, 10);
+
+    const { data: codeTemplate, isLoading, error } = useCodeTemplateById(id);
+    const { mutate: executeCode, data: executeResponse, isLoading: isExecuting } = useExecuteCode();
+
+    const [stdin, setStdin] = useState("");
+
+    const handleFork = () => {
+        console.log("Forking template...");
+    };
+
+    const handleCopyToPlayground = () => {
+        console.log("Copying to playground...");
+    };
+
+    const handleRunCode = () => {
+        if (!codeTemplate) return;
+
+        executeCode({
+            code: codeTemplate.code,
+            language: codeTemplate.language,
+            stdin,
+        });
+    };
+
+    if (isLoading) {
+        return <LoadingSpinner />;
+    }
+
+    if (error) {
+        return <div className="text-center text-red-500 py-8">Error: {error.message}</div>;
+    }
+
+    if (!codeTemplate) {
+        return <div className="text-center py-8">No template found</div>;
+    }
+
+    const { title, code, language, explanation, tags } = codeTemplate;
+
+    return (
+        <div className="container mx-auto px-6 py-8">
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-3xl font-bold">{title}</h1>
+                <div className="flex gap-4">
+                    <button
+                        onClick={handleFork}
+                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                    >
+                        Fork Template
+                    </button>
+                    <button
+                        onClick={handleCopyToPlayground}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                        Copy to Playground
+                    </button>
+                </div>
+            </div>
+            <div className="text-gray-600 dark:text-gray-300 mb-6">Language: {language}</div>
+
+            <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-6">
+                <h2 className="text-xl font-bold mb-2">Code</h2>
+                <pre className="overflow-x-auto whitespace-pre-wrap bg-white dark:bg-gray-900 p-4 rounded-lg shadow-md text-sm">
+                    {code}
+                </pre>
+            </div>
+
+            {explanation && (
+                <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-6">
+                    <h2 className="text-xl font-bold mb-2">Explanation</h2>
+                    <p className="text-gray-700 dark:text-gray-300">{explanation}</p>
+                </div>
+            )}
+
+            <div className="mb-6">
+                <h2 className="text-xl font-bold mb-2">Tags</h2>
+                <div className="flex gap-2 flex-wrap">
+                    {tags.map((tag) => (
+                        <span
+                            key={tag}
+                            className="px-3 py-1 bg-blue-500 text-white rounded-full text-sm"
+                        >
+                            {tag}
+                        </span>
+                    ))}
+                </div>
+            </div>
+
+            <div className="mb-6">
+                <h2 className="text-xl font-bold mb-2">Run Code</h2>
+                <textarea
+                    className="w-full h-24 p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                    placeholder="Provide stdin here..."
+                    value={stdin}
+                    onChange={(e) => setStdin(e.target.value)}
+                />
+                <button
+                    onClick={handleRunCode}
+                    disabled={isExecuting}
+                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+                >
+                    {isExecuting ? "Running..." : "Run Code"}
+                </button>
+            </div>
+
+            {executeResponse && (
+                <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-6">
+                    <h2 className="text-xl font-bold mb-2">Output</h2>
+                    <pre className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
+                        {executeResponse.result || "No output"}
+                    </pre>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default CodeTemplatePage;

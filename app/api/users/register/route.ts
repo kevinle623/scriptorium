@@ -25,23 +25,15 @@ export async function POST(req: Request) {
         const createUserRequest: CreateUserRequest = {
             email, phone, firstName, lastName, password, role, avatar
         }
+        const tokensAndUser = await userService.registerUser(createUserRequest);
+        return NextResponse.json({
+            ...tokensAndUser,
+            user: {
+                ...tokensAndUser.user,
+                password: undefined
+            }
+        }, { status: 200 });
 
-        const user = await userService.registerUser(createUserRequest);
-
-        return NextResponse.json(
-            {
-                message: "User registered successfully",
-                user: {
-                    id: user.id,
-                    email: user.email,
-                    phone: user.phone,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    avatar: user.avatar,
-                },
-            },
-            { status: 201 }
-        );
     } catch (error) {
         return routeHandlerException(error)
     }

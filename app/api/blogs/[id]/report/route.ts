@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import * as blogPostService from "@server/services/blogPosts";
 import {routeHandlerException} from "@server/utils/exceptionUtils";
+import * as authorizationService from "@server/services/authorization";
 
 export async function POST(req: Request, {params}: { params: { id: string } }) {
     try {
@@ -14,9 +15,10 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
         const blogPostId = parseInt(params.id, 10)
 
         const {
-            userId,
             reason,
         } = await req.json()
+
+        const { userId } = await authorizationService.verifyBasicAuthorization(req)
 
         const report =  await blogPostService.reportBlogPost(userId, blogPostId, reason)
         return NextResponse.json(

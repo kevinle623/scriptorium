@@ -15,13 +15,10 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
         const blogPostId = parseInt(params.id, 10)
 
         const {
-            userId,
             voteType,
         } = await req.json()
 
-
-
-        await authorizationService.verifyMatchingUserAuthorization(req, userId)
+        const { userId } = await authorizationService.verifyBasicAuthorization(req)
 
         const vote =  await blogPostService.toggleBlogPostVote(userId, blogPostId, voteType || null)
         return NextResponse.json(

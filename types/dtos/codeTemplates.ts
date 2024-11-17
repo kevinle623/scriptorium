@@ -73,6 +73,16 @@ export interface GetCodeTemplatesRequest {
     limit?: number;
 }
 
+export interface GetCodeTemplateResponse {
+    id: number;
+    userId: number;
+    title: string;
+    code: string;
+    language: string;
+    explanation: string;
+    tags: string[];
+}
+
 export interface GetCodeTemplatesResult {
     totalCount: number,
     codeTemplates: CodeTemplate[]

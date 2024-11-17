@@ -48,6 +48,18 @@ export interface LoginResponse {
     };
 }
 
+export interface RegisterResponse {
+    accessToken: string;
+    refreshToken: string;
+    user: {
+        id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+        role: Role,
+    };
+}
+
 export interface RefreshResponse {
     accessToken: string;
     refreshToken: string;

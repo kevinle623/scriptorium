@@ -33,11 +33,13 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags }) => {
                     <button
                         type="button"
                         onClick={() => handleRemoveTag(tag)}
-                        className="ml-2 text-sm text-red-200 hover:text-red-500"
+                        className="ml-2 text-sm text-red-200 hover:text-red-500 appearance-none focus:outline-none"
                     >
                         ×
                     </button>
+
                 </div>
+
             ))}
             <input
                 type="text"

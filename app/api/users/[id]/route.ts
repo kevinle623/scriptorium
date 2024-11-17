@@ -15,8 +15,6 @@ export async function GET(req: Request, { params }: { params: { id: string }}){
         }
         const userId = parseInt(params.id, 10)
 
-        await authorizationService.verifyMatchingUserAuthorization(req, userId)
-
         const user = await userService.getUserById(userId)
         return NextResponse.json(
             {
@@ -86,7 +84,4 @@ export async function PUT(req: Request, { params }: { params: { id: string }}) {
     } catch (error) {
         return routeHandlerException(error)
     }
-
-
-
 }

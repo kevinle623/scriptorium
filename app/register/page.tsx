@@ -4,12 +4,14 @@ import { useForm } from "react-hook-form";
 import { useRegister } from "@client/hooks/useRegister";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CreateUserRequest } from "@types/dtos/user";
+import {CreateUserRequest, RegisterResponse} from "@types/dtos/user";
 import { Role } from "@types/dtos/roles";
 import { useToaster } from "@client/providers/ToasterProvider";
+import {useAuth} from "@client/providers/AuthProvider";
 
 const Register = () => {
     const router = useRouter();
+    const { setAccessToken, setRefreshToken } = useAuth()
     const { setToaster } = useToaster();
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -30,9 +32,11 @@ const Register = () => {
         };
 
         registerMutation.mutate(createUserRequest, {
-            onSuccess: () => {
+            onSuccess: (data: RegisterResponse) => {
                 setToaster("User registered successfully!", "success");
-                router.push("/login");
+                setAccessToken(data.accessToken);
+                setRefreshToken(data.refreshToken);
+                router.push("/");
             },
             onError: (error: any) => {
                 const message = error.message || "An unexpected error occurred.";

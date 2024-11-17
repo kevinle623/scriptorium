@@ -15,10 +15,6 @@ export async function GET(req: Request) {
         const content = url.searchParams.get('content') || undefined;
         const tags = url.searchParams.get('tags') ? url.searchParams.get('tags')!.split(',') : undefined;
 
-        if (userId) {
-            await authorizationService.verifyMatchingUserAuthorization(req, userId);
-        }
-
         const getCodeTemplatesRequest  = {
             title,
             userId,

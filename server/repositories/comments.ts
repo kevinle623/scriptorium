@@ -152,7 +152,7 @@ export async function getDirectCommentsFromBlogPost(
                         { hidden: false },
                         { userId: userId }
                     ]
-                    : { hidden: false },
+                    : [{ hidden: false }],
             },
             orderBy: {
                 createdAt: 'desc',

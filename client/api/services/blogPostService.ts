@@ -45,7 +45,7 @@ export const fetchBlogPost = async (id: string): Promise<BlogPost> => {
 };
 
 export const fetchComments = async (blogPostId: string): Promise<Comment[]> => {
-    const { data } = await axiosInstance.get(`/blogs/${blogPostId}/comments`);
+    const { data } = await axiosInstance.get(`/blogs/${blogPostId}/comment`);
     return data.comments;
 };
 
@@ -61,7 +61,7 @@ export const addCommentToBlogPost = async (
     payload: AddCommentRequest
 ): Promise<AddCommentResponse> => {
     const {id, content, userId} = payload
-    const response = await axiosInstance.post(`/blogs/${id}/comments`, { content, userId });
+    const response = await axiosInstance.post(`/blogs/${id}/comment`, { content, userId });
     return response.data
 };
 

@@ -1,12 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { CreateBlogPostForm, CreateBlogPostRequest } from "@types/dtos/blogPosts";
 import { useCreateBlogPost } from "@client/hooks/useCreateBlogPost";
 import { useToaster } from "@client/providers/ToasterProvider";
 import TagInput from "@client/components/tag-input/TagInput";
-import {useState} from "react";
 
 const CreateBlogPostPage = () => {
     const router = useRouter();
@@ -88,8 +88,10 @@ const CreateBlogPostPage = () => {
 
                 <div>
                     <label className="block mb-2 font-bold">Tags</label>
-                    {/* Use the TagInput component */}
-                    <TagInput tags={tags} setTags={setTags} />
+                    <TagInput
+                        tags={tags}
+                        setTags={setTags}
+                    />
                 </div>
 
                 <button
