@@ -77,4 +77,3 @@ export interface GetCodeTemplatesResult {
     totalCount: number,
     codeTemplates: CodeTemplate[]
 }
-
