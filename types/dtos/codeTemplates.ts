@@ -56,11 +56,11 @@ export interface UpdateCodeTemplateRequest {
 
 export interface CreateCodeTemplateRequest {
     title: string;
-    userId: number;
+    userId?: string;
     code: string;
     parentTemplateId?: number;
     language: CodingLanguage;
-    explaination: string;
+    explanation?: string;
     tags: string[];
 }
 

@@ -18,7 +18,7 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
             voteType,
         } = await req.json()
 
-        const { userId } = await authorizationService.verifyBasicAuthorization(req)
+        const { userId }= await authorizationService.verifyBasicAuthorization(req)
 
         const vote =  await blogPostService.toggleBlogPostVote(userId, blogPostId, voteType || null)
         return NextResponse.json(

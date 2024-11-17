@@ -9,6 +9,7 @@ import {customMetaData} from "@client/data/customMetaData";
 import {ToasterProvider} from "@client/providers/ToasterProvider";
 import {AuthProvider} from "@client/providers/AuthProvider";
 import {JitOnboardingProvider} from "@client/providers/JitOnboardingProvider";
+import {CodePlaygroundCacheProvider} from "@client/providers/CodePlaygroundCacheProvider";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -41,10 +42,12 @@ export default function RootLayout({
           <ReactQueryProvider>
             <ToasterProvider>
               <AuthProvider>
+                <CodePlaygroundCacheProvider>
                 <NavBar />
-                <JitOnboardingProvider>
-                  {children}
-                </JitOnboardingProvider>
+                  <JitOnboardingProvider>
+                    {children}
+                  </JitOnboardingProvider>
+                </CodePlaygroundCacheProvider>
               </AuthProvider>
             </ToasterProvider>
           </ReactQueryProvider>

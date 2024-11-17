@@ -1,9 +1,16 @@
 import {
+    CreateCodeTemplateRequest,
     ExecuteCodeRequest,
     ExecuteCodeResponse,
     GetCodeTemplatesRequest
 } from "@types/dtos/codeTemplates";
 import axiosInstance from "@client/api/axiosInstance";
+
+
+export const createCodeTemplate = async (data: CreateCodeTemplateRequest) => {
+    const response = await axiosInstance.post("/code", data);
+    return response.data;
+};
 
 export const getCodeTemplateById = async (id: number) => {
     const { data } = await axiosInstance.get(`/code/${id}`);

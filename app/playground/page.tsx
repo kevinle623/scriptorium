@@ -1,25 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useExecuteCode } from "@client/hooks/useExecuteCode";
+import { useCodePlaygroundCache } from "@client/providers/CodePlaygroundCacheProvider";
 import Editor from "@monaco-editor/react";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
+import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
 
 const Playground = () => {
-    const [language, setLanguage] = useState("javascript");
-    const [code, setCode] = useState("// Write your code here");
+    const { language, code, setLanguage, setCode, resetPlayground } = useCodePlaygroundCache();
     const [stdin, setStdin] = useState("");
     const [output, setOutput] = useState<string | null>(null);
-
     const { mutate: executeCode, isPending } = useExecuteCode();
-
     const { resolvedTheme } = useTheme();
     const [editorTheme, setEditorTheme] = useState("vs-dark");
+    const router = useRouter();
+    const {triggerOnboarding} = useJitOnboarding()
 
     useEffect(() => {
         setEditorTheme(resolvedTheme === "light" ? "vs-light" : "vs-dark");
     }, [resolvedTheme]);
-
 
     const handleExecute = () => {
         executeCode(
@@ -35,9 +36,30 @@ const Playground = () => {
         );
     };
 
+    const handleSaveAsTemplate = () => {
+        triggerOnboarding(() => router.push("/playground/save"))
+    };
+
     return (
         <div className="max-w-4xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Code Playground</h1>
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-2xl font-bold">Code Playground</h1>
+                <div className="flex gap-4">
+                    <button
+                        onClick={resetPlayground}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                        Reset Playground
+                    </button>
+                    <button
+                        onClick={handleSaveAsTemplate}
+                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                        Save as Code Template
+                    </button>
+                </div>
+            </div>
+
             <div className="mb-4">
                 <label htmlFor="language" className="block text-lg font-semibold mb-2">
                     Language
@@ -63,7 +85,7 @@ const Playground = () => {
                     language={language}
                     value={code}
                     onChange={(value) => setCode(value || "")}
-                    theme={editorTheme} // Dynamically set the editor theme
+                    theme={editorTheme}
                 />
             </div>
 
@@ -88,8 +110,7 @@ const Playground = () => {
 
             <div className="mt-4">
                 <h2 className="text-lg font-semibold">Output</h2>
-                <pre
-                    className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 p-4 rounded max-h-64 overflow-auto">
+                <pre className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 p-4 rounded max-h-64 overflow-auto">
                     {output || "No output yet"}
                 </pre>
             </div>

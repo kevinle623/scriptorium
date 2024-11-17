@@ -52,8 +52,8 @@ export const fetchComments = async (blogPostId: string): Promise<Comment[]> => {
 export const voteBlogPost = async (
     payload: ToggleVoteRequest
 ): Promise<ToggleVoteResponse> => {
-    const { id, type} = payload
-    const response = await axiosInstance.post(`/blogs/${id}/rate`, { type });
+    const { id, voteType } = payload
+    const response = await axiosInstance.post(`/blogs/${id}/rate`, { voteType });
     return response.data
 };
 

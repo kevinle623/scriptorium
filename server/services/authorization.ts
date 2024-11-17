@@ -12,7 +12,7 @@ import {prisma} from "@server/libs/prisma/client";
 export async function verifyAuthorizationHeader(authorizationHeader: string | null) {
     try {
         if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-            return null;
+            throw new InvalidCredentialsException("Unable to verify token.");
         }
 
         const token = authorizationHeader.split(" ")[1];

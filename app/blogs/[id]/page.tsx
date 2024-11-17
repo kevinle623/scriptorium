@@ -31,7 +31,7 @@ const BlogPost = () => {
     const handleVote = (type: "up" | "down") => {
         const newVote = vote === type ? null : type;
         setVote(newVote);
-        voteBlogPost({id, vote: newVote} as ToggleVoteRequest);
+        voteBlogPost({id, voteType: newVote} as ToggleVoteRequest);
     }
 
     const handleAddComment = () => {

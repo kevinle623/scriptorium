@@ -41,16 +41,21 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     try {
-        const createCodeTemplateRequest = await req.json();
+        let createCodeTemplateRequest = await req.json();
 
-        if (!createCodeTemplateRequest.userId || !createCodeTemplateRequest.title || !createCodeTemplateRequest.language || !createCodeTemplateRequest.code) {
+        if (!createCodeTemplateRequest.title || !createCodeTemplateRequest.language || !createCodeTemplateRequest.code) {
             return NextResponse.json(
                 {message: "Missing required fields"},
                 {status: 400}
             );
         }
 
-        await authorizationService.verifyMatchingUserAuthorization(req, createCodeTemplateRequest.userId)
+        const { userId } = await authorizationService.verifyBasicAuthorization(req)
+
+        createCodeTemplateRequest = {
+            ...createCodeTemplateRequest,
+            userId
+        }
 
         const createdCodeTemplate = await codeTemplateService.createCodeTemplate(createCodeTemplateRequest);
 
