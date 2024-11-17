@@ -49,7 +49,6 @@ const CodeTemplates = () => {
                 </button>
             </div>
 
-            {/* Filters */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <input
                     type="text"
@@ -83,7 +82,6 @@ const CodeTemplates = () => {
                 Search
             </button>
 
-            {/* Code Templates */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 {codeTemplates.map((template) => (
                     <div
