@@ -44,7 +44,7 @@ export const CodePlaygroundCacheProvider = ({ children }: CodePlaygroundCachePro
     }, 500);
 
     const setLanguage = (newLanguage: string) => {
-        setLanguageState(newLanguage);
+        setLanguageState(newLanguage.toLowerCase());
         saveToLocalStorage(CACHE_KEY_LANGUAGE, newLanguage);
     };
 
