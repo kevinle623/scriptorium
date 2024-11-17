@@ -4,34 +4,34 @@ import { useForm } from "react-hook-form";
 import { useLogin } from "@client/hooks/useLogin";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-interface LoginFormInputs {
-    email: string;
-    password: string;
-}
-
+import { useToaster } from "@client/providers/ToasterProvider";
+import {LoginRequest, LoginResponse} from "@types/dtos/user";
+import {useAuth} from "@client/providers/AuthProvider";
 const Login = () => {
     const router = useRouter();
+    const { setAccessToken, setRefreshToken } = useAuth()
+    const { setToaster } = useToaster()
     const [errorMessage, setErrorMessage] = useState("");
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<LoginFormInputs>();
+    } = useForm<LoginRequest>();
 
     const loginMutation = useLogin();
 
-    const onSubmit = (formData: LoginFormInputs) => {
-        setErrorMessage("");
+    const onSubmit = (formData: LoginRequest) => {
         loginMutation.mutate(formData, {
-            onSuccess: (data) => {
-                console.log("Login successful:", data);
-                router.push("/dashboard");
+            onSuccess: (data: LoginResponse) => {
+                setToaster("Logged in successfully", "success");
+                setAccessToken(data.accessToken);
+                setRefreshToken(data.refreshToken);
+                router.push("/");
             },
             onError: (error: any) => {
-                console.error("Login failed:", error.message);
-                setErrorMessage(error.message || "An unexpected error occurred.");
+                setToaster(error.message || "Failed to log in", "error");
+                setErrorMessage(error.message || "Failed to log in")
             },
         });
     };
@@ -43,7 +43,6 @@ const Login = () => {
                     Login
                 </h2>
 
-                {/* Error Prompt */}
                 {errorMessage && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4">
                         <strong className="font-bold">Error: </strong>

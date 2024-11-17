@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FaBlog, FaCode, FaGamepad, FaBars, FaTimes, FaPenNib } from "react-icons/fa";
+import { FaBlog, FaCode, FaGamepad, FaBars, FaTimes, FaPenNib, FaSignInAlt, FaUserPlus } from "react-icons/fa";
 import useMobileDetect from "@client/hooks/useMobileDetect";
 import ThemeSwitcher from "@client/components/theme-switcher/ThemeSwitcher";
+import { useAuth } from "@client/providers/AuthProvider";
 
 const NavBar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const isMobile = useMobileDetect();
+    const { isAuthed } = useAuth();
 
     const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -61,6 +63,26 @@ const NavBar = () => {
                             <FaGamepad className="text-xl" />
                             <span>Playground</span>
                         </Link>
+
+                        {!isAuthed && (
+                            <>
+                                <Link
+                                    href="/login"
+                                    className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-green-500 hover:bg-green-600 shadow-lg transition-all"
+                                >
+                                    <FaSignInAlt className="text-xl" />
+                                    <span>Login</span>
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-purple-500 hover:bg-purple-600 shadow-lg transition-all"
+                                >
+                                    <FaUserPlus className="text-xl" />
+                                    <span>Register</span>
+                                </Link>
+                            </>
+                        )}
+
                         <ThemeSwitcher />
                     </div>
                 )}
@@ -95,6 +117,29 @@ const NavBar = () => {
                         <FaGamepad className="text-xl" />
                         <span>Playground</span>
                     </Link>
+
+                    {!isAuthed && (
+                        <>
+                            <Link
+                                href="/login"
+                                className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-green-500 hover:bg-green-600 shadow-lg transition-all"
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                <FaSignInAlt className="text-xl" />
+                                <span>Login</span>
+                            </Link>
+                            <Link
+                                href="/register"
+                                className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-purple-500 hover:bg-purple-600 shadow-lg transition-all"
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                <FaUserPlus className="text-xl" />
+                                <span>Register</span>
+                            </Link>
+                        </>
+                    )}
+
+                    <ThemeSwitcher />
                 </div>
             )}
         </nav>

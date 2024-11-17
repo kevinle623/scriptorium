@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { FaBlog, FaCode, FaGamepad, FaPenNib } from "react-icons/fa";
+import { FaBlog, FaCode, FaGamepad, FaPenNib, FaSignInAlt, FaUserPlus } from "react-icons/fa";
+import { useAuth } from "@client/providers/AuthProvider";
 
 export default function Home() {
+  const { isAuthed } = useAuth();
+
   return (
       <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-sans">
         <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start text-center sm:text-left">
@@ -44,6 +47,26 @@ export default function Home() {
               <span className="font-medium">Playground</span>
             </Link>
           </div>
+
+          {/* Authentication Buttons */}
+          {!isAuthed && (
+              <div className="flex gap-4 items-center flex-wrap justify-center sm:justify-start mt-6">
+                <Link
+                    href="/login"
+                    className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-green-500 hover:bg-green-600 shadow-lg transition-all"
+                >
+                  <FaSignInAlt className="text-xl" />
+                  <span className="font-medium">Login</span>
+                </Link>
+                <Link
+                    href="/register"
+                    className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-purple-500 hover:bg-purple-600 shadow-lg transition-all"
+                >
+                  <FaUserPlus className="text-xl" />
+                  <span className="font-medium">Register</span>
+                </Link>
+              </div>
+          )}
         </main>
       </div>
   );

@@ -10,6 +10,7 @@ import {useParams} from "next/navigation";
 import {ToggleVoteRequest} from "@types/dtos/votes";
 import {AddCommentRequest} from "@types/dtos/comments";
 import {ReportBlogPostRequest} from "@types/dtos/blogPosts";
+import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 
 const BlogPost = () => {
     const userId = "temp"
@@ -46,7 +47,7 @@ const BlogPost = () => {
     };
 
     if (blogLoading || commentsLoading) {
-        return <div className="text-center text-lg">Loading...</div>;
+        return <LoadingSpinner/>;
     }
 
     return (

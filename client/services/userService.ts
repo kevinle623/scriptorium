@@ -1,7 +1,8 @@
 import {LoginRequest, LoginResponse} from "@types/dtos/user";
+import { CreateUserRequest } from "@/types/dtos/user";
 
 export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await fetch("/api/auth/login", {
+    const response = await fetch("/api/users/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -17,10 +18,8 @@ export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {
     return response.json();
 };
 
-import { CreateUserRequest } from "@/types/dtos/user";
-
 export const registerUser = async (data: CreateUserRequest) => {
-    const response = await fetch("/api/auth/register", {
+    const response = await fetch("/api/users/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

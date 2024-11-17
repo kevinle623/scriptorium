@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useBlogPosts } from "@client/hooks/useBlogPosts";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 
 const BlogPosts = () => {
     const router = useRouter(); // Next.js router
@@ -33,7 +34,7 @@ const BlogPosts = () => {
 
     const totalPages = Math.ceil(totalCount / filters.limit);
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <LoadingSpinner/>;
     if (error) return <div>Error fetching blog posts!</div>;
 
     return (

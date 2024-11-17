@@ -6,6 +6,8 @@ import {ReactQueryProvider} from "@client/providers/ReactQueryProvider";
 import {ThemeProvider} from "next-themes"
 import NavBar from "@client/components/nav-bar/NavBar";
 import {customMetaData} from "@client/data/customMetaData";
+import {ToasterProvider} from "@client/providers/ToasterProvider";
+import {AuthProvider} from "@client/providers/AuthProvider";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -36,8 +38,12 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" enableSystem={true} defaultTheme="system">
           <ReactQueryProvider>
-            <NavBar />
-            {children}
+            <ToasterProvider>
+              <AuthProvider>
+                <NavBar />
+                {children}
+              </AuthProvider>
+            </ToasterProvider>
           </ReactQueryProvider>
         </ThemeProvider>
       </body>

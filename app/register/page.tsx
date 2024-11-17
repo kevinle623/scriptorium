@@ -5,10 +5,12 @@ import { useRegister } from "@client/hooks/useRegister";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CreateUserRequest } from "@types/dtos/user";
-import {Role} from "@types/dtos/roles";
+import { Role } from "@types/dtos/roles";
+import { useToaster } from "@client/providers/ToasterProvider";
 
 const Register = () => {
     const router = useRouter();
+    const { setToaster } = useToaster();
     const [errorMessage, setErrorMessage] = useState("");
 
     const {
@@ -29,12 +31,13 @@ const Register = () => {
 
         registerMutation.mutate(createUserRequest, {
             onSuccess: () => {
-                console.log("User registered successfully.");
+                setToaster("User registered successfully!", "success");
                 router.push("/login");
             },
             onError: (error: any) => {
-                console.error("Registration failed:", error.message);
-                setErrorMessage(error.message || "An unexpected error occurred.");
+                const message = error.message || "An unexpected error occurred.";
+                setErrorMessage(message);
+                setToaster(message, "error");
             },
         });
     };
@@ -146,10 +149,10 @@ const Register = () => {
 
                     <button
                         type="submit"
-                        disabled={registerMutation.isPending}
+                        disabled={registerMutation.isLoading}
                         className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50"
                     >
-                        {registerMutation.isPending ? "Registering..." : "Register"}
+                        {registerMutation.isLoading ? "Registering..." : "Register"}
                     </button>
                 </form>
 
