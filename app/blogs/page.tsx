@@ -6,42 +6,61 @@ import { useRouter } from "next/navigation";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 
 const BlogPosts = () => {
-    const router = useRouter(); // Next.js router
+    const router = useRouter();
 
     const [filters, setFilters] = useState({
         title: "",
         content: "",
-        tags: "",
-        orderBy: "",
+        tags: undefined,
+        orderBy: undefined,
         page: 1,
         limit: 10,
     });
 
-    const { data = [], isLoading, error } = useBlogPosts(filters);
+    const [searchFilters, setSearchFilters] = useState(filters);
+
+    const { data = [], isLoading, error } = useBlogPosts(searchFilters);
 
     const { blogPosts = [], totalCount = 0 } = data;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFilters({
             ...filters,
-            [e.target.name]: e.target.value,
+            [e.target.name]: e.target.value || undefined,
         });
     };
 
     const handleSearch = () => {
-        setFilters((prev) => ({ ...prev, page: 1 }));
+        setSearchFilters({ ...filters, page: 1 });
     };
 
-    const totalPages = Math.ceil(totalCount / filters.limit);
+    const handleReset = () => {
+        const defaultFilters = {
+            title: "",
+            content: "",
+            tags: undefined,
+            orderBy: undefined,
+            page: 1,
+            limit: 10,
+        };
+        setFilters(defaultFilters);
+        setSearchFilters(defaultFilters);
+    };
 
-    if (isLoading) return <LoadingSpinner/>;
+    const handlePagination = (direction: "next" | "prev") => {
+        const newPage = direction === "next" ? searchFilters.page + 1 : searchFilters.page - 1;
+        setSearchFilters({ ...searchFilters, page: newPage });
+    };
+
+    const totalPages = Math.ceil(totalCount / searchFilters.limit);
+
+    if (isLoading) return <LoadingSpinner />;
     if (error) return <div>Error fetching blog posts!</div>;
 
     return (
         <div className="container mx-auto px-6 py-8">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Blog Posts</h1>
-                {/* Create New Post Button */}
                 <button
                     onClick={() => router.push("/blogs/create")}
                     className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
@@ -50,7 +69,7 @@ const BlogPosts = () => {
                 </button>
             </div>
 
-            {/* Filters */}
+            {/* Filter Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <input
                     type="text"
@@ -88,12 +107,22 @@ const BlogPosts = () => {
                     <option value="mostReported">Most Reported</option>
                 </select>
             </div>
-            <button
-                onClick={handleSearch}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-            >
-                Search
-            </button>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+                <button
+                    onClick={handleSearch}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                >
+                    Search
+                </button>
+                <button
+                    onClick={handleReset}
+                    className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+                >
+                    Reset Filters
+                </button>
+            </div>
 
             {/* Blog Posts */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -114,22 +143,18 @@ const BlogPosts = () => {
             {/* Pagination */}
             <div className="flex items-center justify-between mt-6">
                 <button
-                    disabled={filters.page === 1}
-                    onClick={() =>
-                        setFilters((prev) => ({ ...prev, page: prev.page - 1 }))
-                    }
+                    disabled={searchFilters.page === 1}
+                    onClick={() => handlePagination("prev")}
                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
                 >
                     Previous
                 </button>
                 <div>
-                    Page {filters.page} of {totalPages || 1}
+                    Page {searchFilters.page} of {totalPages || 1}
                 </div>
                 <button
-                    disabled={filters.page >= totalPages}
-                    onClick={() =>
-                        setFilters((prev) => ({ ...prev, page: prev.page + 1 }))
-                    }
+                    disabled={searchFilters.page >= totalPages}
+                    onClick={() => handlePagination("next")}
                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
                 >
                     Next

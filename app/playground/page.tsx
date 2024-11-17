@@ -29,7 +29,6 @@ const Playground = () => {
                     setOutput(data.result);
                 },
                 onError: (error: any) => {
-                    console.log("bruh", error, error.response.data.error)
                     setOutput(error?.response?.data?.error || "Error executing code.");
                 },
             }

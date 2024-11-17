@@ -60,29 +60,41 @@ export function buildBlogPostWhereCondition(getBlogPostsRequest: GetBlogPostRequ
     return whereCondition;
 }
 
-export async function createBlogPost(prismaClient: any, createBlogPostRequest: CreateBlogPostRequest): Promise<BlogPost> {
+export async function createBlogPost(
+    prismaClient: any,
+    createBlogPostRequest: CreateBlogPostRequest
+): Promise<BlogPost> {
     try {
+        const { title, description, content, userId, codeTemplateIds } = createBlogPostRequest;
+
+        const data: any = {
+            title,
+            description,
+            content,
+            userId: Number(userId),
+        };
+
+        if (codeTemplateIds && codeTemplateIds.length > 0) {
+            data.codeTemplates = {
+                create: codeTemplateIds.map((id) => ({
+                    codeTemplate: {
+                        connect: { id },
+                    },
+                })),
+            };
+        }
+
         const blogPost = await prismaClient.blogPost.create({
-            data: {
-                title: createBlogPostRequest.title,
-                description: createBlogPostRequest.description,
-                content: createBlogPostRequest.content,
-                userId: Number(createBlogPostRequest.userId),
-                codeTemplates: {
-                    create: createBlogPostRequest.codeTemplateIds.map((id) => ({
-                        codeTemplate: {
-                            connect: { id },
-                        },
-                    })),
-                },
-            }
-        }) as BlogPostModel
-        return deserializeBlogPost(blogPost)
+            data,
+        }) as BlogPostModel;
+
+        return deserializeBlogPost(blogPost);
     } catch (error) {
-        console.error("Database Error", error)
+        console.error("Database Error", error);
         throw new DatabaseIntegrityException('Database error: Failed to create blog post');
     }
 }
+
 
 export async function getBlogPostById(prismaClient: any, blogPostId: number): Promise<BlogPost | null> {
     try {

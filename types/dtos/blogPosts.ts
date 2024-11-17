@@ -32,13 +32,22 @@ export interface BlogPostTag {
     tag: Tag;
 }
 
+export interface CreateBlogPostForm {
+    title: string;
+    description: string;
+    content: string;
+    codeTemplateIds: number[]
+    tags: string[]
+    userId: number;
+}
+
 export interface CreateBlogPostRequest {
     title: string;
     description: string;
     content: string;
-    userId: number;
     codeTemplateIds: number[]
     tags: string[]
+    userId: number;
 }
 
 export interface EditBlogPostRequest {

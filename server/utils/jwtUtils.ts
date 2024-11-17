@@ -43,13 +43,11 @@ export async function verifyRefreshToken(token: string) {
 export async function verifyAccessToken(token: string) {
 
     const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
-    console.log("token", ACCESS_TOKEN_SECRET)
     return verifyToken(token, ACCESS_TOKEN_SECRET)
 }
 
 export async function getUserIdFromAccessToken(token: string): number | null {
     const payload = await verifyAccessToken(token);
-    console.log("hello world???", payload, token)
     return payload?.userId || null;
 }
 

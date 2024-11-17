@@ -2,11 +2,13 @@
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import {CreateBlogPostRequest} from "@types/dtos/blogPosts";
-import {useCreateBlogPost} from "@client/hooks/useCreateBlogPost";
+import { CreateBlogPostForm, CreateBlogPostRequest } from "@types/dtos/blogPosts";
+import { useCreateBlogPost } from "@client/hooks/useCreateBlogPost";
+import { useToaster } from "@client/providers/ToasterProvider";
 
 const CreateBlogPostPage = () => {
     const router = useRouter();
+    const { setToaster } = useToaster();
     const {
         register,
         handleSubmit,
@@ -16,15 +18,15 @@ const CreateBlogPostPage = () => {
 
     const mutation = useCreateBlogPost();
 
-    const onSubmit: SubmitHandler<CreateBlogPostRequest> = (data) => {
+    const onSubmit: SubmitHandler<CreateBlogPostForm> = (data) => {
         mutation.mutate(data, {
             onSuccess: () => {
-                alert("Blog post created successfully!");
+                setToaster("Blog post created successfully!", "success");
                 reset();
                 router.push("/blogs");
             },
             onError: (error) => {
-                alert(`Error: ${error.message}`);
+                setToaster(`Error: ${error.message}`, "error");
             },
         });
     };
@@ -67,19 +69,6 @@ const CreateBlogPostPage = () => {
                         <span className="text-red-500">{errors.content.message}</span>
                     )}
                 </div>
-
-                <div>
-                    <label className="block mb-2 font-bold">User ID</label>
-                    <input
-                        {...register("userId", { required: "User ID is required" })}
-                        className="border border-gray-300 p-2 rounded-lg w-full"
-                        type="number"
-                    />
-                    {errors.userId && (
-                        <span className="text-red-500">{errors.userId.message}</span>
-                    )}
-                </div>
-
                 <div>
                     <label className="block mb-2 font-bold">Code Template IDs</label>
                     <input

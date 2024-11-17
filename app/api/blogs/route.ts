@@ -3,6 +3,7 @@ import * as blogPostService from "@server/services/blogPosts";
 import * as authorizationService from "@server/services/authorization";
 import {BlogPost, BlogPostOrderType} from "@/types/dtos/blogPosts";
 import {routeHandlerException} from "@server/utils/exceptionUtils";
+import {verifyBasicAuthorization} from "@server/services/authorization";
 
 export async function GET(req: Request) {
     try {
@@ -63,23 +64,28 @@ export async function POST(req: Request) {
             title,
             description,
             content,
-            userId,
-            codeTemplateIds,
-            tags
-        } = await req.json()
+            codeTemplateIds = [],
+            tags = [],
+        } = await req.json();
+
+        const { userId } = await verifyBasicAuthorization(req);
+        
+        const cleanedCodeTemplateIds = Array.isArray(codeTemplateIds)
+            ? codeTemplateIds
+                .map((id) => Number(id))
+                .filter((id) => !isNaN(id)) // Ensure only valid numbers are included
+            : [];
 
         const createBlogPostRequest = {
             title,
             description,
             content,
             userId: Number(userId),
-            codeTemplateIds,
+            codeTemplateIds: cleanedCodeTemplateIds,
             tags,
-        }
+        };
 
-        await authorizationService.verifyMatchingUserAuthorization(req, userId)
-
-        const blogPost: BlogPost = await blogPostService.createBlogPost(createBlogPostRequest)
+        const blogPost: BlogPost = await blogPostService.createBlogPost(createBlogPostRequest);
         return NextResponse.json(
             {
                 message: "Blog Post created successfully",
@@ -97,9 +103,9 @@ export async function POST(req: Request) {
                     commentIds: blogPost.commentIds,
                 },
             },
-            {status: 201}
+            { status: 201 }
         );
     } catch (error) {
-        return routeHandlerException(error)
+        return routeHandlerException(error);
     }
 }
