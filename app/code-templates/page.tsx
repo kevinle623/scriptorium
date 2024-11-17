@@ -5,15 +5,15 @@ import { useCodeTemplates } from "@client/hooks/useCodeTemplates";
 import { useRouter } from "next/navigation";
 import { GetCodeTemplatesRequest } from "@types/dtos/codeTemplates";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import TagInput from "@client/components/tag-input/TagInput";
 
 const CodeTemplates = () => {
     const router = useRouter();
 
-    // Separate states for live filters and applied search filters
-    const [filters, setFilters] = useState<GetCodeTemplatesRequest>({
+    const [filters, setFilters] = useState({
         title: "",
         content: "",
-        tags: undefined,
+        tags: [] as string[],
         page: 1,
         limit: 10,
         userId: "temp",
@@ -21,13 +21,19 @@ const CodeTemplates = () => {
 
     const [searchFilters, setSearchFilters] = useState(filters);
 
-    const { data = {}, isLoading, error } = useCodeTemplates(searchFilters);
+    console.log("bruh")
+
+    const { data = {}, isLoading, error } = useCodeTemplates({
+        ...searchFilters,
+        tags: searchFilters.tags && searchFilters.tags.length > 0 ? searchFilters.tags.join(",") : undefined,
+    });
     const { codeTemplates = [], totalCount = 0 } = data;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
         setFilters({
             ...filters,
-            [e.target.name]: e.target.value || undefined,
+            [name]: value,
         });
     };
 
@@ -39,7 +45,7 @@ const CodeTemplates = () => {
         const defaultFilters = {
             title: "",
             content: "",
-            tags: undefined,
+            tags: [] as string[],
             page: 1,
             limit: 10,
             userId: "temp",
@@ -88,13 +94,9 @@ const CodeTemplates = () => {
                     onChange={handleInputChange}
                     className="border border-gray-300 p-2 rounded-lg"
                 />
-                <input
-                    type="text"
-                    name="tags"
-                    placeholder="Filter by Tags (comma-separated)"
-                    value={filters.tags}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 p-2 rounded-lg"
+                <TagInput
+                    tags={filters.tags}
+                    setTags={(newTags) => setFilters({ ...filters, tags: newTags })}
                 />
             </div>
 

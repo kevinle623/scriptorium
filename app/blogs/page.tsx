@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useBlogPosts } from "@client/hooks/useBlogPosts";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import TagInput from "@client/components/tag-input/TagInput";
 
 const BlogPosts = () => {
     const router = useRouter();
@@ -11,7 +12,7 @@ const BlogPosts = () => {
     const [filters, setFilters] = useState({
         title: "",
         content: "",
-        tags: undefined,
+        tags: [] as string[],
         orderBy: undefined,
         page: 1,
         limit: 10,
@@ -19,15 +20,20 @@ const BlogPosts = () => {
 
     const [searchFilters, setSearchFilters] = useState(filters);
 
-    const { data = [], isLoading, error } = useBlogPosts(searchFilters);
+    const { data = [], isLoading, error } = useBlogPosts({
+        ...searchFilters,
+        tags: searchFilters.tags && searchFilters.tags.length > 0 ? searchFilters.tags.join(",") : undefined,
+    });
 
     const { blogPosts = [], totalCount = 0 } = data;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setFilters({
-            ...filters,
-            [e.target.name]: e.target.value || undefined,
-        });
+        const { name, value } = e.target;
+
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            [name]: value,
+        }));
     };
 
     const handleSearch = () => {
@@ -38,7 +44,7 @@ const BlogPosts = () => {
         const defaultFilters = {
             title: "",
             content: "",
-            tags: undefined,
+            tags: [] as string[], // Reset tags as empty list
             orderBy: undefined,
             page: 1,
             limit: 10,
@@ -87,13 +93,9 @@ const BlogPosts = () => {
                     onChange={handleInputChange}
                     className="border border-gray-300 p-2 rounded-lg"
                 />
-                <input
-                    type="text"
-                    name="tags"
-                    placeholder="Filter by Tags (comma-separated)"
-                    value={filters.tags}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 p-2 rounded-lg"
+                <TagInput
+                    tags={filters.tags}
+                    setTags={(newTags) => setFilters((prevFilters) => ({ ...prevFilters, tags: newTags }))}
                 />
                 <select
                     name="orderBy"

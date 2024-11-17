@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { CreateBlogPostForm, CreateBlogPostRequest } from "@types/dtos/blogPosts";
 import { useCreateBlogPost } from "@client/hooks/useCreateBlogPost";
 import { useToaster } from "@client/providers/ToasterProvider";
+import TagInput from "@client/components/tag-input/TagInput";
+import {useState} from "react";
 
 const CreateBlogPostPage = () => {
     const router = useRouter();
@@ -15,20 +17,25 @@ const CreateBlogPostPage = () => {
         reset,
         formState: { errors },
     } = useForm<CreateBlogPostRequest>();
+    const [tags, setTags] = useState<string[]>([]);
 
     const mutation = useCreateBlogPost();
 
     const onSubmit: SubmitHandler<CreateBlogPostForm> = (data) => {
-        mutation.mutate(data, {
-            onSuccess: () => {
-                setToaster("Blog post created successfully!", "success");
-                reset();
-                router.push("/blogs");
-            },
-            onError: (error) => {
-                setToaster(`Error: ${error.message}`, "error");
-            },
-        });
+        mutation.mutate(
+            { ...data, tags },
+            {
+                onSuccess: () => {
+                    setToaster("Blog post created successfully!", "success");
+                    reset();
+                    setTags([]);
+                    router.push("/blogs");
+                },
+                onError: (error) => {
+                    setToaster(`Error: ${error.message}`, "error");
+                },
+            }
+        );
     };
 
     return (
@@ -69,6 +76,7 @@ const CreateBlogPostPage = () => {
                         <span className="text-red-500">{errors.content.message}</span>
                     )}
                 </div>
+
                 <div>
                     <label className="block mb-2 font-bold">Code Template IDs</label>
                     <input
@@ -80,11 +88,8 @@ const CreateBlogPostPage = () => {
 
                 <div>
                     <label className="block mb-2 font-bold">Tags</label>
-                    <input
-                        {...register("tags")}
-                        className="border border-gray-300 p-2 rounded-lg w-full"
-                        placeholder="Comma-separated tags"
-                    />
+                    {/* Use the TagInput component */}
+                    <TagInput tags={tags} setTags={setTags} />
                 </div>
 
                 <button

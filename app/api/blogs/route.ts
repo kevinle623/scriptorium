@@ -69,11 +69,11 @@ export async function POST(req: Request) {
         } = await req.json();
 
         const { userId } = await verifyBasicAuthorization(req);
-        
+
         const cleanedCodeTemplateIds = Array.isArray(codeTemplateIds)
             ? codeTemplateIds
                 .map((id) => Number(id))
-                .filter((id) => !isNaN(id)) // Ensure only valid numbers are included
+                .filter((id) => !isNaN(id))
             : [];
 
         const createBlogPostRequest = {
