@@ -1,8 +1,3 @@
-import {
-    DatabaseIntegrityException,
-    InvalidCredentialsException,
-    ServiceException
-} from "@/types/exceptions";
 import {NextResponse} from "next/server";
 
 import * as userService from "@server/services/users"
@@ -39,14 +34,7 @@ export async function GET(req: Request, { params }: { params: { id: string }}){
             { status: 201 }
         );
     } catch (error) {
-        if (error instanceof DatabaseIntegrityException) {
-            return NextResponse.json({ error: error.message }, { status: 400 });
-        } else if (error instanceof InvalidCredentialsException) {
-            return NextResponse.json({ error: error.message }, { status: 401 });
-        } else if (error instanceof ServiceException) {
-            return NextResponse.json({ error: error.message }, { status: 400 });
-        }
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        return routeHandlerException(error)
     }
 }
 

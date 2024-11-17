@@ -2,10 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FaBlog, FaCode, FaGamepad, FaBars, FaTimes, FaPenNib, FaSignInAlt, FaUserPlus } from "react-icons/fa";
+import {
+    FaBlog,
+    FaCode,
+    FaGamepad,
+    FaBars,
+    FaTimes,
+    FaPenNib,
+    FaSignInAlt,
+    FaUserPlus,
+    FaUserCircle,
+} from "react-icons/fa";
 import useMobileDetect from "@client/hooks/useMobileDetect";
 import ThemeSwitcher from "@client/components/theme-switcher/ThemeSwitcher";
 import { useAuth } from "@client/providers/AuthProvider";
+import LogoutButton from "@client/components/button/LogoutButton";
 
 const NavBar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -64,7 +75,18 @@ const NavBar = () => {
                             <span>Playground</span>
                         </Link>
 
-                        {!isAuthed && (
+                        {isAuthed ? (
+                            <div className="flex items-center gap-4">
+                                <Link
+                                    href="/profile"
+                                    className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-gray-500 hover:bg-gray-600 shadow-lg transition-all"
+                                >
+                                    <FaUserCircle className="text-xl" />
+                                    <span>Profile</span>
+                                </Link>
+                                <LogoutButton />
+                            </div>
+                        ) : (
                             <>
                                 <Link
                                     href="/login"
@@ -118,7 +140,19 @@ const NavBar = () => {
                         <span>Playground</span>
                     </Link>
 
-                    {!isAuthed && (
+                    {isAuthed ? (
+                        <div className="flex flex-col items-center gap-4">
+                            <Link
+                                href="/profile"
+                                className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-gray-500 hover:bg-gray-600 shadow-lg transition-all"
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                <FaUserCircle className="text-xl" />
+                                <span>Profile</span>
+                            </Link>
+                            <LogoutButton />
+                        </div>
+                    ) : (
                         <>
                             <Link
                                 href="/login"

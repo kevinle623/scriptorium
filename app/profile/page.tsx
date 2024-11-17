@@ -5,7 +5,7 @@ import { useUser } from "@client/hooks/useUser";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 
 const ProfilePage = () => {
-    const { data: { user }, isLoading, isError, error } = useUser();
+    const { data: user, isLoading, isError, error } = useUser();
 
     if (isLoading) {
         return (
@@ -15,7 +15,7 @@ const ProfilePage = () => {
         );
     }
 
-    if (isError) {
+    if (isError || !user) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen text-center">
                 <h1 className="text-2xl font-bold text-red-500">Error</h1>

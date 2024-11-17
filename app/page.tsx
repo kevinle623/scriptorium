@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FaBlog, FaCode, FaGamepad, FaPenNib, FaSignInAlt, FaUserPlus } from "react-icons/fa";
+import { FaBlog, FaCode, FaGamepad, FaPenNib, FaSignInAlt, FaUserPlus, FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@client/providers/AuthProvider";
 import LogoutButton from "@client/components/button/LogoutButton";
 
@@ -69,7 +69,16 @@ export default function Home() {
                   </Link>
                 </>
             ) : (
-                <LogoutButton />
+                <div className="flex gap-4 items-center">
+                  <Link
+                      href="/profile"
+                      className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-gray-500 hover:bg-gray-600 shadow-lg transition-all"
+                  >
+                    <FaUserCircle className="text-xl" />
+                    <span className="font-medium">Profile</span>
+                  </Link>
+                  <LogoutButton />
+                </div>
             )}
           </div>
         </main>

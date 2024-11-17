@@ -41,15 +41,19 @@ export async function verifyRefreshToken(token: string) {
 }
 
 export async function verifyAccessToken(token: string) {
+
+    const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+    console.log("token", ACCESS_TOKEN_SECRET)
     return verifyToken(token, ACCESS_TOKEN_SECRET)
 }
 
-export function getUserIdFromAccessToken(token: string): number | null {
-    const payload = verifyAccessToken(token);
+export async function getUserIdFromAccessToken(token: string): number | null {
+    const payload = await verifyAccessToken(token);
+    console.log("hello world???", payload, token)
     return payload?.userId || null;
 }
 
-export function getRoleFromAccessToken(token: string): number | null {
-    const payload = verifyAccessToken(token);
+export async function getRoleFromAccessToken(token: string): number | null {
+    const payload = await verifyAccessToken(token);
     return payload?.role || null;
 }

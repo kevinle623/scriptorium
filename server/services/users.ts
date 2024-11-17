@@ -7,7 +7,7 @@ import {
     generateRefreshToken,
     verifyAccessToken,
     verifyRefreshToken
-} from "@utils/jwtUtils";
+} from "@server/utils/jwtUtils";
 import {CreateUserRequest, EditUserRequest} from "@/types/dtos/user";
 import * as revokedTokenRepository from '@server/repositories/revokedTokens'
 

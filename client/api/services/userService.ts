@@ -2,9 +2,9 @@ import {GetUserResponse, LoginRequest, LoginResponse} from "@types/dtos/user";
 import { CreateUserRequest, RefreshResponse } from "@types/dtos/user";
 import axiosInstance from "@client/api/axiosInstance";
 
-export const getUserById = async (userId: string): Promise<GetUserResponse> => {
-    const { data } = await axiosInstance.get(`/users/${userId}`);
-    return data;
+export const getUser = async (): Promise<GetUserResponse> => {
+    const { data } = await axiosInstance.get(`/users`);
+    return data.user
 };
 
 export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {

@@ -9,6 +9,7 @@ interface AuthContextProps {
     setAccessToken: (token: string) => void;
     setRefreshToken: (token: string) => void;
     clearAuth: () => void;
+    isInitialized: boolean;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -16,13 +17,15 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [accessToken, setAccessTokenState] = useState<string | null>(null);
     const [refreshToken, setRefreshTokenState] = useState<string | null>(null);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
         const storedAccessToken = localStorage.getItem("accessToken");
         const storedRefreshToken = localStorage.getItem("refreshToken");
 
-        if (storedAccessToken) setAccessTokenState(storedAccessToken);
-        if (storedRefreshToken) setRefreshTokenState(storedRefreshToken);
+        setAccessTokenState(storedAccessToken);
+        setRefreshTokenState(storedRefreshToken);
+        setIsInitialized(true);
     }, []);
 
     const setAccessToken = (token: string) => {
@@ -56,6 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setAccessToken,
                 setRefreshToken,
                 clearAuth,
+                isInitialized,
             }}
         >
             {children}

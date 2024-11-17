@@ -5,7 +5,7 @@ import { useAuth } from "@client/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useToaster } from "@client/providers/ToasterProvider";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
-import { getRoleFromAccessToken } from "@utils/jwtUtils"
+import { getRoleFromAccessToken } from "@server/utils/jwtUtils"
 
 interface AdminGuardProps {
     children: React.ReactNode;
