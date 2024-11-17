@@ -11,9 +11,9 @@ const Playground = () => {
     const [stdin, setStdin] = useState("");
     const [output, setOutput] = useState<string | null>(null);
 
-    const { mutate: executeCode, isLoading, isError, error } = useExecuteCode();
+    const { mutate: executeCode, isPending } = useExecuteCode();
 
-    const { resolvedTheme } = useTheme(); // Use resolvedTheme to account for system preferences
+    const { resolvedTheme } = useTheme();
     const [editorTheme, setEditorTheme] = useState("vs-dark");
 
     useEffect(() => {
@@ -28,8 +28,9 @@ const Playground = () => {
                 onSuccess: (data) => {
                     setOutput(data.result);
                 },
-                onError: () => {
-                    setOutput("Error executing code.");
+                onError: (error: any) => {
+                    console.log("bruh", error, error.response.data.error)
+                    setOutput(error?.response?.data?.error || "Error executing code.");
                 },
             }
         );
@@ -80,19 +81,18 @@ const Playground = () => {
 
             <button
                 onClick={handleExecute}
-                disabled={isLoading}
+                disabled={isPending}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
             >
-                {isLoading ? "Executing..." : "Run Code"}
+                {isPending ? "Executing..." : "Run Code"}
             </button>
 
             <div className="mt-4">
                 <h2 className="text-lg font-semibold">Output</h2>
-                {isError ? (
-                    <p className="text-red-500">Error: {error?.message}</p>
-                ) : (
-                    <pre className="bg-gray-100 p-4 rounded">{output || "No output yet"}</pre>
-                )}
+                <pre
+                    className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 p-4 rounded max-h-64 overflow-auto">
+                    {output || "No output yet"}
+                </pre>
             </div>
         </div>
     );
