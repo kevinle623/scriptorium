@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSun, faMoon, faDesktop } from "@fortawesome/free-solid-svg-icons";
 
 const ThemeSwitcher = () => {
-    const { theme, setTheme, resolvedTheme } = useTheme();
+    const { setTheme, resolvedTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -13,45 +15,27 @@ const ThemeSwitcher = () => {
 
     if (!mounted) return null;
 
-    return (
-        <div className="flex items-center space-x-4">
-            {/* Current Theme */}
-            <span className="text-gray-900 dark:text-gray-100">
-        Theme: {resolvedTheme}
-      </span>
+    const themes = ["light", "dark", "system"];
+    const icons = {
+        light: faSun,
+        dark: faMoon,
+        system: faDesktop,
+    };
 
-            {/* Toggle Buttons */}
-            <button
-                className={`px-3 py-1 rounded ${
-                    theme === "light"
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200 dark:bg-gray-700 dark:text-white"
-                }`}
-                onClick={() => setTheme("light")}
-            >
-                Light
-            </button>
-            <button
-                className={`px-3 py-1 rounded ${
-                    theme === "dark"
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200 dark:bg-gray-700 dark:text-white"
-                }`}
-                onClick={() => setTheme("dark")}
-            >
-                Dark
-            </button>
-            <button
-                className={`px-3 py-1 rounded ${
-                    theme === "system"
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200 dark:bg-gray-700 dark:text-white"
-                }`}
-                onClick={() => setTheme("system")}
-            >
-                System
-            </button>
-        </div>
+    const toggleTheme = () => {
+        const currentIndex = themes.indexOf(resolvedTheme || "system");
+        const nextTheme = themes[(currentIndex + 1) % themes.length];
+        setTheme(nextTheme);
+    };
+
+    return (
+        <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center gap-3 px-6 py-3 rounded-lg text-gray-900 bg-gray-200 hover:bg-gray-300 dark:text-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 shadow-lg transition-all"
+            aria-label={`Toggle Theme (${resolvedTheme})`}
+        >
+            <FontAwesomeIcon icon={icons[resolvedTheme || "system"]} className="text-xl" />
+        </button>
     );
 };
 

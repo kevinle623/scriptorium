@@ -7,6 +7,9 @@ import {useBlogPostComments} from "@client/hooks/useBlogPostComments";
 import {useVoteBlogPost} from "@client/hooks/useVoteBlogPost";
 import {useReportBlogPost} from "@client/hooks/useReportBlogPost";
 import {useParams} from "next/navigation";
+import {ToggleVoteRequest} from "@types/dtos/votes";
+import {AddCommentRequest} from "@types/dtos/comments";
+import {ReportBlogPostRequest} from "@types/dtos/blogPosts";
 
 const BlogPost = () => {
     const userId = "temp"
@@ -27,18 +30,18 @@ const BlogPost = () => {
     const handleVote = (type: "up" | "down") => {
         const newVote = vote === type ? undefined : type;
         setVote(newVote);
-        voteBlogPost(id, vote, userId);
-    };
+        voteBlogPost({id, vote, userId} as ToggleVoteRequest);
+    }
 
     const handleAddComment = () => {
         if (!newComment.trim()) return;
-        addComment(id, newComment, userId);
+        addComment({id, newComment, userId} as AddCommentRequest);
         setNewComment("");
     };
 
     const handleReport = () => {
         if (!reportReason.trim()) return alert("Please provide a reason for reporting.");
-        reportBlogPost(id, reportReason, userId);
+        reportBlogPost({id, reportReason, userId} as ReportBlogPostRequest);
         setReportReason("");
     };
 

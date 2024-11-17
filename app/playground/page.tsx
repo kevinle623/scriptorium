@@ -13,12 +13,13 @@ const Playground = () => {
 
     const { mutate: executeCode, isLoading, isError, error } = useExecuteCode();
 
-    const { theme } = useTheme();
+    const { resolvedTheme } = useTheme(); // Use resolvedTheme to account for system preferences
     const [editorTheme, setEditorTheme] = useState("vs-dark");
 
     useEffect(() => {
-        setEditorTheme(theme === "light" ? "vs-light" : "vs-dark");
-    }, [theme]);
+        setEditorTheme(resolvedTheme === "light" ? "vs-light" : "vs-dark");
+    }, [resolvedTheme]);
+
 
     const handleExecute = () => {
         executeCode(

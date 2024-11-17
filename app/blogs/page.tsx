@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import { useBlogPosts } from "@client/hooks/useBlogPosts";
+import { useRouter } from "next/navigation";
 
 const BlogPosts = () => {
+    const router = useRouter(); // Next.js router
+
     const [filters, setFilters] = useState({
         title: "",
         content: "",
@@ -15,7 +18,7 @@ const BlogPosts = () => {
 
     const { data = [], isLoading, error } = useBlogPosts(filters);
 
-    const { blogPosts = [], totalCount = 0} = data
+    const { blogPosts = [], totalCount = 0 } = data;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFilters({
@@ -35,7 +38,16 @@ const BlogPosts = () => {
 
     return (
         <div className="container mx-auto px-6 py-8">
-            <h1 className="text-3xl font-bold mb-6">Blog Posts</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold">Blog Posts</h1>
+                {/* Create New Post Button */}
+                <button
+                    onClick={() => router.push("/blogs/create")}
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                >
+                    Create New Post
+                </button>
+            </div>
 
             {/* Filters */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
