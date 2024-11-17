@@ -3,7 +3,7 @@ import {
     generateRefreshToken,
     verifyAccessToken,
     verifyRefreshToken
-} from "@server/utils/jwt_utils";
+} from "@utils/jwtUtils";
 import {InsufficientPermissionsException, InvalidCredentialsException} from "@/types/exceptions";
 import {Role} from "@/types/dtos/roles";
 import * as revokedTokenRepository from "@server/repositories/revokedTokens"

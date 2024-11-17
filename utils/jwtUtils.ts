@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import {Role} from "@/types/dtos/roles";
+import {Role} from "@types/dtos/roles";
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET as string;
 const ACCESS_TOKEN_SECRET_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN as string;
@@ -42,4 +42,14 @@ export async function verifyRefreshToken(token: string) {
 
 export async function verifyAccessToken(token: string) {
     return verifyToken(token, ACCESS_TOKEN_SECRET)
+}
+
+export function getUserIdFromAccessToken(token: string): number | null {
+    const payload = verifyAccessToken(token);
+    return payload?.userId || null;
+}
+
+export function getRoleFromAccessToken(token: string): number | null {
+    const payload = verifyAccessToken(token);
+    return payload?.role || null;
 }

@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 import * as commentService from "@server/services/comments";
 import {NextResponse} from "next/server";
 import * as authorizationService from "@server/services/authorization";
-import {routeHandlerException} from "@server/utils/exception_utils";
+import {routeHandlerException} from "@server/utils/exceptionUtils";
 
 export async function GET(req: Request) {
     try {

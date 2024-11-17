@@ -1,7 +1,7 @@
 import {NextResponse} from "next/server";
 import * as codeTemplateService from "@server/services/codeTemplates";
 import * as authorizationService from "@server/services/authorization";
-import {routeHandlerException} from "@server/utils/exception_utils";
+import {routeHandlerException} from "@server/utils/exceptionUtils";
 
 export async function GET(req: Request, {params}: { params: { id: string } }) {
     try {

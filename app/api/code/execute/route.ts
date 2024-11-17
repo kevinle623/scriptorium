@@ -3,7 +3,7 @@ import * as codeTemplateService from "@server/services/codeTemplates";
 import {
     CodeExecutionException,
 } from "@/types/exceptions";
-import {routeHandlerException} from "@server/utils/exception_utils";
+import {routeHandlerException} from "@server/utils/exceptionUtils";
 
 export async function POST(req: Request) {
     try {

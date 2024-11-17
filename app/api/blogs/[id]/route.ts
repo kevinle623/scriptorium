@@ -8,7 +8,7 @@ import {
 } from "@/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
 import {BlogPost} from "@/types/dtos/blogPosts";
-import {routeHandlerException} from "@server/utils/exception_utils";
+import {routeHandlerException} from "@server/utils/exceptionUtils";
 
 export async function GET(req: Request, {params}: { params: { id: string } }) {
     try {

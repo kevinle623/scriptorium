@@ -1,6 +1,6 @@
 import * as authorizationService from "@server/services/authorization";
 import { NextResponse } from "next/server";
-import {routeHandlerException} from "@server/utils/exception_utils";
+import {routeHandlerException} from "@server/utils/exceptionUtils";
 
 export async function POST(req: Request) {
     try {

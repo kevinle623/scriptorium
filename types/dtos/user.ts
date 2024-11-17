@@ -52,3 +52,18 @@ export interface RefreshResponse {
     accessToken: string;
     refreshToken: string;
 }
+
+export interface GetUserRequest {
+    userId: string
+}
+
+
+export interface GetUserResponse {
+    id: number;
+    email: string;
+    phone: string;
+    role: Role;
+    firstName: string;
+    lastName: string;
+    avatar?: string;
+}

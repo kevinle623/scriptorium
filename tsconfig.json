@@ -22,6 +22,7 @@
       "@server/*": ["./server/*"],
       "@client/*": ["./client/*"],
       "@types/*": ["./types/*"],
+      "@utils/*": ["./utils/*"]
     },
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

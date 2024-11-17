@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import * as blogPostService from "@server/services/blogPosts";
-import {routeHandlerException} from "@server/utils/exception_utils";
+import {routeHandlerException} from "@server/utils/exceptionUtils";
 
 export async function POST(req: Request, {params}: { params: { id: string } }) {
     try {

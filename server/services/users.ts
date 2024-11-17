@@ -1,13 +1,13 @@
 import * as userRepository from '@server/repositories/users'
 import {InvalidCredentialsException, NotFoundException, ServiceException} from "@/types/exceptions";
 import {prisma} from "@server/libs/prisma/client";
-import {comparePassword, hashPassword} from "@server/utils/password_utils";
+import {comparePassword, hashPassword} from "@server/utils/passwordUtils";
 import {
     generateAccessToken,
     generateRefreshToken,
     verifyAccessToken,
     verifyRefreshToken
-} from "@server/utils/jwt_utils";
+} from "@utils/jwtUtils";
 import {CreateUserRequest, EditUserRequest} from "@/types/dtos/user";
 import * as revokedTokenRepository from '@server/repositories/revokedTokens'
 

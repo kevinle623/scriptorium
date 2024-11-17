@@ -7,7 +7,7 @@ import {
     ServiceException
 } from "@/types/exceptions";
 import * as authorizationService from "@server/services/authorization";
-import {routeHandlerException} from "@server/utils/exception_utils";
+import {routeHandlerException} from "@server/utils/exceptionUtils";
 
 export async function POST(req: Request, {params}: { params: { id: string } }) {
     try {

@@ -1,7 +1,11 @@
-import { LoginRequest, LoginResponse } from "@types/dtos/user";
+import {GetUserResponse, LoginRequest, LoginResponse} from "@types/dtos/user";
 import { CreateUserRequest, RefreshResponse } from "@types/dtos/user";
 import axiosInstance from "@client/api/axiosInstance";
 
+export const getUserById = async (userId: string): Promise<GetUserResponse> => {
+    const { data } = await axiosInstance.get(`/users/${userId}`);
+    return data;
+};
 
 export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {
     const response = await axiosInstance.post("/users/login", data, {
@@ -38,6 +42,6 @@ export const logoutUser = async (accessToken: string, refreshToken: string) => {
 };
 
 export const refreshUser = async (refreshToken: string) => {
-    const { data } = await axiosInstance.post<RefreshResponse>("/refresh-tokens", { refreshToken });
+    const { data } = await axiosInstance.post<RefreshResponse>("/users/refresh", { refreshToken });
     return data;
 };
