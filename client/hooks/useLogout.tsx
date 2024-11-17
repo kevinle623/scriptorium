@@ -1,9 +1,11 @@
-import {useMutation} from "@tanstack/react-query";
-import {useAuth} from "@client/providers/AuthProvider";
-import {logoutUser} from "@client/services/userService";
+import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "@client/providers/AuthProvider";
+import { useToaster } from "@client/providers/ToasterProvider";
+import { logoutUser } from "@client/services/userService";
 
 export const useLogout = () => {
     const { clearAuth, getAccessToken, getRefreshToken } = useAuth();
+    const { setToaster } = useToaster();
 
     return useMutation({
         mutationFn: async () => {
@@ -16,9 +18,11 @@ export const useLogout = () => {
         },
         onSuccess: () => {
             clearAuth();
+            setToaster("Logged out successfully", "success");
         },
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("Logout failed:", error.message);
+            setToaster(error.message || "Failed to log out", "error");
         },
     });
 };

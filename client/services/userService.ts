@@ -24,7 +24,7 @@ export const registerUser = async (data: CreateUserRequest) => {
 
 export const logoutUser = async (accessToken: string, refreshToken: string) => {
     const response = await axios.post(
-        "/api/logout",
+        "/api/users/logout",
         { refreshToken },
         {
             headers: {
