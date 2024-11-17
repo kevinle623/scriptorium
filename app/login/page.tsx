@@ -23,7 +23,7 @@ const Login = () => {
     const loginMutation = useLogin();
 
     const onSubmit = (formData: LoginFormInputs) => {
-        setErrorMessage(""); // Reset error message on new attempt
+        setErrorMessage("");
         loginMutation.mutate(formData, {
             onSuccess: (data) => {
                 console.log("Login successful:", data);
