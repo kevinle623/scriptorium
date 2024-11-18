@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useBlogPosts } from "@client/hooks/useBlogPosts";
 import { useRouter } from "next/navigation";
-import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import TagInput from "@client/components/tag-input/TagInput";
 import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
 
@@ -62,7 +62,7 @@ const BlogPosts = () => {
 
     const totalPages = Math.ceil(totalCount / searchFilters.limit);
 
-    if (isLoading) return <LoadingSpinner />;
+    if (isLoading) return <LoadingSpinnerScreen />;
     if (error) return <div>Error fetching blog posts!</div>;
 
     return (

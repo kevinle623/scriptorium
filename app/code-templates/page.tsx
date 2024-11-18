@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useCodeTemplates } from "@client/hooks/useCodeTemplates";
 import { useRouter } from "next/navigation";
-import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import TagInput from "@client/components/tag-input/TagInput";
 
 const CodeTemplates = () => {
@@ -58,7 +58,7 @@ const CodeTemplates = () => {
 
     const totalPages = Math.ceil(totalCount / searchFilters.limit);
 
-    if (isLoading) return <LoadingSpinner />;
+    if (isLoading) return <LoadingSpinnerScreen />;
     if (error) return <div>Error fetching code templates!</div>;
 
     return (

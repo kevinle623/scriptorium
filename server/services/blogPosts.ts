@@ -12,7 +12,7 @@ import {NotFoundException, ServiceException} from "@/types/exceptions";
 import {Comment, GetCommentsResult} from "@/types/dtos/comments";
 import * as commentRepository from "@server/repositories/comments";
 import * as reportRepository from "@server/repositories/reports";
-import {Vote, VoteType} from "@/types/dtos/votes";
+import {BlogPostVoteResponse, Vote, VoteType} from "@/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
 import * as codeTemplateRepository from "@server/repositories/codeTemplates"
 
@@ -205,15 +205,22 @@ export async function toggleBlogPostVote(
 }
 
 export async function getBlogPostVoteByUserId(
-    userId: number,
+    userId: number | undefined,
     blogPostId: number,
-): Promise<Vote | null> {
+): Promise<BlogPostVoteResponse> {
     try {
-        return await voteRepository.getBlogPostVoteByUserId(prisma, userId, blogPostId)
-    } catch (e) {
-        throw e
-    }
+        const { upVotes, downVotes } = await voteRepository.getVoteCountsByBlogPostId(prisma, blogPostId);
 
+        const userVote = userId ? await voteRepository.getBlogPostVoteByUserId(prisma, userId, blogPostId) : null;
+
+        return {
+            userVote,
+            upVotes,
+            downVotes,
+        };
+    } catch (e) {
+        throw e;
+    }
 }
 export async function getDirectCommentsFromBlogPost(
     blogPostId: number,

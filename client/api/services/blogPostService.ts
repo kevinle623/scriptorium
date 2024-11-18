@@ -7,7 +7,7 @@ import {
     ReportBlogPostResponse
 } from "@types/dtos/blogPosts";
 import {AddCommentRequest, AddCommentResponse, Comment} from "@types/dtos/comments"
-import {ToggleVoteRequest, ToggleVoteResponse} from "@types/dtos/votes";
+import {BlogPostVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@types/dtos/votes";
 import axiosInstance from "@client/api/axiosInstance";
 
 export const fetchBlogPosts = async (filters: BlogPostFilters): Promise<{
@@ -52,8 +52,8 @@ export const fetchComments = async (blogPostId: string): Promise<Comment[]> => {
 export const voteBlogPost = async (
     payload: ToggleVoteRequest
 ): Promise<ToggleVoteResponse> => {
-    const { id, voteType } = payload
-    const response = await axiosInstance.post(`/blogs/${id}/rate`, { voteType });
+    const { blogPostId, voteType } = payload
+    const response = await axiosInstance.post(`/blogs/${blogPostId}/rate`, { voteType });
     return response.data
 };
 
@@ -82,4 +82,9 @@ export const reportBlogPost = async (payload: ReportBlogPostRequest): Promise<Re
     const {id, reason, userId} = payload
     const response = await axiosInstance.post(`/blogs/${id}/report`, { reason, userId });
     return response.data
+};
+
+export const getBlogPostVotes = async (blogPostId: number): Promise<BlogPostVoteResponse> => {
+    const { data } = await axiosInstance.get(`/blogs/${blogPostId}/rate`);
+    return data;
 };

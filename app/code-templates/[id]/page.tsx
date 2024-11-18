@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useCodeTemplateById } from "@client/hooks/useCodeTemplateById";
 import { useExecuteCode } from "@client/hooks/useExecuteCode";
-import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import { useRouter } from "next/navigation";
 import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
 import { useCodePlaygroundCache } from "@client/providers/CodePlaygroundCacheProvider";
@@ -53,7 +53,7 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
     };
 
     if (isLoading || userLoading) {
-        return <LoadingSpinner />;
+        return <LoadingSpinnerScreen />;
     }
 
     if (error) {

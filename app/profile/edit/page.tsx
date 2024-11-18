@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToaster } from "@client/providers/ToasterProvider";
-import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import {useUser} from "@client/hooks/useUser";
 import {useEditProfile} from "@client/hooks/useEditProfile";
 
@@ -47,7 +47,7 @@ const EditProfilePage = () => {
     };
 
     if (isUserLoading) {
-        return <LoadingSpinner />;
+        return <LoadingSpinnerScreen />;
     }
 
     return (

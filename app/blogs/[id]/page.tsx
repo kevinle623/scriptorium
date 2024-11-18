@@ -4,15 +4,14 @@ import React, { useEffect, useState } from "react";
 import { useCommentBlogPost } from "@client/hooks/useCommentBlogPost";
 import { useBlogPost } from "@client/hooks/useBlogPost";
 import { useParams, useRouter } from "next/navigation";
-import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import { useBlogPostComments } from "@client/hooks/useBlogPostComments";
-import { useVoteBlogPost } from "@client/hooks/useVoteBlogPost";
 import { useReportBlogPost } from "@client/hooks/useReportBlogPost";
-import { ToggleVoteRequest } from "@types/dtos/votes";
 import { AddCommentRequest } from "@types/dtos/comments";
 import { ReportBlogPostRequest } from "@types/dtos/blogPosts";
 import { useUser } from "@client/hooks/useUser";
 import { FaEdit } from "react-icons/fa";
+import BlogPostVote from "@client/components/vote/BlogPostVote";
 
 const BlogPost = () => {
     const params = useParams();
@@ -21,14 +20,12 @@ const BlogPost = () => {
 
     const [newComment, setNewComment] = useState("");
     const [reportReason, setReportReason] = useState("");
-    const [vote, setVote] = useState<"up" | "down" | undefined>();
     const [isAuthor, setIsAuthor] = useState(false);
 
     const { blogPost, blogLoading } = useBlogPost(id);
     const { data: user, isLoading: userLoading } = useUser();
     const { comments, commentsLoading } = useBlogPostComments(id);
 
-    const { mutate: voteBlogPost } = useVoteBlogPost();
     const { mutate: addComment } = useCommentBlogPost();
     const { mutate: reportBlogPost } = useReportBlogPost();
 
@@ -37,12 +34,6 @@ const BlogPost = () => {
             setIsAuthor(user.id === blogPost.userId);
         }
     }, [user, blogPost]);
-
-    const handleVote = (type: "up" | "down") => {
-        const newVote = vote === type ? null : type;
-        setVote(newVote);
-        voteBlogPost({ id, voteType: newVote } as ToggleVoteRequest);
-    };
 
     const handleAddComment = () => {
         if (!newComment.trim()) return;
@@ -57,7 +48,7 @@ const BlogPost = () => {
     };
 
     if (blogLoading || commentsLoading || userLoading) {
-        return <LoadingSpinner />;
+        return <LoadingSpinnerScreen />;
     }
 
     return (
@@ -83,26 +74,7 @@ const BlogPost = () => {
                     <h2 className="text-lg font-semibold">Tags:</h2>
                     <p className="text-blue-600 dark:text-blue-400">{blogPost?.tags.join(", ")}</p>
                 </div>
-                <div className="flex items-center gap-4 mb-4">
-                    <button
-                        onClick={() => handleVote("up")}
-                        className={`px-4 py-2 ${
-                            vote === "up" ? "bg-green-600" : "bg-green-500 dark:bg-green-700"
-                        } text-white rounded hover:bg-green-600`}
-                    >
-                        Upvote
-                    </button>
-                    <span>{blogPost?.upVotes}</span>
-                    <button
-                        onClick={() => handleVote("down")}
-                        className={`px-4 py-2 ${
-                            vote === "down" ? "bg-red-600" : "bg-red-500 dark:bg-red-700"
-                        } text-white rounded hover:bg-red-600`}
-                    >
-                        Downvote
-                    </button>
-                    <span>{blogPost?.downVotes}</span>
-                </div>
+                <BlogPostVote blogPostId={Number(id)} /> {/* Integrated BlogPostVote */}
             </div>
 
             {/* Comments Section */}

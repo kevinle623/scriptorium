@@ -1,9 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import { useAuth } from "@client/providers/AuthProvider";
 import { useToaster } from "@client/providers/ToasterProvider";
 import { logoutUser } from "@client/api/services/userService";
 
 export const useLogout = () => {
+    const queryClient = useQueryClient();
     const { clearAuth, getAccessToken, getRefreshToken } = useAuth();
     const { setToaster } = useToaster();
 
@@ -17,6 +18,7 @@ export const useLogout = () => {
             return await logoutUser(accessToken, refreshToken);
         },
         onSuccess: () => {
+            queryClient.invalidateQueries();
             clearAuth();
             setToaster("Logged out successfully", "success");
         },

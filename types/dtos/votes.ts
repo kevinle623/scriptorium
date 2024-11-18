@@ -26,3 +26,9 @@ export interface ToggleVoteResponse {
         voteType: "up" | "down";
     } | null;
 }
+
+export interface BlogPostVoteResponse {
+    userVote: Vote | null;
+    upVotes: number;
+    downVotes: number;
+}

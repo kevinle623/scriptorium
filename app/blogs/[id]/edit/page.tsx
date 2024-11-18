@@ -7,7 +7,7 @@ import { useBlogPost } from "@client/hooks/useBlogPost";
 import { useEditBlogPost } from "@client/hooks/useEditBlogPost";
 import { useDeleteBlogPost } from "@client/hooks/useDeleteBlogPost";
 import TagInput from "@client/components/tag-input/TagInput";
-import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import { useToaster } from "@client/providers/ToasterProvider";
 import { useUser } from "@client/hooks/useUser";
 
@@ -89,7 +89,7 @@ const EditBlogPostPage = () => {
     };
 
     if (blogLoading || userLoading) {
-        return <LoadingSpinner />;
+        return <LoadingSpinnerScreen />;
     }
 
     return (

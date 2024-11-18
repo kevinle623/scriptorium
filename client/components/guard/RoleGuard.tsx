@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useAuth } from "@client/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useToaster } from "@client/providers/ToasterProvider";
-import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import { getRoleFromAccessToken } from "@server/utils/jwtUtils"
 
 interface AdminGuardProps {
@@ -37,7 +37,7 @@ const AdminGuard = ({ children, reroute = "/login" }: AdminGuardProps) => {
     }, [isAuthed, getAccessToken, reroute, router, setToaster]);
 
     if (!isAuthed) {
-        return <LoadingSpinner />;
+        return <LoadingSpinnerScreen />;
     }
 
     return children;

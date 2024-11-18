@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useAuth } from "@client/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useToaster } from "@client/providers/ToasterProvider";
-import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 
 interface UnAuthGuardProps {
     children: React.ReactNode;
@@ -23,7 +23,7 @@ const UnAuthGuard = ({ children, reroute = "/" }: UnAuthGuardProps) => {
     }, [isAuthed, reroute, router, setToaster]);
 
     if (isAuthed || !isInitialized) {
-        return <LoadingSpinner/>;
+        return <LoadingSpinnerScreen/>;
     }
 
     return children

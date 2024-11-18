@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useUser } from "@client/hooks/useUser";
-import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import { useRouter } from "next/navigation";
 import { FaUserCircle } from "react-icons/fa"; // Importing a default icon
 
@@ -11,7 +11,7 @@ const ProfilePage = () => {
     const router = useRouter();
 
     if (isLoading) {
-        return <LoadingSpinner />;
+        return <LoadingSpinnerScreen />;
     }
 
     if (isError || !user) {

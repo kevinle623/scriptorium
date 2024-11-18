@@ -10,7 +10,7 @@ import {useCodeTemplateById} from "@client/hooks/useCodeTemplateById";
 import {useUpdateCodeTemplate} from "@client/hooks/useEditCodeTemplate";
 import {useDeleteCodeTemplate} from "@client/hooks/useDeleteCodeTemplate";
 import {useUser} from "@client/hooks/useUser";
-import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 
 const EditCodeTemplatePage = () => {
     const { id } = useParams() as { id: string };
@@ -104,7 +104,7 @@ const EditCodeTemplatePage = () => {
     };
 
     if (isLoadingTemplate || userLoading) {
-        return <LoadingSpinner/>;
+        return <LoadingSpinnerScreen/>;
     }
 
     return (
