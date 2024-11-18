@@ -1,6 +1,7 @@
 "use client";
 
-import React, {createContext, useContext, useState, ReactNode, useEffect} from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Login from "@client/components/onboarding/Login";
 import Register from "@client/components/onboarding/Register";
 import { useAuth } from "@client/providers/AuthProvider";
@@ -29,12 +30,26 @@ export const JitOnboardingProvider = ({ children }: JitOnboardingProviderProps) 
     const { isAuthed, isInitialized } = useAuth();
     const [onboardingAction, setOnboardingAction] = useState<(() => void) | null>(null);
     const [step, setStep] = useState<OnboardingStep | null>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        const handleRouteChange = () => {
+            setStep(null);
+            setOnboardingAction(null);
+        };
+
+        router.events.on("routeChangeStart", handleRouteChange);
+
+        return () => {
+            router.events.off("routeChangeStart", handleRouteChange);
+        };
+    }, [router]);
 
     useEffect(() => {
         if (isAuthed) {
-            setStep(null)
+            setStep(null);
         }
-    }, [isAuthed])
+    }, [isAuthed]);
 
     const handleSuccess = () => {
         if (onboardingAction) onboardingAction();
@@ -55,10 +70,11 @@ export const JitOnboardingProvider = ({ children }: JitOnboardingProviderProps) 
         setOnboardingAction(() => nextAction);
         setStep(step);
     };
+
     if (step) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
-                <div className="rounded-lg p-6 w-full max-w-lg">
+                <div className="rounded-lg p-6 max-w-lg">
                     <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
                         In order to perform this action, you must be authenticated.
                     </h2>
@@ -89,7 +105,7 @@ export const JitOnboardingProvider = ({ children }: JitOnboardingProviderProps) 
     }
 
     return (
-        <JitOnboardingContext.Provider value={{triggerOnboarding}}>
+        <JitOnboardingContext.Provider value={{ triggerOnboarding }}>
             {children}
         </JitOnboardingContext.Provider>
     );

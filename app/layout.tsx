@@ -43,7 +43,7 @@ export default function RootLayout({
             <ToasterProvider>
               <AuthProvider>
                 <CodePlaygroundCacheProvider>
-                <NavBar />
+                  <NavBar />
                   <JitOnboardingProvider>
                     {children}
                   </JitOnboardingProvider>

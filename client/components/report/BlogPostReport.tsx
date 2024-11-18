@@ -26,7 +26,7 @@ const BlogPostReport = ({ blogPostId }: BlogPostReportProps) => {
             {
                 onSuccess: () => {
                     setReportReason("");
-                    setShowReportForm(false); // Hide the form after successful submission
+                    setShowReportForm(false);
                     setToaster("Report submitted successfully!", "success");
                 },
                 onError: (error) => {

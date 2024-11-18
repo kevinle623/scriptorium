@@ -9,6 +9,11 @@ const ToasterContext = createContext({
 
 export const useToaster = () => useContext(ToasterContext);
 
+export const useGlobalToaster = () => {
+    const { setToaster } = useToaster();
+    return setToaster;
+};
+
 export const ToasterProvider = ({ children }: { children: React.ReactNode }) => {
     const setToaster = useCallback(
         (message: string, type: "success" | "error" | "info" = "info") => {
