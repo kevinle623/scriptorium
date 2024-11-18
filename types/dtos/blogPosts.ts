@@ -72,6 +72,7 @@ export interface GetBlogPostRequest {
     orderBy: BlogPostOrderType
     userId?: number,
     mineOnly: boolean,
+    hidden?: boolean,
 }
 
 export interface GetBlogPostsResult {

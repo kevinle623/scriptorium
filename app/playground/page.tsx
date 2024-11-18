@@ -6,7 +6,8 @@ import { useCodePlaygroundCache } from "@client/providers/CodePlaygroundCachePro
 import Editor from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
+import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
+import {CodingLanguage} from "@types/dtos/codeTemplates";
 
 const Playground = () => {
     const { language, code, setLanguage, setCode, resetPlayground } = useCodePlaygroundCache();
@@ -16,7 +17,7 @@ const Playground = () => {
     const { resolvedTheme } = useTheme();
     const [editorTheme, setEditorTheme] = useState("vs-dark");
     const router = useRouter();
-    const {triggerOnboarding} = useJitOnboarding()
+    const { triggerOnboarding } = useJitOnboarding();
 
     useEffect(() => {
         setEditorTheme(resolvedTheme === "light" ? "vs-light" : "vs-dark");
@@ -37,7 +38,7 @@ const Playground = () => {
     };
 
     const handleSaveAsTemplate = () => {
-        triggerOnboarding(() => router.push("/playground/save"))
+        triggerOnboarding(() => router.push("/playground/save"));
     };
 
     return (
@@ -67,14 +68,14 @@ const Playground = () => {
                 <select
                     id="language"
                     value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
+                    onChange={(e) => setLanguage(e.target.value as CodingLanguage)}
                     className="border rounded p-2 w-full"
                 >
-                    <option value="javascript">JavaScript</option>
-                    <option value="python">Python</option>
-                    <option value="java">Java</option>
-                    <option value="c">C</option>
-                    <option value="cpp">C++</option>
+                    {Object.entries(CodingLanguage).map(([key, value]) => (
+                        <option key={key} value={value}>
+                            {key.charAt(0).toUpperCase() + key.slice(1).toLowerCase()}
+                        </option>
+                    ))}
                 </select>
             </div>
 

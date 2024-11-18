@@ -6,18 +6,20 @@ import { useTheme } from "next-themes";
 import { useExecuteCode } from "@client/hooks/useExecuteCode";
 import { useToaster } from "@client/providers/ToasterProvider";
 import Editor from "@monaco-editor/react";
-import {useCodeTemplateById} from "@client/hooks/useCodeTemplateById";
-import {useUpdateCodeTemplate} from "@client/hooks/useEditCodeTemplate";
-import {useDeleteCodeTemplate} from "@client/hooks/useDeleteCodeTemplate";
-import {useUser} from "@client/hooks/useUser";
+import { useCodeTemplateById } from "@client/hooks/useCodeTemplateById";
+import { useUpdateCodeTemplate } from "@client/hooks/useEditCodeTemplate";
+import { useDeleteCodeTemplate } from "@client/hooks/useDeleteCodeTemplate";
+import { useUser } from "@client/hooks/useUser";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
+import {CodingLanguage} from "@types/dtos/codeTemplates";
+
 
 const EditCodeTemplatePage = () => {
     const { id } = useParams() as { id: string };
     const router = useRouter();
 
     const { resolvedTheme } = useTheme();
-    const [editorTheme, setEditorTheme] = useState("vs-dark");
+    const [editorTheme, setEditorTheme] = useState<"vs-dark" | "vs-light">("vs-dark");
 
     const { data: codeTemplate, isLoading: isLoadingTemplate } = useCodeTemplateById(Number(id));
     const { mutate: updateCodeTemplate, isLoading: isUpdating } = useUpdateCodeTemplate();
@@ -26,12 +28,12 @@ const EditCodeTemplatePage = () => {
     const { data: user, isLoading: userLoading } = useUser();
     const { setToaster } = useToaster();
 
-    const [title, setTitle] = useState("");
-    const [language, setLanguage] = useState("javascript");
-    const [code, setCode] = useState("");
-    const [explanation, setExplanation] = useState("");
+    const [title, setTitle] = useState<string>("");
+    const [language, setLanguage] = useState<CodingLanguage>(CodingLanguage.JAVASCRIPT);
+    const [code, setCode] = useState<string>("");
+    const [explanation, setExplanation] = useState<string>("");
     const [tags, setTags] = useState<string[]>([]);
-    const [stdin, setStdin] = useState("");
+    const [stdin, setStdin] = useState<string>("");
     const [output, setOutput] = useState<string | null>(null);
 
     useEffect(() => {
@@ -65,7 +67,7 @@ const EditCodeTemplatePage = () => {
                     setToaster("Code template updated successfully!", "success");
                     router.push(`/code-templates/${id}`);
                 },
-                onError: (error) => {
+                onError: (error: any) => {
                     setToaster(error.message || "Failed to update code template.", "error");
                 },
             }
@@ -79,7 +81,7 @@ const EditCodeTemplatePage = () => {
                     setToaster("Code template deleted successfully!", "success");
                     router.push("/code-templates");
                 },
-                onError: (error) => {
+                onError: (error: any) => {
                     setToaster(error.message || "Failed to delete code template.", "error");
                 },
             });
@@ -104,7 +106,7 @@ const EditCodeTemplatePage = () => {
     };
 
     if (isLoadingTemplate || userLoading) {
-        return <LoadingSpinnerScreen/>;
+        return <LoadingSpinnerScreen />;
     }
 
     return (
@@ -136,14 +138,14 @@ const EditCodeTemplatePage = () => {
                     <label className="block text-lg font-semibold mb-2">Language</label>
                     <select
                         value={language}
-                        onChange={(e) => setLanguage(e.target.value)}
+                        onChange={(e) => setLanguage(e.target.value as CodingLanguage)}
                         className="border rounded p-2 w-full"
                     >
-                        <option value="javascript">JavaScript</option>
-                        <option value="python">Python</option>
-                        <option value="java">Java</option>
-                        <option value="c">C</option>
-                        <option value="cpp">C++</option>
+                        {Object.entries(CodingLanguage).map(([key, value]) => (
+                            <option key={key} value={value}>
+                                {key.charAt(0).toUpperCase() + key.slice(1).toLowerCase()}
+                            </option>
+                        ))}
                     </select>
                 </div>
 

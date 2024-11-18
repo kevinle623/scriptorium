@@ -12,12 +12,19 @@ export type ExecuteCodeResponse = {
 };
 
 export enum CodingLanguage {
-    JAVA = "java",
-    PYTHON = "python",
     C = "c",
     CPLUSPLUS = "c++",
-    JAVASCRIPT = "javascript"
+    JAVA = "java",
+    PYTHON = "python",
+    JAVASCRIPT = "javascript",
+    RUBY = "ruby",
+    GO = "go",
+    PHP = "php",
+    SWIFT = "swift",
+    KOTLIN = "kotlin",
+    RUST = "rust"
 }
+
 
 export interface CodeTemplate {
     id: number;

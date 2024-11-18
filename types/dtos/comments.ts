@@ -1,3 +1,5 @@
+import {BlogPostOrderType} from "@types/dtos/blogPosts";
+
 export interface Comment {
     id: number;
     content: string;
@@ -50,4 +52,10 @@ export interface ReportCommentResponse {
         commentId: number;
         reason: string;
     };
+}
+
+export interface GetCommentsRequest {
+    page?: number,
+    limit?: number,
+    hidden?: boolean,
 }

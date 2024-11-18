@@ -1,5 +1,5 @@
 import * as commentRepository from "@server/repositories/comments";
-import {Comment, GetCommentsResult} from "@/types/dtos/comments";
+import {Comment, GetCommentsRequest, GetCommentsResult} from "@/types/dtos/comments";
 import {prisma} from "@server/libs/prisma/client";
 import * as reportRepository from "@server/repositories/reports";
 import {CommentVoteResponse, Vote, VoteType} from "@/types/dtos/votes";
@@ -143,11 +143,10 @@ export async function toggleHiddentComment(commentId: number, hidden: boolean) {
 }
 
 export async function getMostReportedComments(
-    page?: number,
-    limit?: number,
+    getCommentsRequest: GetCommentsRequest
 ): Promise<{totalCount: number, comments: Comment[]}> {
     try {
-        const {totalCount, comments} = await commentRepository.getMostReportedComments(prisma, page, limit)
+        const {totalCount, comments} = await commentRepository.getMostReportedComments(prisma, getCommentsRequest)
         const populatedComments = await Promise.all(
             comments.map(async (comment: Comment) => {
                 return await populateComment(comment);
