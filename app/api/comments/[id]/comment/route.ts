@@ -41,6 +41,7 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
 export async function GET(req: Request, {params}: { params: { id: string } }) {
     try {
         const userId = await authorizationService.extractUserIdFromRequestHeader(req)
+
         if (!Number(params.id)) {
             return NextResponse.json(
                 {message: "Invalid id"},

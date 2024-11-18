@@ -22,12 +22,19 @@ export interface ToggleVoteResponse {
     vote: {
         id: string;
         userId: string;
-        blogPostId: number;
+        commentId?: number;
+        blogPostId?: number;
         voteType: "up" | "down";
     } | null;
 }
 
 export interface BlogPostVoteResponse {
+    userVote: Vote | null;
+    upVotes: number;
+    downVotes: number;
+}
+
+export interface CommentVoteResponse {
     userVote: Vote | null;
     upVotes: number;
     downVotes: number;

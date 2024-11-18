@@ -43,7 +43,7 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
         try {
             tokenPayload = await authorizationService.verifyBasicAuthorization(req)
         } catch (e) {
-
+            console.error('Authorization failed:', e);
         }
 
 

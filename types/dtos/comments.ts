@@ -36,3 +36,18 @@ export interface GetCommentsResult {
     totalCount: number,
     comments: Comment[]
 }
+
+export interface ReportCommentRequest {
+    id: string;
+    reason: string;
+}
+
+export interface ReportCommentResponse {
+    message: string;
+    report: {
+        id: string;
+        userId: string;
+        commentId: number;
+        reason: string;
+    };
+}

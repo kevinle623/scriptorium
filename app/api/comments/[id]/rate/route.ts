@@ -39,7 +39,13 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
 
 export async function GET(req: Request, {params}: { params: { id: string } }) {
     try {
-        const tokenPayload = await authorizationService.verifyBasicAuthorization(req)
+        let tokenPayload = {}
+
+        try {
+            tokenPayload = await authorizationService.verifyBasicAuthorization(req)
+        } catch (e) {
+            console.error('Authorization failed:', e);
+        }
 
         if (!Number(params.id)) {
             return NextResponse.json(
@@ -52,17 +58,19 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
 
         const commentId = parseInt(params.id, 10)
 
-        const vote =  await commentService.getCommentVoteByUserId(userId, commentId)
+        const { userVote: vote, upVotes, downVotes}  =  await commentService.getCommentVoteByUserId(userId, commentId)
 
         return NextResponse.json(
             {
                 message: "Comment vote successfully fetched for user",
-                vote: vote ? {
+                userVote: vote ? {
                     id: vote?.id,
                     userId: vote?.userId,
                     commentId: vote?.commentId,
                     voteType: vote?.voteType
-                } : null
+                } : null,
+                upVotes: upVotes || 0,
+                downVotes: downVotes || 0,
             },
             {status: 201}
         );
