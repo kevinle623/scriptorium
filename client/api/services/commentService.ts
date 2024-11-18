@@ -1,4 +1,10 @@
-import {Comment, ReportCommentRequest, ReportCommentResponse} from "@types/dtos/comments";
+import {
+    AddCommentRequest,
+    AddCommentResponse,
+    Comment,
+    ReportCommentRequest,
+    ReportCommentResponse
+} from "@types/dtos/comments";
 import axiosInstance from "@client/api/axiosInstance";
 import {CommentVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@types/dtos/votes";
 
@@ -31,4 +37,12 @@ export const voteComment = async (
 export const deleteComment = async (id: string) => {
     const response = await axiosInstance.delete(`/comments/${id}`);
     return response.data;
+};
+
+export const addReplyToComment = async (
+    payload: AddCommentRequest
+): Promise<AddCommentResponse> => {
+    const {id, content} = payload
+    const response = await axiosInstance.post(`/comments/${id}/comment`, { content });
+    return response.data
 };

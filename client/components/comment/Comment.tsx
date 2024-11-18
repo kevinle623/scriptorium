@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import CommentForm from "./CommentForm";
 import { Comment as CommentType } from "@types/dtos/comments";
 import { useReportComment } from "@client/hooks/useReportComment";
+import { useReplyComment } from "@client/hooks/useReplyComment";
 import { useCommentReplies } from "@client/hooks/useCommentReplies";
 import CommentVote from "@client/components/vote/CommentVote";
 
@@ -11,20 +12,32 @@ interface CommentProps {
 
 const Comment = ({ comment }: CommentProps) => {
     const { mutate: reportComment } = useReportComment();
+    const { mutate: replyToComment } = useReplyComment();
     const { replies, repliesLoading } = useCommentReplies(comment.id);
 
     const [isRepliesVisible, setIsRepliesVisible] = useState(false);
-    const [isReplyFormVisible, setIsReplyFormVisible] = useState(false);
+    const [activeForm, setActiveForm] = useState<"reply" | "report" | null>(null); // Track the active form
     const [replyContent, setReplyContent] = useState("");
+    const [reportReason, setReportReason] = useState("");
 
-    const handleReport = () => {
-        reportComment({ commentId: comment.id });
+    const handleReply = () => {
+        if (!replyContent.trim()) return;
+        replyToComment({ id: comment.id, content: replyContent });
+        setReplyContent(""); // Clear the input field after submission
+        setActiveForm(null); // Hide the reply form after submitting
     };
 
-    const handleReply = (content: string) => {
-        console.log("Reply to Comment:", content);
-        setReplyContent(""); // Clear the input field after submission
-        setIsReplyFormVisible(false); // Hide the reply form after submitting
+    const handleReport = () => {
+        if (!reportReason.trim()) {
+            return alert("Please provide a reason for reporting.");
+        }
+        reportComment({ id: comment.id, reason: reportReason });
+        setReportReason(""); // Clear the input field after submission
+        setActiveForm(null); // Hide the report form
+    };
+
+    const toggleForm = (form: "reply" | "report") => {
+        setActiveForm(activeForm === form ? null : form); // Toggle form visibility
     };
 
     return (
@@ -42,26 +55,58 @@ const Comment = ({ comment }: CommentProps) => {
             <div className="mt-4 flex items-center gap-4 text-sm">
                 <CommentVote commentId={comment.id} />
                 <button
-                    onClick={handleReport}
-                    className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
+                    onClick={() => toggleForm("report")}
+                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
                 >
-                    Report
+                    {activeForm === "report" ? "Cancel Report" : "Report"}
                 </button>
                 <button
-                    onClick={() => setIsReplyFormVisible(!isReplyFormVisible)}
+                    onClick={() => toggleForm("reply")}
                     className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
                 >
-                    {isReplyFormVisible ? "Cancel Reply" : "Reply"}
+                    {activeForm === "reply" ? "Cancel Reply" : "Reply"}
                 </button>
                 {replies && replies.length > 0 && (
                     <button
                         onClick={() => setIsRepliesVisible(!isRepliesVisible)}
-                        className="px-2 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 transition"
+                        className="px-3 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 transition"
                     >
                         {isRepliesVisible ? "Hide Replies" : `View Replies (${replies.length})`}
                     </button>
                 )}
             </div>
+
+            {activeForm === "report" && (
+                <div className="mt-4 p-4 rounded-lg shadow bg-red-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                    <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">
+                        Report Comment
+                    </h3>
+                    <textarea
+                        value={reportReason}
+                        onChange={(e) => setReportReason(e.target.value)}
+                        rows={4}
+                        className="w-full p-2 border rounded mb-4 border-red-300 dark:border-red-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+                        placeholder="Provide a reason for reporting..."
+                    />
+                    <button
+                        onClick={handleReport}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                        Submit Report
+                    </button>
+                </div>
+            )}
+
+            {activeForm === "reply" && (
+                <div className="mt-4">
+                    <CommentForm
+                        value={replyContent}
+                        onSubmit={handleReply}
+                        onChange={setReplyContent}
+                        placeholder="Write a reply..."
+                    />
+                </div>
+            )}
 
             {isRepliesVisible && (
                 <div className="mt-4 ml-4 border-l-2 border-gray-200 dark:border-gray-700 pl-4">
@@ -70,17 +115,6 @@ const Comment = ({ comment }: CommentProps) => {
                     ) : (
                         replies.map((reply) => <Comment key={reply.id} comment={reply} />)
                     )}
-                </div>
-            )}
-
-            {isReplyFormVisible && (
-                <div className="mt-4">
-                    <CommentForm
-                        value={replyContent}
-                        onSubmit={handleReply}
-                        onChange={setReplyContent}
-                        placeholder="Write a reply..."
-                    />
                 </div>
             )}
         </div>
