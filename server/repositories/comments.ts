@@ -273,7 +273,7 @@ export async function getDirectRepliesFromComment(
                         { hidden: false },
                         { userId: userId }
                     ]
-                    : { hidden: false },
+                    : [{ hidden: false }],
             },
         });
 
@@ -285,7 +285,7 @@ export async function getDirectRepliesFromComment(
                         { hidden: false },
                         { userId: userId }
                     ]
-                    : { hidden: false },
+                    : [{ hidden: false }],
             },
             orderBy: {
                 createdAt: 'desc',
