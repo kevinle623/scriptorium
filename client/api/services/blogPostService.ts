@@ -72,7 +72,6 @@ export const deleteBlogPost = async (id: string) => {
 export const addCommentToBlogPost = async (
     payload: AddCommentRequest
 ): Promise<AddCommentResponse> => {
-    console.log("hello world??", payload)
     const {id, content} = payload
     const response = await axiosInstance.post(`/blogs/${id}/comment`, { content });
     return response.data
