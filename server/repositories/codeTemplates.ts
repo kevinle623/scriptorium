@@ -80,14 +80,14 @@ export async function getCodeTemplatesByUserId(
     getCodeTemplatesRequest: GetCodeTemplatesRequest
 ): Promise<GetCodeTemplatesResult> {
     try {
-        const { title, userId, tags, content, page = 1, limit = 10 } = getCodeTemplatesRequest;
+        const { title, userId, tags, content, page = 1, limit = 10, mineOnly = false } = getCodeTemplatesRequest;
 
         const skip = (page - 1) * limit;
         const take = limit;
 
         const whereCondition: any = {};
 
-        if (userId) {
+        if (userId && mineOnly) {
             whereCondition.userId = parseInt(userId, 10);
         }
 

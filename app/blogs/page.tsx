@@ -27,6 +27,8 @@ const BlogPosts = () => {
 
     const { data = [], isLoading, error } = useBlogPosts({
         ...searchFilters,
+        title: searchFilters.title || undefined,
+        content: searchFilters.content || undefined,
         tags: searchFilters.tags && searchFilters.tags.length > 0 ? searchFilters.tags.join(",") : undefined,
     });
 

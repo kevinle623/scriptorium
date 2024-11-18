@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useCodeTemplates } from "@client/hooks/useCodeTemplates";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@client/providers/AuthProvider";
+import {useState} from "react";
+import {useCodeTemplates} from "@client/hooks/useCodeTemplates";
+import {useRouter} from "next/navigation";
+import {useAuth} from "@client/providers/AuthProvider";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import TagInput from "@client/components/tag-input/TagInput";
 
 const CodeTemplates = () => {
     const router = useRouter();
-    const { isAuthed } = useAuth();
+    const {isAuthed} = useAuth();
 
     const [filters, setFilters] = useState({
         title: "",
@@ -22,14 +22,16 @@ const CodeTemplates = () => {
 
     const [searchFilters, setSearchFilters] = useState(filters);
 
-    const { data = {}, isLoading, error } = useCodeTemplates({
+    const {data = {}, isLoading, error} = useCodeTemplates({
         ...searchFilters,
+        title: searchFilters.title || undefined,
+        content: searchFilters.content || undefined,
         tags: searchFilters.tags && searchFilters.tags.length > 0 ? searchFilters.tags.join(",") : undefined,
     });
-    const { codeTemplates = [], totalCount = 0 } = data;
+    const {codeTemplates = [], totalCount = 0} = data;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFilters({
             ...filters,
             [name]: value,
@@ -37,7 +39,7 @@ const CodeTemplates = () => {
     };
 
     const handleSearch = () => {
-        setSearchFilters({ ...filters, page: 1 });
+        setSearchFilters({...filters, page: 1});
     };
 
     const handleReset = () => {
@@ -55,17 +57,21 @@ const CodeTemplates = () => {
 
     const handlePagination = (direction: "next" | "prev") => {
         const newPage = direction === "next" ? searchFilters.page + 1 : searchFilters.page - 1;
-        setSearchFilters({ ...searchFilters, page: newPage });
+        setSearchFilters(
+            {
+                ...searchFilters,
+                page: newPage
+            });
     };
 
     const toggleMineOnly = () => {
-        setFilters((prev) => ({ ...prev, mineOnly: !prev.mineOnly }));
-        setSearchFilters((prev) => ({ ...prev, mineOnly: !prev.mineOnly }));
+        setFilters((prev) => ({...prev, mineOnly: !prev.mineOnly}));
+        setSearchFilters((prev) => ({...prev, mineOnly: !prev.mineOnly}));
     };
 
     const totalPages = Math.ceil(totalCount / searchFilters.limit);
 
-    if (isLoading) return <LoadingSpinnerScreen />;
+    if (isLoading) return <LoadingSpinnerScreen/>;
     if (error) return <div>Error fetching code templates!</div>;
 
     return (
@@ -100,7 +106,7 @@ const CodeTemplates = () => {
                 />
                 <TagInput
                     tags={filters.tags}
-                    setTags={(newTags) => setFilters({ ...filters, tags: newTags })}
+                    setTags={(newTags) => setFilters({...filters, tags: newTags})}
                 />
                 {isAuthed && (
                     <div className="flex items-center gap-2">
