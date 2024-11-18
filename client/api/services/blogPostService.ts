@@ -2,7 +2,7 @@
 import {
     BlogPost,
     BlogPostFilters,
-    CreateBlogPostRequest, CreateBlogPostResponse,
+    CreateBlogPostRequest, CreateBlogPostResponse, EditBlogPostRequest,
     ReportBlogPostRequest,
     ReportBlogPostResponse
 } from "@types/dtos/blogPosts";
@@ -55,6 +55,18 @@ export const voteBlogPost = async (
     const { id, voteType } = payload
     const response = await axiosInstance.post(`/blogs/${id}/rate`, { voteType });
     return response.data
+};
+
+export const editBlogPost = async (editBlogPostRequest: EditBlogPostRequest): Promise<BlogPost> => {
+    const { blogPostId, ...payload } = editBlogPostRequest;
+    const response = await axiosInstance.put(`/blogs/${blogPostId}`, payload);
+    return response.data.blogPost;
+};
+
+
+export const deleteBlogPost = async (id: string) => {
+    const response = await axiosInstance.delete(`/blogs/${id}`);
+    return response.data;
 };
 
 export const addCommentToBlogPost = async (

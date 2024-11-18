@@ -1,34 +1,45 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCodeTemplateById } from "@client/hooks/useCodeTemplateById";
 import { useExecuteCode } from "@client/hooks/useExecuteCode";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
-import {useRouter} from "next/navigation";
-import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
-import {useCodePlaygroundCache} from "@client/providers/CodePlaygroundCacheProvider";
+import { useRouter } from "next/navigation";
+import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
+import { useCodePlaygroundCache } from "@client/providers/CodePlaygroundCacheProvider";
+import { useUser } from "@client/hooks/useUser";
+import { FaEdit } from "react-icons/fa";
 
 const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
     const id = parseInt(params.id, 10);
-    const router = useRouter()
-    const {triggerOnboarding} = useJitOnboarding()
-    const { setCode, setLanguage, resetPlayground } = useCodePlaygroundCache()
+    const router = useRouter();
+    const { triggerOnboarding } = useJitOnboarding();
+    const { setCode, setLanguage, resetPlayground } = useCodePlaygroundCache();
+    const [isAuthor, setIsAuthor] = useState(false);
 
     const { data: codeTemplate, isLoading, error } = useCodeTemplateById(id);
+    const { data: user, isLoading: userLoading } = useUser();
     const { mutate: executeCode, data: executeResponse, isLoading: isExecuting } = useExecuteCode();
 
     const [stdin, setStdin] = useState("");
 
+    useEffect(() => {
+        if (user && codeTemplate) {
+            if (user.id === codeTemplate.userId) {
+                setIsAuthor(true);
+            }
+        }
+    }, [user, codeTemplate]);
+
     const handleFork = () => {
-        console.log("hello?")
-        triggerOnboarding(() => router.push(`/code-templates/${id}/fork`))
+        triggerOnboarding(() => router.push(`/code-templates/${id}/fork`));
     };
 
     const handleCopyToPlayground = () => {
-        resetPlayground()
-        setCode(codeTemplate?.code)
-        setLanguage(codeTemplate?.language)
-        router.push(`/playground`)
+        resetPlayground();
+        setCode(codeTemplate?.code);
+        setLanguage(codeTemplate?.language);
+        router.push(`/playground`);
     };
 
     const handleRunCode = () => {
@@ -41,7 +52,7 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
         });
     };
 
-    if (isLoading) {
+    if (isLoading || userLoading) {
         return <LoadingSpinner />;
     }
 
@@ -72,6 +83,15 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
                     >
                         Copy to Playground
                     </button>
+                    {isAuthor && (
+                        <button
+                            onClick={() => router.push(`/code-templates/${id}/edit`)}
+                            className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
+                        >
+                            <FaEdit />
+                            Edit Template
+                        </button>
+                    )}
                 </div>
             </div>
             <div className="text-gray-600 dark:text-gray-300 mb-6">Language: {language}</div>

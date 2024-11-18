@@ -87,3 +87,29 @@ export interface GetCodeTemplatesResult {
     totalCount: number,
     codeTemplates: CodeTemplate[]
 }
+
+export interface UpdateCodeTemplateRequest {
+    id: number;
+    title: string;
+    code: string;
+    language: string;
+    explanation: string;
+    tags: string[];
+}
+
+export interface UpdateCodeTemplateResponse {
+    message: string;
+    codeTemplate: {
+        id: number;
+        userId: number;
+        title: string;
+        code: string;
+        language: string;
+        explanation: string;
+        tags: string[];
+    };
+}
+
+export interface DeleteCodeTemplateResponse {
+    message: string;
+}
