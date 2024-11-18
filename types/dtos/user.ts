@@ -31,6 +31,18 @@ export interface EditUserRequest {
     avatar?: string;
 }
 
+export interface EditUserResponse {
+    message: string;
+    user: {
+        id: number;
+        email?: string;
+        phone?: string;
+        firstName?: string;
+        lastName?: string;
+        avatar?: string;
+    };
+}
+
 export interface LoginRequest {
     email: string;
     password: string;

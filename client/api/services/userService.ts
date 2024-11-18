@@ -1,4 +1,4 @@
-import {GetUserResponse, LoginRequest, LoginResponse} from "@types/dtos/user";
+import {EditUserRequest, EditUserResponse, GetUserResponse, LoginRequest, LoginResponse} from "@types/dtos/user";
 import { CreateUserRequest, RefreshResponse } from "@types/dtos/user";
 import axiosInstance from "@client/api/axiosInstance";
 
@@ -45,3 +45,20 @@ export const refreshUser = async (refreshToken: string) => {
     const { data } = await axiosInstance.post<RefreshResponse>("/users/refresh", { refreshToken });
     return data;
 };
+
+export async function editUser(request: EditUserRequest): Promise<EditUserResponse> {
+    try {
+        const response = await axiosInstance.put<EditUserResponse>(`/users`, request, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        return response.data;
+    } catch (error: any) {
+        if (error.response && error.response.data) {
+            throw new Error(error.response.data.message || 'Failed to update user.');
+        }
+        throw new Error('Failed to update user.');
+    }
+}

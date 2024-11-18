@@ -29,7 +29,7 @@ export async function GET(req: Request){
 
 export async function PUT(req: Request) {
     try {
-        const { userId } = authorizationService.verifyBasicAuthorization(req)
+        const { userId } = await authorizationService.verifyBasicAuthorization(req)
 
         const { email, phone, firstName, lastName, avatar } = await req.json()
 
