@@ -7,18 +7,22 @@ import {
     GetBlogPostRequest,
     GetBlogPostsResult
 } from "@/types/dtos/blogPosts";
-import {prisma} from "@server/libs/prisma/client";
 
 export function buildBlogPostWhereCondition(getBlogPostsRequest: GetBlogPostRequest) {
-    const { tagsList, content, title, codeTemplateIds, userId } = getBlogPostsRequest;
+    const { tagsList, content, title, codeTemplateIds, userId, mineOnly } = getBlogPostsRequest;
 
     const whereCondition: any = {};
 
+
     if (userId !== undefined) {
-        whereCondition.OR = [
-            { hidden: false },
-            { userId: userId }
-        ];
+        if (mineOnly) {
+            whereCondition.userId = userId
+        } else {
+            whereCondition.OR = [
+                { hidden: false },
+                { userId: userId }
+            ];
+        }
     } else {
         whereCondition.hidden = false;
     }

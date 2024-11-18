@@ -71,6 +71,7 @@ export interface GetCodeTemplatesRequest {
     content?: string;
     page?: number;
     limit?: number;
+    mineOnly?: boolean;
 }
 
 export interface GetCodeTemplateResponse {

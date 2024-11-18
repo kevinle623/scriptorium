@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { useCodeTemplates } from "@client/hooks/useCodeTemplates";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@client/providers/AuthProvider";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import TagInput from "@client/components/tag-input/TagInput";
 
 const CodeTemplates = () => {
     const router = useRouter();
+    const { isAuthed } = useAuth();
 
     const [filters, setFilters] = useState({
         title: "",
@@ -15,7 +17,7 @@ const CodeTemplates = () => {
         tags: [] as string[],
         page: 1,
         limit: 10,
-        userId: "temp",
+        mineOnly: false,
     });
 
     const [searchFilters, setSearchFilters] = useState(filters);
@@ -45,7 +47,7 @@ const CodeTemplates = () => {
             tags: [] as string[],
             page: 1,
             limit: 10,
-            userId: "temp",
+            mineOnly: false,
         };
         setFilters(defaultFilters);
         setSearchFilters(defaultFilters);
@@ -54,6 +56,11 @@ const CodeTemplates = () => {
     const handlePagination = (direction: "next" | "prev") => {
         const newPage = direction === "next" ? searchFilters.page + 1 : searchFilters.page - 1;
         setSearchFilters({ ...searchFilters, page: newPage });
+    };
+
+    const toggleMineOnly = () => {
+        setFilters((prev) => ({ ...prev, mineOnly: !prev.mineOnly }));
+        setSearchFilters((prev) => ({ ...prev, mineOnly: !prev.mineOnly }));
     };
 
     const totalPages = Math.ceil(totalCount / searchFilters.limit);
@@ -95,6 +102,20 @@ const CodeTemplates = () => {
                     tags={filters.tags}
                     setTags={(newTags) => setFilters({ ...filters, tags: newTags })}
                 />
+                {isAuthed && (
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="mineOnly" className="text-gray-700">
+                            Show My Templates
+                        </label>
+                        <input
+                            type="checkbox"
+                            id="mineOnly"
+                            checked={filters.mineOnly}
+                            onChange={toggleMineOnly}
+                            className="form-checkbox text-blue-500 h-5 w-5"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Action Buttons */}

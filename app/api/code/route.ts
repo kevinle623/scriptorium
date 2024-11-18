@@ -7,13 +7,14 @@ import {routeHandlerException} from "@server/utils/exceptionUtils";
 export async function GET(req: Request) {
     try {
         const url = new URL(req.url);
+        const userId = await authorizationService.extractUserIdFromRequestHeader(req)
 
         const page = url.searchParams.get('page') ? parseInt(url.searchParams.get('page')!) : undefined;
         const limit = url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!) : undefined;
-        const userId = url.searchParams.get('userId') ? parseInt(url.searchParams.get('userId')!, 10) : undefined;
         const title = url.searchParams.get('title') || undefined;
         const content = url.searchParams.get('content') || undefined;
         const tags = url.searchParams.get('tags') ? url.searchParams.get('tags')!.split(',') : undefined;
+        const mineOnly = url.searchParams.get('mineOnly') === 'true';
 
         const getCodeTemplatesRequest  = {
             title,
@@ -22,6 +23,7 @@ export async function GET(req: Request) {
             content,
             page,
             limit,
+            mineOnly: userId ? mineOnly : false
         } as GetCodeTemplatesRequest;
 
         const { totalCount, codeTemplates } = await codeTemplateService.getCodeTemplatesByUserId(getCodeTemplatesRequest);

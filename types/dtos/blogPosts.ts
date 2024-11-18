@@ -71,6 +71,7 @@ export interface GetBlogPostRequest {
     tagsList?: string[],
     orderBy: BlogPostOrderType
     userId?: number,
+    mineOnly: boolean,
 }
 
 export interface GetBlogPostsResult {

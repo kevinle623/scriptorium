@@ -5,11 +5,13 @@ import { useBlogPosts } from "@client/hooks/useBlogPosts";
 import { useRouter } from "next/navigation";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import TagInput from "@client/components/tag-input/TagInput";
-import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
+import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
+import { useAuth } from "@client/providers/AuthProvider";
 
 const BlogPosts = () => {
     const router = useRouter();
     const { triggerOnboarding } = useJitOnboarding();
+    const { isAuthed } = useAuth(); // Access isAuthed from useAuth()
 
     const [filters, setFilters] = useState({
         title: "",
@@ -18,6 +20,7 @@ const BlogPosts = () => {
         orderBy: undefined,
         page: 1,
         limit: 10,
+        mineOnly: false, // Add mineOnly to the filters
     });
 
     const [searchFilters, setSearchFilters] = useState(filters);
@@ -50,6 +53,7 @@ const BlogPosts = () => {
             orderBy: undefined,
             page: 1,
             limit: 10,
+            mineOnly: false, // Reset mineOnly to false
         };
         setFilters(defaultFilters);
         setSearchFilters(defaultFilters);
@@ -58,6 +62,11 @@ const BlogPosts = () => {
     const handlePagination = (direction: "next" | "prev") => {
         const newPage = direction === "next" ? searchFilters.page + 1 : searchFilters.page - 1;
         setSearchFilters({ ...searchFilters, page: newPage });
+    };
+
+    const toggleMineOnly = () => {
+        setFilters((prevFilters) => ({ ...prevFilters, mineOnly: !prevFilters.mineOnly }));
+        setSearchFilters((prevFilters) => ({ ...prevFilters, mineOnly: !prevFilters.mineOnly }));
     };
 
     const totalPages = Math.ceil(totalCount / searchFilters.limit);
@@ -110,6 +119,20 @@ const BlogPosts = () => {
                     <option value="oldest">Oldest</option>
                     <option value="mostReported">Most Reported</option>
                 </select>
+                {isAuthed && (
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="mineOnly" className="text-gray-700">
+                            Show My Posts
+                        </label>
+                        <input
+                            type="checkbox"
+                            id="mineOnly"
+                            checked={filters.mineOnly}
+                            onChange={toggleMineOnly}
+                            className="form-checkbox text-blue-500 h-5 w-5"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Action Buttons */}

@@ -39,14 +39,6 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
 
 export async function GET(req: Request, {params}: { params: { id: string } }) {
     try {
-        let tokenPayload = {}
-
-        try {
-            tokenPayload = await authorizationService.verifyBasicAuthorization(req)
-        } catch (e) {
-            console.error('Authorization failed:', e);
-        }
-
         if (!Number(params.id)) {
             return NextResponse.json(
                 {message: "Invalid id"},
@@ -54,7 +46,7 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
             );
         }
 
-        const { userId } = tokenPayload
+        const userId = await authorizationService.extractUserIdFromRequestHeader(req) || null
 
         const commentId = parseInt(params.id, 10)
 

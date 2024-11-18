@@ -27,6 +27,8 @@ export async function GET(req: Request) {
 
         const orderBy = url.searchParams.get('orderBy') || undefined;
 
+        const mineOnly = url.searchParams.get('mineOnly') === 'true';
+
         let parsedOrderBy = orderBy
         if (parsedOrderBy === 'mostReported') {
             parsedOrderBy = undefined
@@ -40,7 +42,8 @@ export async function GET(req: Request) {
             codeTemplateIds,
             tagsList,
             orderBy: parsedOrderBy as BlogPostOrderType,
-            userId
+            userId,
+            mineOnly: userId ? mineOnly : false,
         };
 
         const {totalCount, blogPosts} = await blogPostService.getBlogPosts(getBlogPostRequest);
