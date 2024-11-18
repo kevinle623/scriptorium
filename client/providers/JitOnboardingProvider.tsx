@@ -37,12 +37,13 @@ export const JitOnboardingProvider = ({ children }: JitOnboardingProviderProps) 
             setStep(null);
             setOnboardingAction(null);
         };
+        if (router && router.events) {
+            router.events.on("routeChangeStart", handleRouteChange);
 
-        router.events.on("routeChangeStart", handleRouteChange);
-
-        return () => {
-            router.events.off("routeChangeStart", handleRouteChange);
-        };
+            return () => {
+                router.events.off("routeChangeStart", handleRouteChange);
+            };
+        }
     }, [router]);
 
     useEffect(() => {
