@@ -10,7 +10,7 @@ import { useUser } from "@client/hooks/useUser";
 import { FaEdit } from "react-icons/fa";
 import BlogPostVote from "@client/components/vote/BlogPostVote";
 import CommentSection from "@client/components/comment/CommentSection";
-import BlogPostReport from "@client/components/report/BlogPostReport"; // Import the new component
+import BlogPostReport from "@client/components/report/BlogPostReport"; // Import the updated component
 
 const BlogPost = () => {
     const params = useParams();
@@ -19,7 +19,6 @@ const BlogPost = () => {
 
     const [newComment, setNewComment] = useState("");
     const [isAuthor, setIsAuthor] = useState(false);
-    const [showReportForm, setShowReportForm] = useState(false); // Track toggle state for report form
 
     const { blogPost, blogLoading } = useBlogPost(id);
     const { data: user, isLoading: userLoading } = useUser();
@@ -67,15 +66,7 @@ const BlogPost = () => {
                     <p className="text-blue-600 dark:text-blue-400">{blogPost?.tags.join(", ")}</p>
                 </div>
                 <BlogPostVote blogPostId={Number(id)} />
-                <div className="mt-6">
-                    <button
-                        onClick={() => setShowReportForm(!showReportForm)}
-                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 mb-2"
-                    >
-                        {showReportForm ? "Cancel Report" : "Report Blog Post"}
-                    </button>
-                    {showReportForm && <BlogPostReport blogPostId={id} />}
-                </div>
+                <BlogPostReport blogPostId={id} />
             </div>
 
             <CommentSection blogPostId={blogPost?.id} />

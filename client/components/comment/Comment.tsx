@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import CommentForm from "./CommentForm";
 import { Comment as CommentType } from "@types/dtos/comments";
@@ -5,6 +7,7 @@ import { useReportComment } from "@client/hooks/useReportComment";
 import { useReplyComment } from "@client/hooks/useReplyComment";
 import { useCommentReplies } from "@client/hooks/useCommentReplies";
 import CommentVote from "@client/components/vote/CommentVote";
+import { useToaster } from "@client/providers/ToasterProvider"
 
 interface CommentProps {
     comment: CommentType;
@@ -14,6 +17,7 @@ const Comment = ({ comment }: CommentProps) => {
     const { mutate: reportComment } = useReportComment();
     const { mutate: replyToComment } = useReplyComment();
     const { replies, repliesLoading } = useCommentReplies(comment.id);
+    const { setToaster } = useToaster();
 
     const [isRepliesVisible, setIsRepliesVisible] = useState(false);
     const [activeForm, setActiveForm] = useState<"reply" | "report" | null>(null); // Track the active form
@@ -21,23 +25,51 @@ const Comment = ({ comment }: CommentProps) => {
     const [reportReason, setReportReason] = useState("");
 
     const handleReply = () => {
-        if (!replyContent.trim()) return;
-        replyToComment({ id: comment.id, content: replyContent });
-        setReplyContent(""); // Clear the input field after submission
-        setActiveForm(null); // Hide the reply form after submitting
+        if (!replyContent.trim()) {
+            setToaster("Please write a reply before submitting.", "info");
+            return;
+        }
+        replyToComment(
+            { id: comment.id, content: replyContent },
+            {
+                onSuccess: () => {
+                    setReplyContent("");
+                    setActiveForm(null);
+                    setToaster("Reply submitted successfully!", "success");
+                },
+                onError: (error) => {
+                    setToaster(error.response.data.error || "Failed to report comment. Please try again.", "error");
+                    setActiveForm(null);
+                    console.error(error);
+                },
+            }
+        );
     };
 
     const handleReport = () => {
         if (!reportReason.trim()) {
-            return alert("Please provide a reason for reporting.");
+            setToaster("Please provide a reason for reporting.", "info");
+            return;
         }
-        reportComment({ id: comment.id, reason: reportReason });
-        setReportReason(""); // Clear the input field after submission
-        setActiveForm(null); // Hide the report form
+        reportComment(
+            { id: comment.id, reason: reportReason },
+            {
+                onSuccess: () => {
+                    setReportReason("");
+                    setActiveForm(null);
+                    setToaster("Comment reported successfully.", "success");
+                },
+                onError: (error) => {
+                    setToaster(error.response.data.error || "Failed to report comment. Please try again.", "error");
+                    setActiveForm(null);
+                    console.error(error);
+                },
+            }
+        );
     };
 
     const toggleForm = (form: "reply" | "report") => {
-        setActiveForm(activeForm === form ? null : form); // Toggle form visibility
+        setActiveForm(activeForm === form ? null : form);
     };
 
     return (
