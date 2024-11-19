@@ -20,7 +20,7 @@ const Comment = ({ comment }: CommentProps) => {
     const { setToaster } = useToaster();
 
     const [isRepliesVisible, setIsRepliesVisible] = useState(false);
-    const [activeForm, setActiveForm] = useState<"reply" | "report" | null>(null); // Track the active form
+    const [activeForm, setActiveForm] = useState<"reply" | "report" | null>(null);
     const [replyContent, setReplyContent] = useState("");
     const [reportReason, setReportReason] = useState("");
 
