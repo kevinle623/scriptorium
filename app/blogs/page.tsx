@@ -20,7 +20,7 @@ const BlogPosts = () => {
         orderBy: undefined,
         page: 1,
         limit: 10,
-        mineOnly: false, // Add mineOnly to the filters
+        mineOnly: false,
     });
 
     const [searchFilters, setSearchFilters] = useState(filters);

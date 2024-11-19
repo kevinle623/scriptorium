@@ -9,6 +9,8 @@ import { FaEdit } from "react-icons/fa";
 import BlogPostVote from "@client/components/vote/BlogPostVote";
 import CommentSection from "@client/components/comment/CommentSection";
 import BlogPostReport from "@client/components/report/BlogPostReport";
+import { useCodeTemplates } from "@client/hooks/useCodeTemplates";
+import Link from "next/link";
 
 const BlogPost = () => {
     const params = useParams();
@@ -19,6 +21,10 @@ const BlogPost = () => {
 
     const { blogPost, blogLoading } = useBlogPost(id);
     const { data: user, isLoading: userLoading } = useUser();
+
+    const { data: codeTemplateData, isLoading: codeTemplateLoading } = useCodeTemplates({
+        ids: blogPost?.codeTemplateIds ? blogPost.codeTemplateIds.join(",") : undefined,
+    });
 
     useEffect(() => {
         if (user && blogPost) {
@@ -57,6 +63,49 @@ const BlogPost = () => {
                 <BlogPostReport blogPostId={id} />
             </div>
 
+            {/* Code Templates Section */}
+            {blogPost.codeTemplateIds.length > 0 && (
+                <div className="p-6 mb-4 rounded-lg shadow-md bg-gray-100 dark:bg-gray-700">
+                    <h2 className="text-xl font-bold mb-4">Code Templates</h2>
+                    {codeTemplateLoading ? (
+                        <p>Loading code templates...</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {codeTemplateData?.codeTemplates.map((template) => (
+                                <details
+                                    key={template.id}
+                                    className="border rounded-lg p-4 bg-white dark:bg-gray-800"
+                                >
+                                    <summary className="cursor-pointer text-lg font-medium">
+                                        {template.title} ({template.language})
+                                    </summary>
+                                    <pre className="mt-2 p-4 bg-gray-100 dark:bg-gray-900 rounded text-sm overflow-x-auto">
+                                        {template.code}
+                                    </pre>
+                                    {template.explanation && (
+                                        <p className="mt-2 text-gray-700 dark:text-gray-300">
+                                            {template.explanation}
+                                        </p>
+                                    )}
+                                    <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                        Created: {new Date(template.createdAt).toLocaleDateString()}
+                                    </div>
+                                    <div className="mt-4">
+                                        <Link
+                                            href={`/code-templates/${template.id}`}
+                                            className="text-blue-500 hover:underline dark:text-blue-400"
+                                        >
+                                            View Full Template
+                                        </Link>
+                                    </div>
+                                </details>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Comments Section */}
             <CommentSection blogPostId={blogPost?.id} />
         </div>
     );

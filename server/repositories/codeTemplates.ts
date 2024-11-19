@@ -80,48 +80,63 @@ export async function getCodeTemplatesByUserId(
     getCodeTemplatesRequest: GetCodeTemplatesRequest
 ): Promise<GetCodeTemplatesResult> {
     try {
-        const { title, userId, tags, content, page = 1, limit = 10, mineOnly = false } = getCodeTemplatesRequest;
+        const {
+            title,
+            userId,
+            tags,
+            content,
+            page = 1,
+            limit = 10,
+            mineOnly = false,
+            ids,
+        } = getCodeTemplatesRequest;
 
         const skip = (page - 1) * limit;
         const take = limit;
 
         const whereCondition: any = {};
 
-        if (userId && mineOnly) {
-            whereCondition.userId = parseInt(userId, 10);
-        }
-
-        if (title) {
-            whereCondition.title = {
-                contains: title,
+        if (ids && ids.length > 0) {
+            whereCondition.id = {
+                in: ids,
             };
-        }
+        } else {
+            if (userId && mineOnly) {
+                whereCondition.userId = parseInt(userId, 10);
+            }
 
-        if (content) {
-            whereCondition.OR = [
-                {
-                    code: {
-                        contains: content,
-                    },
-                },
-                {
-                    description: {
-                        contains: content,
-                    },
-                },
-            ];
-        }
+            if (title) {
+                whereCondition.title = {
+                    contains: title,
+                };
+            }
 
-        if (tags && tags.length > 0) {
-            whereCondition.tags = {
-                some: {
-                    tag: {
-                        name: {
-                            in: tags,
+            if (content) {
+                whereCondition.OR = [
+                    {
+                        code: {
+                            contains: content,
                         },
                     },
-                },
-            };
+                    {
+                        description: {
+                            contains: content,
+                        },
+                    },
+                ];
+            }
+
+            if (tags && tags.length > 0) {
+                whereCondition.tags = {
+                    some: {
+                        tag: {
+                            name: {
+                                in: tags,
+                            },
+                        },
+                    },
+                };
+            }
         }
 
         const totalCount = await prismaClient.codeTemplate.count({

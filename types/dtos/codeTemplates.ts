@@ -74,11 +74,12 @@ export interface CreateCodeTemplateRequest {
 export interface GetCodeTemplatesRequest {
     title?: string;
     userId?: string;
-    tags?: string;
+    tags?: string[];
     content?: string;
     page?: number;
     limit?: number;
     mineOnly?: boolean;
+    ids?: number[]
 }
 
 export interface GetCodeTemplateResponse {

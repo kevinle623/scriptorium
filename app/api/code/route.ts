@@ -14,6 +14,7 @@ export async function GET(req: Request) {
         const title = url.searchParams.get('title') || undefined;
         const content = url.searchParams.get('content') || undefined;
         const tags = url.searchParams.get('tags') ? url.searchParams.get('tags')!.split(',') : undefined;
+        const ids = url.searchParams.get('ids') ? url.searchParams.get('ids')!.split(',').map(Number) : undefined;
         const mineOnly = url.searchParams.get('mineOnly') === 'true';
 
         const getCodeTemplatesRequest  = {
@@ -23,6 +24,7 @@ export async function GET(req: Request) {
             content,
             page,
             limit,
+            ids,
             mineOnly: userId ? mineOnly : false
         } as GetCodeTemplatesRequest;
 
