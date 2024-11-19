@@ -4,7 +4,7 @@ import {
     InvalidCredentialsException,
     ServiceException,
     InsufficientPermissionsException,
-    NotFoundException,
+    NotFoundException, ExternalServiceException,
 } from "@/types/exceptions";
 
 export function routeHandlerException(error: any) {
@@ -23,6 +23,9 @@ export function routeHandlerException(error: any) {
     } else if (error instanceof NotFoundException) {
         // 404 Not Found: Resource not found
         return NextResponse.json({ error: error.message }, { status: 404 });
+    } else if (error instanceof ExternalServiceException) {
+        // 409 Conflict: some conflict with external services
+        return NextResponse.json({ error: error.message }, { status: 409 });
     }
     console.error("Unhandled Error", error);
     // 500 Internal Server Error: Catch-all for unexpected server errors

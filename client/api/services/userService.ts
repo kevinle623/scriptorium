@@ -62,3 +62,12 @@ export async function editUser(request: EditUserRequest): Promise<EditUserRespon
         throw new Error('Failed to update user.');
     }
 }
+
+export const uploadAvatar = async (formData: FormData) => {
+    const response = await axiosInstance.post("/users/avatar", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    return response.data;
+};

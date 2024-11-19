@@ -10,6 +10,7 @@ import {
 } from "@server/utils/jwtUtils";
 import {CreateUserRequest, EditUserRequest} from "@/types/dtos/user";
 import * as revokedTokenRepository from '@server/repositories/revokedTokens'
+import * as s3Manager from "@server/libs/s3/manager"
 
 export async function registerUser(createUserRequest: CreateUserRequest) {
     try {
@@ -105,4 +106,29 @@ export async function logoutUser(accessToken: string, refreshToken: string) {
     } catch (error) {
         throw error;
     }
+}
+
+export async function uploadAvatar(userId: number, file) {
+    try {
+        const user = await userRepository.findUserById(prisma, userId)
+        if (!user) {
+            throw new NotFoundException("User not found")
+        }
+        const avatarUrl = await s3Manager.uploadFileToS3(file, "avatars", `${user.email}-avatar`);
+
+        const editUserRequest: EditUserRequest = {
+            userId: user.id,
+            avatar: avatarUrl
+        }
+
+        await userRepository.updateUser(prisma, editUserRequest)
+        return avatarUrl
+    } catch (e) {
+        throw e
+    }
+
+
+
+
+
 }

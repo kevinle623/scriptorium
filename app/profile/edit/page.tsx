@@ -4,8 +4,9 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToaster } from "@client/providers/ToasterProvider";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
-import {useUser} from "@client/hooks/useUser";
-import {useEditProfile} from "@client/hooks/useEditProfile";
+import { useUser } from "@client/hooks/useUser";
+import { useEditProfile } from "@client/hooks/useEditProfile";
+import AvatarUploader from "@client/components/avatar/AvatarUploader";
 
 const EditProfilePage = () => {
     const { data: user, isLoading: isUserLoading } = useUser();
@@ -118,14 +119,9 @@ const EditProfilePage = () => {
                 {/* Avatar */}
                 <div>
                     <label className="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Avatar URL
+                        Avatar
                     </label>
-                    <input
-                        type="url"
-                        value={avatar}
-                        onChange={(e) => setAvatar(e.target.value)}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300"
-                    />
+                    <AvatarUploader onAvatarUpload={setAvatar} />
                 </div>
 
                 {/* Submit Button */}

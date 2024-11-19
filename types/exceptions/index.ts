@@ -39,3 +39,10 @@ export class DatabaseIntegrityException extends Error {
         this.name = 'DatabaseIntegrityException';
     }
 }
+
+export class ExternalServiceException extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'DatabaseIntegrityException';
+    }
+}
