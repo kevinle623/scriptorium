@@ -61,7 +61,7 @@ export default function Home() {
             </Link>
 
             {/* Admin Portal Button */}
-            {user?.role === Role.ADMIN && (
+            {isAuthed && user?.role === Role.ADMIN && (
                 <Link
                     href="/admin"
                     className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 shadow-lg transition-all"

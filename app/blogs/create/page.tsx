@@ -7,6 +7,7 @@ import { CreateBlogPostForm, CreateBlogPostRequest } from "@types/dtos/blogPosts
 import { useCreateBlogPost } from "@client/hooks/useCreateBlogPost";
 import { useToaster } from "@client/providers/ToasterProvider";
 import TagInput from "@client/components/tag-input/TagInput";
+import CodeTemplateSelector from "@client/components/code-template/CodeTemplateSelector";
 
 const CreateBlogPostPage = () => {
     const router = useRouter();
@@ -18,17 +19,19 @@ const CreateBlogPostPage = () => {
         formState: { errors },
     } = useForm<CreateBlogPostRequest>();
     const [tags, setTags] = useState<string[]>([]);
+    const [selectedCodeTemplateIds, setSelectedCodeTemplateIds] = useState<number[]>([]);
 
     const mutation = useCreateBlogPost();
 
     const onSubmit: SubmitHandler<CreateBlogPostForm> = (data) => {
         mutation.mutate(
-            { ...data, tags },
+            { ...data, tags, codeTemplateIds: selectedCodeTemplateIds },
             {
                 onSuccess: () => {
                     setToaster("Blog post created successfully!", "success");
                     reset();
                     setTags([]);
+                    setSelectedCodeTemplateIds([]);
                     router.push("/blogs");
                 },
                 onError: (error) => {
@@ -78,19 +81,18 @@ const CreateBlogPostPage = () => {
                 </div>
 
                 <div>
-                    <label className="block mb-2 font-bold">Code Template IDs</label>
-                    <input
-                        {...register("codeTemplateIds")}
-                        className="border border-gray-300 p-2 rounded-lg w-full"
-                        placeholder="Comma-separated IDs (e.g., 1,2,3)"
-                    />
-                </div>
-
-                <div>
                     <label className="block mb-2 font-bold">Tags</label>
                     <TagInput
                         tags={tags}
                         setTags={setTags}
+                    />
+                </div>
+
+                <div>
+                    <label className="block mb-2 font-bold">Code Templates</label>
+                    <CodeTemplateSelector
+                        selectedIds={selectedCodeTemplateIds}
+                        setSelectedIds={setSelectedCodeTemplateIds}
                     />
                 </div>
 

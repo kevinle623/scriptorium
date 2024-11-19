@@ -7,6 +7,7 @@ import { useBlogPost } from "@client/hooks/useBlogPost";
 import { useEditBlogPost } from "@client/hooks/useEditBlogPost";
 import { useDeleteBlogPost } from "@client/hooks/useDeleteBlogPost";
 import TagInput from "@client/components/tag-input/TagInput";
+import CodeTemplateSelector from "@client/components/code-template/CodeTemplateSelector";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import { useToaster } from "@client/providers/ToasterProvider";
 import { useUser } from "@client/hooks/useUser";
@@ -16,7 +17,7 @@ interface EditBlogPostForm {
     description: string;
     content: string;
     tags: string[];
-    codeTemplateIds: string[];
+    codeTemplateIds: number[]; // Updated to match `CodeTemplateSelector`
 }
 
 const EditBlogPostPage = () => {
@@ -162,14 +163,14 @@ const EditBlogPostPage = () => {
                     />
                 </div>
 
-                {/* Code Template IDs */}
+                {/* Code Template Selector */}
                 <div>
                     <label htmlFor="codeTemplateIds" className="block text-sm font-medium">
-                        Code Template IDs
+                        Code Templates
                     </label>
-                    <TagInput
-                        tags={codeTemplateIds}
-                        setTags={(newIds) => setValue("codeTemplateIds", newIds)}
+                    <CodeTemplateSelector
+                        selectedIds={codeTemplateIds}
+                        setSelectedIds={(newIds) => setValue("codeTemplateIds", newIds)}
                     />
                 </div>
 

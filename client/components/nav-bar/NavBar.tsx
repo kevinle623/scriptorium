@@ -60,7 +60,7 @@ const NavBar = () => {
                             </Link>
                         ))}
 
-                        {user?.role === Role.ADMIN && (
+                        {isAuthed && user?.role === Role.ADMIN && (
                             <Link
                                 href="/admin"
                                 className="text-gray-700 dark:text-gray-300 text-lg hover:text-red-500 dark:hover:text-red-400 transition-colors flex items-center gap-2"
@@ -118,7 +118,7 @@ const NavBar = () => {
                     ))}
 
                     {/* Admin Navigation Link */}
-                    {user?.role === Role.ADMIN && (
+                    {isAuthed && user?.role === Role.ADMIN && (
                         <Link
                             href="/admin"
                             className="text-gray-700 dark:text-gray-300 text-lg hover:text-red-500 dark:hover:text-red-400 transition-colors flex items-center gap-2"
