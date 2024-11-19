@@ -1,30 +1,24 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useCommentBlogPost } from "@client/hooks/useCommentBlogPost";
 import { useBlogPost } from "@client/hooks/useBlogPost";
 import { useParams, useRouter } from "next/navigation";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
-import { useBlogPostComments } from "@client/hooks/useBlogPostComments";
 import { useUser } from "@client/hooks/useUser";
 import { FaEdit } from "react-icons/fa";
 import BlogPostVote from "@client/components/vote/BlogPostVote";
 import CommentSection from "@client/components/comment/CommentSection";
-import BlogPostReport from "@client/components/report/BlogPostReport"; // Import the updated component
+import BlogPostReport from "@client/components/report/BlogPostReport";
 
 const BlogPost = () => {
     const params = useParams();
     const id = params?.id as string;
     const router = useRouter();
 
-    const [newComment, setNewComment] = useState("");
     const [isAuthor, setIsAuthor] = useState(false);
 
     const { blogPost, blogLoading } = useBlogPost(id);
     const { data: user, isLoading: userLoading } = useUser();
-    const { comments, commentsLoading } = useBlogPostComments(id);
-
-    const { mutate: addComment } = useCommentBlogPost();
 
     useEffect(() => {
         if (user && blogPost) {
@@ -32,13 +26,7 @@ const BlogPost = () => {
         }
     }, [user, blogPost]);
 
-    const handleAddComment = () => {
-        if (!newComment.trim()) return;
-        addComment({ id, content: newComment });
-        setNewComment("");
-    };
-
-    if (blogLoading || commentsLoading || userLoading) {
+    if (blogLoading || userLoading) {
         return <LoadingSpinnerScreen />;
     }
 

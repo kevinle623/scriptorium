@@ -7,7 +7,20 @@ import {
 } from "@types/dtos/comments";
 import axiosInstance from "@client/api/axiosInstance";
 import {CommentVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@types/dtos/votes";
+import {Comment} from "@types/dtos/comments";
 
+
+export const getCommentById = async (id: string): Promise<Comment> => {
+    try {
+        const response = await axiosInstance.get<Comment>(`/comments/${id}`);
+        return response.data.comment;
+    } catch (error: any) {
+        if (error.response) {
+            throw new Error(error.response.data.message || "Failed to fetch comment.");
+        }
+        throw new Error("An unexpected error occurred.");
+    }
+};
 
 export const fetchComments = async (commentId: string): Promise<Comment[]> => {
     const { data } = await axiosInstance.get(`/comments/${commentId}/comment`);

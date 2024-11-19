@@ -56,7 +56,7 @@ export async function verifyAdminAuthorization(req: Request) {
     return tokenPayload
 }
 
-export async function verifyMatchingUserAuthorization(req: Request, userId: number) {
+export async function verifyMatchingUserAuthorization(req: Request, userId: number, allowAdminBypass: boolean = true) {
     const authorizationHeader = req.headers.get("authorization");
 
     const tokenPayload = await verifyAuthorizationHeader(authorizationHeader);
@@ -64,6 +64,11 @@ export async function verifyMatchingUserAuthorization(req: Request, userId: numb
         throw new InvalidCredentialsException("Authorization failed. Invalid token.");
     }
 
+    if (allowAdminBypass) {
+        if (tokenPayload.role === Role.ADMIN) {
+            return tokenPayload
+        }
+    }
     await verifyMatchingUser(tokenPayload, userId)
 
     return tokenPayload;

@@ -8,6 +8,7 @@ export interface BlogPostFilters {
     content?: string;
     tags?: string;
     orderBy?: string;
+    hidden?: boolean;
 }
 
 export interface BlogPost {
@@ -74,6 +75,7 @@ export interface GetBlogPostRequest {
     userId?: number,
     mineOnly: boolean,
     hidden?: boolean,
+    reportCount?: number,
 }
 
 export interface GetBlogPostReportsRequest {
@@ -127,6 +129,7 @@ export interface ReportBlogPostResponse {
 
 export interface ToggleBlogPostHiddenStatusRequest {
     hidden: boolean;
+    blogPostId: string;
 }
 
 export interface ToggleBlogPostHiddenStatusResponse {

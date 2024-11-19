@@ -13,24 +13,25 @@ interface AdminGuardProps {
     reroute?: string;
 }
 
-const AdminGuard = ({ children, reroute = "/login" }: AdminGuardProps) => {
-    const { isAuthed } = useAuth();
+const AdminGuard = ({ children, reroute = "/" }: AdminGuardProps) => {
+    const { isAuthed, isInitialized } = useAuth();
     const router = useRouter();
     const { data: user, isLoading } = useUser();
     const { setToaster } = useToaster();
 
     useEffect(() => {
+        if (isLoading || !isInitialized) return
         if (!isAuthed) {
             setToaster("Not authorized to access this page. Redirecting...", "error");
             router.push(reroute || "/login");
         } else if (user && user.role !== Role.ADMIN) {
             setToaster("Admin access required. Redirecting...", "error");
-            router.push(reroute || "/login");
+            router.push(reroute || "/");
         } else if (!isLoading && !user) {
             setToaster("Unable to verify user. Redirecting...", "error");
             router.push(reroute || "/login");
         }
-    }, [isAuthed, user, isLoading, reroute, router, setToaster]);
+    }, [isInitialized, isAuthed, user, isLoading, reroute, router, setToaster]);
 
     if (isLoading || !isAuthed) {
         return <LoadingSpinnerScreen />;
