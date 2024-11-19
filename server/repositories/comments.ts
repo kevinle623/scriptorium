@@ -316,15 +316,22 @@ export async function getMostReportedComments(
     getCommentRequest: GetCommentsRequest
 ) {
     try {
-        const {page = 1, limit = 10, hidden = undefined} = getCommentRequest
+        const { page = 1, limit = 10, hidden = undefined } = getCommentRequest;
         const skip = (page - 1) * limit;
 
-        const mostReportedComments = await prismaClient.comment.findMany({
-            where: {
-                reports: {
-                    some: {},
-                },
+        // Build the `where` condition dynamically
+        const whereCondition: any = {
+            reports: {
+                some: {},
             },
+        };
+
+        if (hidden !== undefined) {
+            whereCondition.hidden = hidden;
+        }
+
+        const mostReportedComments = await prismaClient.comment.findMany({
+            where: whereCondition,
             include: {
                 reports: true,
             },
@@ -343,11 +350,7 @@ export async function getMostReportedComments(
         }));
 
         const totalCount = await prismaClient.comment.count({
-            where: {
-                reports: {
-                    some: {},
-                },
-            },
+            where: whereCondition,
         });
 
         return { totalCount, comments: result };

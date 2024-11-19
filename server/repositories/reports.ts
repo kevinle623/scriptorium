@@ -1,6 +1,8 @@
 import { DatabaseIntegrityException } from "@/types/exceptions";
 import {Report as ReportModel} from "@prisma/client";
 import { Report } from "@/types/dtos/reports";
+import {GetCommentReportsRequest, GetCommentReportsResponse} from "@types/dtos/comments";
+import {GetBlogPostReportsRequest, GetBlogPostReportsResponse} from "@types/dtos/blogPosts";
 
 export async function getBlogPostReportByUser(
     prismaClient: any,
@@ -101,6 +103,76 @@ export async function deleteReportByBlogPostId(
     } catch (error) {
         console.error("Database error: ", error);
         throw new DatabaseIntegrityException("Database error: failed to delete report by blog post ID");
+    }
+}
+
+export async function getBlogPostReports(
+    prismaClient: any,
+    request: GetBlogPostReportsRequest
+): Promise<GetBlogPostReportsResponse> {
+    try {
+        const { page = 1, limit = 10, blogPostId } = request;
+        const skip = (page - 1) * limit;
+
+        const reports = await prismaClient.report.findMany({
+            where: {
+                blogPostId: blogPostId,
+            },
+            skip,
+            take: limit,
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        const totalCount = await prismaClient.report.count({
+            where: {
+                blogPostId: blogPostId,
+            },
+        });
+
+        return {
+            totalCount,
+            reports: reports.map(deserializeReport),
+        };
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to fetch blog post reports");
+    }
+}
+
+export async function getCommentReports(
+    prismaClient: any,
+    request: GetCommentReportsRequest
+): Promise<GetCommentReportsResponse> {
+    try {
+        const { page = 1, limit = 10, commentId } = request;
+        const skip = (page - 1) * limit;
+
+        const reports = await prismaClient.report.findMany({
+            where: {
+                commentId: commentId,
+            },
+            skip,
+            take: limit,
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        const totalCount = await prismaClient.report.count({
+            where: {
+                commentId: commentId,
+            },
+        });
+
+        return {
+            totalCount,
+            reports: reports.map(deserializeReport),
+        };
+    } catch (error) {
+        console.error("Database error: ", error);
+        throw new DatabaseIntegrityException("Database error: failed to fetch comment reports");
     }
 }
 

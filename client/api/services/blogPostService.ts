@@ -2,11 +2,19 @@
 import {
     BlogPost,
     BlogPostFilters,
-    CreateBlogPostRequest, CreateBlogPostResponse, EditBlogPostRequest,
+    CreateBlogPostRequest,
+    CreateBlogPostResponse,
+    EditBlogPostRequest,
+    GetBlogPostReportsRequest,
+    GetBlogPostReportsResponse, GetBlogPostsResult,
     ReportBlogPostRequest,
-    ReportBlogPostResponse
+    ReportBlogPostResponse, ToggleBlogPostHiddenStatusRequest, ToggleBlogPostHiddenStatusResponse
 } from "@types/dtos/blogPosts";
-import {AddCommentRequest, AddCommentResponse, Comment} from "@types/dtos/comments"
+import {
+    AddCommentRequest,
+    AddCommentResponse,
+    Comment,
+} from "@types/dtos/comments"
 import {BlogPostVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@types/dtos/votes";
 import axiosInstance from "@client/api/axiosInstance";
 
@@ -85,5 +93,50 @@ export const reportBlogPost = async (payload: ReportBlogPostRequest): Promise<Re
 
 export const getBlogPostVotes = async (blogPostId: number): Promise<BlogPostVoteResponse> => {
     const { data } = await axiosInstance.get(`/blogs/${blogPostId}/rate`);
+    return data;
+};
+
+
+export const getBlogPostReports = async (payload: GetBlogPostReportsRequest): Promise<GetBlogPostReportsResponse> => {
+    const { blogPostId, page = 1, limit = 10 } = payload;
+
+    const { data } = await axiosInstance.get(`/admin/blogs/${blogPostId}/report`, {
+        params: {
+            page,
+            limit,
+        },
+    });
+
+    return data;
+};
+
+export const updateBlogPostHiddenStatus = async (
+    payload: ToggleBlogPostHiddenStatusRequest
+): Promise<ToggleBlogPostHiddenStatusResponse> => {
+    try {
+        const { hidden, blogPostId} = payload
+        const requestBody: ToggleBlogPostHiddenStatusRequest = { hidden };
+
+        const { data } = await axiosInstance.put<ToggleBlogPostHiddenStatusResponse>(
+            `/admin/blogs/${blogPostId}/hide`,
+            requestBody
+        );
+
+        return data;
+    } catch (error) {
+        console.error("Error updating blog post hidden status:", error);
+        throw new Error("Failed to update blog post hidden status");
+    }
+};
+
+export const getMostReportedBlogPosts = async (filters: BlogPostFilters): Promise<GetBlogPostsResult> => {
+    const { page = 1, limit = 10, hidden = undefined } = filters
+    const { data } = await axiosInstance.get(`/admin/blogs/`, {
+        params: {
+            page,
+            limit,
+            hidden
+        },
+    });
     return data;
 };

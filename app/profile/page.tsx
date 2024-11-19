@@ -4,7 +4,7 @@ import React from "react";
 import { useUser } from "@client/hooks/useUser";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import { useRouter } from "next/navigation";
-import { FaUserCircle } from "react-icons/fa"; // Importing a default icon
+import { FaUserCircle } from "react-icons/fa";
 
 const ProfilePage = () => {
     const { data: user, isLoading, isError, error } = useUser();

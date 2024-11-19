@@ -1,4 +1,5 @@
-import {Tag} from "@/types/dtos/tags";
+import {Tag} from "@types/dtos/tags";
+import {Report} from "@types/dtos/reports"
 
 export interface BlogPostFilters {
     page?: number;
@@ -75,6 +76,17 @@ export interface GetBlogPostRequest {
     hidden?: boolean,
 }
 
+export interface GetBlogPostReportsRequest {
+    page?: number,
+    limit?: number,
+    blogPostId: number,
+}
+
+export interface GetBlogPostReportsResponse {
+    totalCount: number,
+    reports: Report[]
+}
+
 export interface GetBlogPostsResult {
     totalCount: number,
     blogPosts: BlogPost[]
@@ -112,3 +124,14 @@ export interface ReportBlogPostResponse {
         reason: string;
     };
 }
+
+export interface ToggleBlogPostHiddenStatusRequest {
+    hidden: boolean;
+}
+
+export interface ToggleBlogPostHiddenStatusResponse {
+    message: string;
+    blogPostId: number;
+    hidden: boolean;
+}
+

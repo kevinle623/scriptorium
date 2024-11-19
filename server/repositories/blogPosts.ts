@@ -240,17 +240,21 @@ export async function getMostReportedBlogPosts(
     getBlogPostsRequest: GetBlogPostRequest
 ) {
     try {
-        let {page, limit} = getBlogPostsRequest
-        page = page || 1
-        limit = limit || 10
+        const { page = 1, limit = 10, hidden = undefined } = getBlogPostsRequest;
         const skip = (page - 1) * limit;
 
-        const mostReportedBlogPosts = await prismaClient.blogPost.findMany({
-            where: {
-                report: {
-                    some: {},
-                },
+        const whereCondition: any = {
+            report: {
+                some: {},
             },
+        };
+
+        if (hidden !== undefined) {
+            whereCondition.hidden = hidden;
+        }
+
+        const mostReportedBlogPosts = await prismaClient.blogPost.findMany({
+            where: whereCondition,
             include: {
                 report: true,
             },
@@ -269,11 +273,7 @@ export async function getMostReportedBlogPosts(
         }));
 
         const totalCount = await prismaClient.blogPost.count({
-            where: {
-                report: {
-                    some: {},
-                },
-            },
+            where: whereCondition,
         });
 
         return { totalCount, blogPosts: result };

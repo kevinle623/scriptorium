@@ -5,7 +5,8 @@ import { useAuth } from "@client/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useToaster } from "@client/providers/ToasterProvider";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
-import { getRoleFromAccessToken } from "@server/utils/jwtUtils"
+import { Role } from "@types/dtos/roles"
+import { useUser } from "@client/hooks/useUser";
 
 interface AdminGuardProps {
     children: React.ReactNode;
@@ -13,30 +14,25 @@ interface AdminGuardProps {
 }
 
 const AdminGuard = ({ children, reroute = "/login" }: AdminGuardProps) => {
-    const { isAuthed, getAccessToken } = useAuth();
+    const { isAuthed } = useAuth();
     const router = useRouter();
+    const { data: user, isLoading } = useUser();
     const { setToaster } = useToaster();
 
     useEffect(() => {
         if (!isAuthed) {
             setToaster("Not authorized to access this page. Redirecting...", "error");
             router.push(reroute || "/login");
-        } else {
-            const accessToken = getAccessToken();
-            if (accessToken) {
-                const role = getRoleFromAccessToken(accessToken);
-                if (role !== "admin") {
-                    setToaster("Admin access required. Redirecting...", "error");
-                    router.push(reroute || "/login");
-                }
-            } else {
-                setToaster("Unable to verify user role. Redirecting...", "error");
-                router.push(reroute || "/login");
-            }
+        } else if (user && user.role !== Role.ADMIN) {
+            setToaster("Admin access required. Redirecting...", "error");
+            router.push(reroute || "/login");
+        } else if (!isLoading && !user) {
+            setToaster("Unable to verify user. Redirecting...", "error");
+            router.push(reroute || "/login");
         }
-    }, [isAuthed, getAccessToken, reroute, router, setToaster]);
+    }, [isAuthed, user, isLoading, reroute, router, setToaster]);
 
-    if (!isAuthed) {
+    if (isLoading || !isAuthed) {
         return <LoadingSpinnerScreen />;
     }
 

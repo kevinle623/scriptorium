@@ -3,7 +3,7 @@ import {prisma} from "@server/libs/prisma/client";
 import {
     BlogPost,
     CreateBlogPostRequest,
-    EditBlogPostRequest,
+    EditBlogPostRequest, GetBlogPostReportsRequest,
     GetBlogPostRequest, GetBlogPostsResult,
 } from "@/types/dtos/blogPosts";
 import * as blogPostRepository from "@server/repositories/blogPosts"
@@ -12,7 +12,7 @@ import {NotFoundException, ServiceException} from "@/types/exceptions";
 import {Comment, GetCommentsResult} from "@/types/dtos/comments";
 import * as commentRepository from "@server/repositories/comments";
 import * as reportRepository from "@server/repositories/reports";
-import {BlogPostVoteResponse, Vote, VoteType} from "@/types/dtos/votes";
+import {BlogPostVoteResponse, VoteType} from "@/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
 import * as codeTemplateRepository from "@server/repositories/codeTemplates"
 
@@ -248,6 +248,18 @@ export async function toggleHiddenBlogPost(blogPostId: number, hidden: boolean) 
             hidden: hidden
         }
         await blogPostRepository.editBlogPost(prisma, updateBlogPostRequest)
+    } catch (e) {
+        throw e
+    }
+
+}
+
+export async function getReportsForBlogPost(getBlogPostReportsRequest: GetBlogPostReportsRequest) {
+    try {
+        const { blogPostId} = getBlogPostReportsRequest
+        const blogPost = await blogPostRepository.getBlogPostById(prisma, blogPostId)
+        if (!blogPost) throw new NotFoundException("Blog post does not exist")
+        return await reportRepository.getBlogPostReports(prisma, getBlogPostReportsRequest)
     } catch (e) {
         throw e
     }

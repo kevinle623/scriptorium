@@ -1,24 +1,27 @@
 "use client";
 
-import {useState} from "react";
+import { useState } from "react";
 import Link from "next/link";
-import {FaPenNib, FaBars, FaTimes} from "react-icons/fa";
+import { FaPenNib, FaBars, FaTimes } from "react-icons/fa";
 import useMobileDetect from "@client/hooks/useMobileDetect";
 import ThemeSwitcher from "@client/components/theme-switcher/ThemeSwitcher";
-import {useAuth} from "@client/providers/AuthProvider";
+import { useAuth } from "@client/providers/AuthProvider";
 import LogoutButton from "@client/components/button/LogoutButton";
+import { useUser } from "@client/hooks/useUser";
+import { Role } from "@types/dtos/roles"
 
 const NavBar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const isMobile = useMobileDetect();
-    const {isAuthed} = useAuth();
+    const { isAuthed } = useAuth();
+    const { data: user } = useUser();
 
     const toggleMenu = () => setMenuOpen(!menuOpen);
 
     const navLinks = [
-        {href: "/blogs", label: "Blogs"},
-        {href: "/code-templates", label: "Templates"},
-        {href: "/playground", label: "Playground"},
+        { href: "/blogs", label: "Blogs" },
+        { href: "/code-templates", label: "Templates" },
+        { href: "/playground", label: "Playground" },
     ];
 
     return (
@@ -29,7 +32,7 @@ const NavBar = () => {
                     href="/"
                     className="flex items-center gap-3 text-3xl font-extrabold hover:text-blue-500 dark:hover:text-blue-400"
                 >
-                    <FaPenNib style={{color: "#A1A6B4"}} className="text-3xl"/>
+                    <FaPenNib style={{ color: "#A1A6B4" }} className="text-3xl" />
                     Scriptorium
                 </Link>
 
@@ -40,7 +43,7 @@ const NavBar = () => {
                         onClick={toggleMenu}
                         aria-label={menuOpen ? "Close menu" : "Open menu"}
                     >
-                        {menuOpen ? <FaTimes/> : <FaBars/>}
+                        {menuOpen ? <FaTimes /> : <FaBars />}
                     </button>
                 )}
 
@@ -57,6 +60,15 @@ const NavBar = () => {
                             </Link>
                         ))}
 
+                        {user?.role === Role.ADMIN && (
+                            <Link
+                                href="/admin"
+                                className="text-gray-700 dark:text-gray-300 text-lg hover:text-red-500 dark:hover:text-red-400 transition-colors flex items-center gap-2"
+                            >
+                                Admin
+                            </Link>
+                        )}
+
                         {isAuthed ? (
                             <>
                                 <Link
@@ -65,9 +77,8 @@ const NavBar = () => {
                                 >
                                     Profile
                                 </Link>
-                                <LogoutButton renderIcon={false} variant="text"/>
+                                <LogoutButton renderIcon={false} variant="text" />
                             </>
-
                         ) : (
                             <>
                                 <Link
@@ -83,10 +94,9 @@ const NavBar = () => {
                                     Register
                                 </Link>
                             </>
-
                         )}
 
-                        <ThemeSwitcher/>
+                        <ThemeSwitcher />
                     </div>
                 )}
             </div>
@@ -94,7 +104,8 @@ const NavBar = () => {
             {/* Mobile Modal Navigation */}
             {isMobile && menuOpen && (
                 <div
-                    className="fixed inset-0 z-50 bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 flex flex-col items-center justify-center gap-6">
+                    className="fixed inset-0 z-50 bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 flex flex-col items-center justify-center gap-6"
+                >
                     {navLinks.map((link) => (
                         <Link
                             key={link.href}
@@ -106,6 +117,17 @@ const NavBar = () => {
                         </Link>
                     ))}
 
+                    {/* Admin Navigation Link */}
+                    {user?.role === Role.ADMIN && (
+                        <Link
+                            href="/admin"
+                            className="text-gray-700 dark:text-gray-300 text-lg hover:text-red-500 dark:hover:text-red-400 transition-colors flex items-center gap-2"
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            Admin
+                        </Link>
+                    )}
+
                     {isAuthed ? (
                         <>
                             <Link
@@ -115,9 +137,8 @@ const NavBar = () => {
                             >
                                 Profile
                             </Link>
-                            <LogoutButton renderIcon={false} variant="text"/>
+                            <LogoutButton renderIcon={false} variant="text" />
                         </>
-
                     ) : (
                         <>
                             <Link
@@ -135,10 +156,9 @@ const NavBar = () => {
                                 Register
                             </Link>
                         </>
-
                     )}
 
-                    <ThemeSwitcher/>
+                    <ThemeSwitcher />
                 </div>
             )}
         </nav>

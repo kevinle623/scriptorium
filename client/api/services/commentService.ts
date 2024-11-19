@@ -1,9 +1,9 @@
 import {
     AddCommentRequest,
     AddCommentResponse,
-    Comment,
+    Comment, GetCommentReportsRequest, GetCommentReportsResponse, GetCommentsRequest, GetCommentsResult,
     ReportCommentRequest,
-    ReportCommentResponse
+    ReportCommentResponse, UpdateCommentHiddenStatusRequest, UpdateCommentHiddenStatusResponse
 } from "@types/dtos/comments";
 import axiosInstance from "@client/api/axiosInstance";
 import {CommentVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@types/dtos/votes";
@@ -46,3 +46,48 @@ export const addReplyToComment = async (
     const response = await axiosInstance.post(`/comments/${id}/comment`, { content });
     return response.data
 };
+
+export const getCommentReports = async (payload: GetCommentReportsRequest): Promise<GetCommentReportsResponse> => {
+    const { commentId, page = 1, limit = 10 } = payload;
+
+    const { data } = await axiosInstance.get(`/admin/comments/${commentId}/report`, {
+        params: {
+            page,
+            limit,
+        },
+    });
+
+    return data;
+};
+
+export const updateCommentHiddenStatus = async (
+    payload: UpdateCommentHiddenStatusRequest
+): Promise<UpdateCommentHiddenStatusResponse> => {
+    try {
+        const { hidden, commentId } = payload
+        const requestBody: UpdateCommentHiddenStatusRequest = { hidden };
+
+        const { data } = await axiosInstance.put<UpdateCommentHiddenStatusResponse>(
+            `/admin/comments/${commentId}/hide`,
+            requestBody
+        );
+
+        return data;
+    } catch (error) {
+        console.error("Error updating comment hidden status:", error);
+        throw new Error("Failed to update comment hidden status");
+    }
+};
+
+export const getMostReportedComments = async (filters: GetCommentsRequest): Promise<GetCommentsResult> => {
+    const { page = 1, limit = 10, hidden = undefined } = filters
+    const { data } = await axiosInstance.get(`/admin/comments/`, {
+        params: {
+            page,
+            limit,
+            hidden
+        },
+    });
+    return data;
+};
+

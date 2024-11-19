@@ -1,12 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { FaBlog, FaCode, FaGamepad, FaPenNib, FaSignInAlt, FaUserPlus, FaUserCircle } from "react-icons/fa";
+import {
+  FaBlog,
+  FaCode,
+  FaGamepad,
+  FaPenNib,
+  FaSignInAlt,
+  FaUserPlus,
+  FaUserCircle,
+  FaUserShield,
+} from "react-icons/fa";
 import { useAuth } from "@client/providers/AuthProvider";
 import LogoutButton from "@client/components/button/LogoutButton";
+import { useUser } from "@client/hooks/useUser";
+import { Role } from "@types/dtos/roles";
 
 export default function Home() {
   const { isAuthed } = useAuth();
+  const { data: user } = useUser();
 
   return (
       <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-sans">
@@ -47,6 +59,17 @@ export default function Home() {
               <FaGamepad className="text-xl" />
               <span className="font-medium">Playground</span>
             </Link>
+
+            {/* Admin Portal Button */}
+            {user?.role === Role.ADMIN && (
+                <Link
+                    href="/admin"
+                    className="flex items-center justify-center gap-3 px-5 py-3 rounded-lg text-white bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 shadow-lg transition-all"
+                >
+                  <FaUserShield className="text-xl" />
+                  <span className="font-medium">Admin Portal</span>
+                </Link>
+            )}
           </div>
 
           {/* Authentication Buttons */}

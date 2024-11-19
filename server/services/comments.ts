@@ -1,8 +1,8 @@
 import * as commentRepository from "@server/repositories/comments";
-import {Comment, GetCommentsRequest, GetCommentsResult} from "@/types/dtos/comments";
+import {Comment, GetCommentReportsRequest, GetCommentsRequest, GetCommentsResult} from "@/types/dtos/comments";
 import {prisma} from "@server/libs/prisma/client";
 import * as reportRepository from "@server/repositories/reports";
-import {CommentVoteResponse, Vote, VoteType} from "@/types/dtos/votes";
+import {CommentVoteResponse, VoteType} from "@/types/dtos/votes";
 import * as voteRepository from "@server/repositories/votes";
 import {NotFoundException, ServiceException} from "@/types/exceptions";
 async function populateComment(comment: Comment): Promise<Comment> {
@@ -171,6 +171,18 @@ export async function getCommentVoteByUserId(
             upVotes,
             downVotes,
         };
+    } catch (e) {
+        throw e
+    }
+
+}
+
+export async function getReportsForComment(getCommentReportsRequest: GetCommentReportsRequest) {
+    try {
+        const { commentId } = getCommentReportsRequest
+        const comment = await commentRepository.getCommentById(prisma, commentId)
+        if (!comment) throw new NotFoundException("Blog post does not exist")
+        return await reportRepository.getCommentReports(prisma, getCommentReportsRequest)
     } catch (e) {
         throw e
     }
