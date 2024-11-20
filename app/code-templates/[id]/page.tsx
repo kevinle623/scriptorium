@@ -9,6 +9,7 @@ import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
 import { useCodePlaygroundCache } from "@client/providers/CodePlaygroundCacheProvider";
 import { useUser } from "@client/hooks/useUser";
 import { FaEdit } from "react-icons/fa";
+import UserProfileSection from "@client/components/user/UserProfileSection";
 
 const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
     const id = parseInt(params.id, 10);
@@ -64,7 +65,7 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
         return <div className="text-center py-8">No template found</div>;
     }
 
-    const { title, code, language, explanation, tags } = codeTemplate;
+    const { title, code, language, explanation, tags, userId } = codeTemplate;
 
     return (
         <div className="container mx-auto px-6 py-8">
@@ -102,6 +103,11 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
                     {code}
                 </pre>
             </div>
+
+            {userId &&
+                <div className="mb-6">
+                    <UserProfileSection userId={userId} sectionName="Author"/>
+                </div>}
 
             {explanation && (
                 <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-6">

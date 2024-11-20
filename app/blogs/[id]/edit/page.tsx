@@ -58,7 +58,7 @@ const EditBlogPostPage = () => {
                 router.push(`/blogs/${blogPost.id}`);
             }
         }
-    }, [user, blogPost]);
+    }, [user, blogPost, setToaster, router]);
 
     const onSubmit = (formData: EditBlogPostForm) => {
         editBlogPost(

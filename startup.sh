@@ -12,14 +12,6 @@ check_installed() {
     fi
 }
 
-echo "Checking for required compilers and interpreters..."
-check_installed gcc
-check_installed g++
-check_installed javac
-check_installed python3
-check_installed node
-check_installed npx
-
 echo "All required compilers and interpreters found in the machine! Proceeding..."
 
 DB_PATH="server/libs/prisma/dev.db"

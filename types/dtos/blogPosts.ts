@@ -25,6 +25,7 @@ export interface BlogPost {
     downVotes?: number;
     commentIds?: number[];
     tags?: string[];
+    reportCount?: number;
 }
 
 export interface BlogPostTag {

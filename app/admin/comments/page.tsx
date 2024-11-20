@@ -14,7 +14,7 @@ const AdminCommentsPage = () => {
 
     const { data, isLoading, isError } = useMostReportedComments(filters);
 
-    const handleFilterChange = (key: keyof GetCommentsRequest, value: any) => {
+    const handleFilterChange = (key: keyof GetCommentsRequest, value: string) => {
         setFilters((prev) => ({
             ...prev,
             [key]: value,

@@ -13,7 +13,7 @@ import {
 import {
     AddCommentRequest,
     AddCommentResponse,
-    Comment,
+    Comment, GetCommentsRequest, GetCommentsResult,
 } from "@types/dtos/comments"
 import {BlogPostVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@types/dtos/votes";
 import axiosInstance from "@client/api/axiosInstance";
@@ -52,9 +52,15 @@ export const fetchBlogPost = async (id: string): Promise<BlogPost> => {
     return data.blogPost;
 };
 
-export const fetchComments = async (blogPostId: string): Promise<Comment[]> => {
-    const { data } = await axiosInstance.get(`/blogs/${blogPostId}/comment`);
-    return data.comments;
+export const fetchComments = async (payload: GetCommentsRequest): Promise<GetCommentsResult> => {
+    const { page, limit, blogPostId } = payload
+    const { data } = await axiosInstance.get(`/blogs/${blogPostId}/comment`, {
+        params: {
+            page,
+            limit
+        }
+    });
+    return data;
 };
 
 export const voteBlogPost = async (

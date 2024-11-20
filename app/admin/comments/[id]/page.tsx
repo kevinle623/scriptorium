@@ -8,7 +8,7 @@ import { useHideComment } from "@client/hooks/useHideComment";
 import { useCommentReplies } from "@client/hooks/useCommentReplies";
 import { useToaster } from "@client/providers/ToasterProvider";
 import CommentVote from "@client/components/vote/CommentVote";
-import Reply from "@client/components/comment/Comment"
+import Reply from "@client/components/comment/Comment";
 
 const AdminComment = () => {
     const params = useParams();
@@ -16,12 +16,19 @@ const AdminComment = () => {
     const router = useRouter();
 
     const { comment, commentLoading } = useComment(id);
-    const { mutate: toggleHiddenStatus, isLoading: toggling } = useHideComment();
-    const { replies, repliesLoading } = useCommentReplies(Number(id));
+    const { mutate: toggleHiddenStatus, isPending: toggling } = useHideComment();
     const { setToaster } = useToaster();
 
     const [isHidden, setIsHidden] = useState<boolean | undefined>(undefined);
+    const [currentPage, setCurrentPage] = useState(1);
     const [isRepliesVisible, setIsRepliesVisible] = useState(false);
+    const limit = 5;
+
+    const { replies, repliesLoading, totalCount } = useCommentReplies({
+        commentId: Number(id),
+        page: currentPage,
+        limit,
+    });
 
     useEffect(() => {
         if (comment) {
@@ -42,13 +49,26 @@ const AdminComment = () => {
                         "success"
                     );
                 },
-                onError: (error: any) => {
-                    const errorMessage = error.response?.data?.error || "An unexpected error occurred";
+                onError: (error: Error) => {
+                    const errorMessage =
+                        error.response?.data?.error || "An unexpected error occurred";
                     setToaster(errorMessage, "error");
                     console.error("Failed to toggle hidden status:", errorMessage);
                 },
             }
         );
+    };
+
+    const handleNextPage = () => {
+        if (currentPage * limit < totalCount) {
+            setCurrentPage((prev) => prev + 1);
+        }
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage((prev) => prev - 1);
+        }
     };
 
     if (commentLoading) {
@@ -115,13 +135,31 @@ const AdminComment = () => {
                             onClick={() => setIsRepliesVisible(!isRepliesVisible)}
                             className="px-3 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 transition"
                         >
-                            {isRepliesVisible ? "Hide Replies" : `View Replies (${replies.length})`}
+                            {isRepliesVisible
+                                ? "Hide Replies"
+                                : `View Replies (${totalCount})`}
                         </button>
                         {isRepliesVisible && (
                             <div className="mt-4 ml-4 border-l-2 border-gray-200 dark:border-gray-700 pl-4">
                                 {replies.map((reply) => (
-                                    <Reply comment={reply}  />
+                                    <Reply key={reply.id} comment={reply} />
                                 ))}
+                                <div className="flex justify-between mt-4">
+                                    <button
+                                        onClick={handlePrevPage}
+                                        className="py-2 px-4 bg-gray-500 hover:bg-gray-600 text-white rounded-lg disabled:opacity-50"
+                                        disabled={currentPage === 1 || repliesLoading}
+                                    >
+                                        Previous
+                                    </button>
+                                    <button
+                                        onClick={handleNextPage}
+                                        className="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
+                                        disabled={currentPage * limit >= totalCount || repliesLoading}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </>

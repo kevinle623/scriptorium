@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMostReportedBlogPosts } from "@client/hooks/useMostReportedBlogPosts";
-import { BlogPostFilters } from "@types/dtos/blogPosts";
+import { BlogPostFilters } from "@/types/dtos/blogPosts";
 import Link from "next/link";
 
 const AdminBlogsPage = () => {
@@ -14,7 +14,8 @@ const AdminBlogsPage = () => {
 
     const { data, isLoading, isError } = useMostReportedBlogPosts(filters);
 
-    const handleFilterChange = (key: keyof BlogPostFilters, value: any) => {
+    const handleFilterChange = (key: keyof BlogPostFilters, value: unknown | undefined) => {
+        if (!value) return
         setFilters((prev) => ({
             ...prev,
             [key]: value,
@@ -58,7 +59,7 @@ const AdminBlogsPage = () => {
                     <div>
                         <label className="block text-sm font-medium mb-1">Hidden</label>
                         <select
-                            value={filters.hidden}
+                            value={String(filters.hidden)}
                             onChange={(e) =>
                                 handleFilterChange(
                                     "hidden",

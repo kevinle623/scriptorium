@@ -57,7 +57,7 @@ const EditCodeTemplatePage = () => {
                 router.push(`/code-templates/${id}`);
             }
         }
-    }, [user, codeTemplate]);
+    }, [user, codeTemplate, id, router, setToaster]);
 
     const handleUpdate = () => {
         updateCodeTemplate(
@@ -67,7 +67,7 @@ const EditCodeTemplatePage = () => {
                     setToaster("Code template updated successfully!", "success");
                     router.push(`/code-templates/${id}`);
                 },
-                onError: (error: any) => {
+                onError: (error: Error) => {
                     setToaster(error.message || "Failed to update code template.", "error");
                 },
             }
@@ -81,7 +81,7 @@ const EditCodeTemplatePage = () => {
                     setToaster("Code template deleted successfully!", "success");
                     router.push("/code-templates");
                 },
-                onError: (error: any) => {
+                onError: (error: Error) => {
                     setToaster(error.message || "Failed to delete code template.", "error");
                 },
             });
@@ -96,7 +96,7 @@ const EditCodeTemplatePage = () => {
                     setOutput(data.result);
                     setToaster("Code executed successfully!", "success");
                 },
-                onError: (error: any) => {
+                onError: (error: Error) => {
                     const errorMessage = error?.response?.data?.error || "Error executing code.";
                     setOutput(errorMessage);
                     setToaster(errorMessage, "error");

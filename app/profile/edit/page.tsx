@@ -63,31 +63,10 @@ const EditProfilePage = () => {
                 </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Email */}
-                <div>
-                    <label className="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300"
-                    />
-                </div>
-
-                {/* Phone */}
-                <div>
-                    <label className="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Phone
-                    </label>
-                    <input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300"
-                    />
+            <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+                {/* Avatar */}
+                <div className="flex flex-col items-center mb-6">
+                    <AvatarUploader onAvatarUpload={setAvatar} initialAvatar={avatar} />
                 </div>
 
                 {/* First Name */}
@@ -116,12 +95,30 @@ const EditProfilePage = () => {
                     />
                 </div>
 
-                {/* Avatar */}
+                {/* Email */}
                 <div>
                     <label className="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Avatar
+                        Email
                     </label>
-                    <AvatarUploader onAvatarUpload={setAvatar} />
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300"
+                    />
+                </div>
+
+                {/* Phone */}
+                <div>
+                    <label className="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        Phone
+                    </label>
+                    <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300"
+                    />
                 </div>
 
                 {/* Submit Button */}

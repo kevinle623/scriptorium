@@ -5,6 +5,7 @@ import { useUser } from "@client/hooks/useUser";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import { useRouter } from "next/navigation";
 import { FaUserCircle } from "react-icons/fa";
+import Image from "next/image"
 
 const ProfilePage = () => {
     const { data: user, isLoading, isError, error } = useUser();
@@ -26,41 +27,53 @@ const ProfilePage = () => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Profile</h1>
+        <div className="max-w-2xl mx-auto p-6">
+            {/* Header */}
+            <div className="flex justify-center items-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Your Profile</h1>
+            </div>
+
+            {/* Profile Card */}
+            <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 flex flex-col items-center">
+                {/* Avatar */}
+                <div className="relative mb-6">
+                    {user?.avatar ? (
+                        <Image
+                            src={user.avatar}
+                            alt={`${user?.firstName}'s avatar`}
+                            width={60}
+                            height={60}
+                            className="rounded-full  border-4 border-blue-500"
+                        />
+                    ) : (
+                        <div className="flex items-center justify-center rounded-full w-32 h-32 bg-gray-200 dark:bg-gray-700 border-4 border-blue-500">
+                            <FaUserCircle className="text-gray-500 dark:text-gray-400 w-28 h-28" />
+                        </div>
+                    )}
+                </div>
+
+                {/* Name */}
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    {user?.firstName} {user?.lastName}
+                </h2>
+
+                {/* Email */}
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                    <strong>Email:</strong> {user?.email}
+                </p>
+
+                {/* Phone */}
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                    <strong>Phone:</strong> {user?.phone || "Not provided"}
+                </p>
+
+                {/* Edit Profile Button */}
                 <button
                     onClick={() => router.push("/profile/edit")}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    className="mt-4 px-6 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg shadow hover:bg-blue-600 transition"
                 >
                     Edit Profile
                 </button>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-                <h2 className="text-2xl font-bold text-blue-500 mb-4">
-                    {user?.firstName} {user?.lastName}
-                </h2>
-                <p className="text-lg text-gray-700 dark:text-gray-300">
-                    <strong>Email:</strong> {user?.email}
-                </p>
-                <p className="text-lg text-gray-700 dark:text-gray-300 mt-2">
-                    <strong>Phone:</strong> {user?.phone || "Not provided"}
-                </p>
-                <p className="text-lg text-gray-700 dark:text-gray-300 mt-2">
-                    <strong>Avatar:</strong>{" "}
-                    {user?.avatar ? (
-                        <img
-                            src={user?.avatar}
-                            alt={`${user?.firstName}'s avatar`}
-                            className="rounded-full w-24 h-24 mt-4"
-                        />
-                    ) : (
-                        <div className="flex items-center justify-center rounded-full w-24 h-24 bg-gray-200 dark:bg-gray-700 mt-4">
-                            <FaUserCircle className="text-gray-500 dark:text-gray-400 w-20 h-20" />
-                        </div>
-                    )}
-                </p>
             </div>
         </div>
     );

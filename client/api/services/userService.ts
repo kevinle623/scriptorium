@@ -7,6 +7,11 @@ export const getUser = async (): Promise<GetUserResponse> => {
     return data.user
 };
 
+export const getUserById = async (userId: string): Promise<GetUserResponse> => {
+    const { data } = await axiosInstance.get(`/users/${userId}`);
+    return data.user
+};
+
 export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {
     const response = await axiosInstance.post("/users/login", data, {
         headers: {

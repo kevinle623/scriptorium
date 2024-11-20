@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { useCommentVotes } from "@client/hooks/useCommentVotes";
 import { useVoteComment } from "@client/hooks/useVoteComment";
+import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
 
 interface CommentVoteProps {
     commentId: number;
@@ -10,6 +11,7 @@ interface CommentVoteProps {
 const CommentVote = ({ commentId }: CommentVoteProps) => {
     const { data, isLoading, isError, error } = useCommentVotes(commentId);
     const { mutate: voteComment, isLoading: isVoting } = useVoteComment();
+    const {triggerOnboarding} = useJitOnboarding()
 
     const [upVotes, setUpVotes] = useState<number>(0);
     const [downVotes, setDownVotes] = useState<number>(0);
@@ -26,7 +28,7 @@ const CommentVote = ({ commentId }: CommentVoteProps) => {
     const handleVote = (voteType: "UP" | "DOWN") => {
         const newVoteType = userVote === voteType ? null : voteType;
 
-        voteComment(
+        triggerOnboarding(() => voteComment(
             { commentId, voteType: newVoteType },
             {
                 onSuccess: () => {
@@ -46,7 +48,7 @@ const CommentVote = ({ commentId }: CommentVoteProps) => {
                     console.error("Failed to cast vote:", err.message);
                 },
             }
-        );
+        ));
     };
 
     if (isLoading) return null; // Avoid showing spinner here for a smaller component

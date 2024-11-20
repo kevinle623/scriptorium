@@ -9,6 +9,7 @@ import { useHideBlogPost } from "@client/hooks/useHideBlogPost";
 import BlogPostVote from "@client/components/vote/BlogPostVote";
 import CommentSection from "@client/components/comment/CommentSection";
 import { useToaster } from "@client/providers/ToasterProvider";
+import {AxiosError} from "axios";
 
 const AdminBlogPost = () => {
     const params = useParams();
@@ -16,7 +17,7 @@ const AdminBlogPost = () => {
     const router = useRouter();
 
     const { blogPost, blogLoading } = useBlogPost(id);
-    const { mutate: toggleHiddenStatus, isLoading: toggling } = useHideBlogPost();
+    const { mutate: toggleHiddenStatus, isPending: toggling } = useHideBlogPost();
     const { setToaster } = useToaster();
     const [isHidden, setIsHidden] = useState<boolean | undefined>(undefined);
 
@@ -39,10 +40,18 @@ const AdminBlogPost = () => {
                         "success"
                     );
                 },
-                onError: (error: any) => {
-                    const errorMessage = error.response?.data?.error || "An unexpected error occurred";
-                    setToaster(errorMessage, "error");
-                    console.error("Failed to toggle hidden status:", errorMessage);
+                onError: (error: unknown) => {
+                    if ((error as AxiosError).isAxiosError) {
+                        const axiosError = error as AxiosError<{ error: string }>;
+                        const errorMessage =
+                            axiosError.response?.data?.error || "An unexpected error occurred";
+                        setToaster(errorMessage, "error");
+                        console.error("Failed to toggle hidden status:", errorMessage);
+                    } else {
+                        const errorMessage = "An unexpected error occurred";
+                        setToaster(errorMessage, "error");
+                        console.error("Failed to toggle hidden status:", error);
+                    }
                 },
             }
         );
@@ -98,7 +107,7 @@ const AdminBlogPost = () => {
                 </div>
                 <div className="mb-4">
                     <h2 className="text-lg font-semibold">Tags:</h2>
-                    <p className="text-blue-600 dark:text-blue-400">{blogPost?.tags.join(", ")}</p>
+                    <p className="text-blue-600 dark:text-blue-400">{blogPost?.tags?.join(", ")}</p>
                 </div>
                 <div className="mb-4">
                     <h2 className="text-lg font-semibold">Visibility Status:</h2>
@@ -113,7 +122,7 @@ const AdminBlogPost = () => {
                 <BlogPostVote blogPostId={Number(id)} />
             </div>
 
-            <CommentSection blogPostId={blogPost?.id} />
+            <CommentSection blogPostId={blogPost?.id ? String(blogPost.id) : ""} />
         </div>
     );
 };

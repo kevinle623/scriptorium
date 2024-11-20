@@ -3,6 +3,7 @@ import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { useBlogPostVotes } from "@client/hooks/useBlogPostVotes";
 import { useVoteBlogPost } from "@client/hooks/useVoteBlogPost";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
+import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
 
 interface BlogPostVoteProps {
     blogPostId: number;
@@ -11,6 +12,7 @@ interface BlogPostVoteProps {
 const BlogPostVote = ({ blogPostId }: BlogPostVoteProps) => {
     const { data, isLoading, isError, error } = useBlogPostVotes(blogPostId);
     const { mutate: voteBlogPost, isLoading: isVoting } = useVoteBlogPost();
+    const {triggerOnboarding} = useJitOnboarding()
 
     const [upVotes, setUpVotes] = useState<number>(0);
     const [downVotes, setDownVotes] = useState<number>(0);
@@ -27,7 +29,7 @@ const BlogPostVote = ({ blogPostId }: BlogPostVoteProps) => {
     const handleVote = (voteType: "UP" | "DOWN") => {
         const newVoteType = userVote === voteType ? null : voteType;
 
-        voteBlogPost(
+        triggerOnboarding(() => voteBlogPost(
             { blogPostId, voteType: newVoteType },
             {
                 onSuccess: () => {
@@ -47,7 +49,7 @@ const BlogPostVote = ({ blogPostId }: BlogPostVoteProps) => {
                     console.error("Failed to cast vote:", err.message);
                 },
             }
-        );
+        ));
     };
 
     if (isLoading) {

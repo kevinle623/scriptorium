@@ -7,24 +7,33 @@ import { useBlogPostComments } from "@client/hooks/useBlogPostComments";
 import { useCommentBlogPost } from "@client/hooks/useCommentBlogPost";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 import { useToaster } from "@client/providers/ToasterProvider";
+import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
 
 interface CommentSectionProps {
     blogPostId: string;
 }
 
 const CommentSection = ({ blogPostId }: CommentSectionProps) => {
-    const { comments, commentsLoading } = useBlogPostComments(blogPostId);
+    const [currentPage, setCurrentPage] = useState(1);
+    const { triggerOnboarding } = useJitOnboarding()
+    const limit = 10;
+
+    const { comments, totalCount, commentsLoading } = useBlogPostComments({
+        blogPostId,
+        page: currentPage,
+        limit,
+    });
+
     const { mutate: addComment, isLoading: addingComment } = useCommentBlogPost();
-    const [newComment, setNewComment] = useState("");
-    const { setToaster } = useToaster(); // Use toaster context
+    const { setToaster } = useToaster();
 
     const handleAddComment = (content: string) => {
-        addComment(
+        triggerOnboarding(() => addComment(
             { id: blogPostId, content },
             {
                 onSuccess: () => {
-                    setNewComment("");
                     setToaster("Comment added successfully!", "success");
+                    setCurrentPage(1);
                 },
                 onError: (error) => {
                     const errorMessage =
@@ -33,24 +42,77 @@ const CommentSection = ({ blogPostId }: CommentSectionProps) => {
                     console.error("Error adding comment:", errorMessage);
                 },
             }
-        );
+        ));
     };
 
-    if (commentsLoading) return <LoadingSpinner />;
+    const handleNextPage = () => {
+        if (currentPage * limit < totalCount) {
+            setCurrentPage((prev) => prev + 1);
+        }
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage((prev) => prev - 1);
+        }
+    };
+
+    if (commentsLoading && currentPage === 1) return <LoadingSpinner />;
 
     return (
         <div className="p-6 mb-4 rounded-lg shadow-md bg-gray-50 dark:bg-gray-800">
             <h3 className="text-2xl font-bold mb-4">Comments</h3>
             <CommentForm
-                value={newComment}
+                value=""
                 onSubmit={handleAddComment}
-                onChange={setNewComment}
+                onChange={() => {}}
                 placeholder="Add a comment..."
                 disabled={addingComment}
             />
-            {comments?.map((comment) => (
-                <Comment key={comment.id} comment={comment} />
-            ))}
+            <hr/>
+            {comments?.length > 0 ? (
+                <>
+                    <div className="flex justify-between mt-4 mb-4">
+
+                        <button
+                            onClick={handlePrevPage}
+                            className="py-2 px-4 bg-gray-500 hover:bg-gray-600 text-white rounded-lg disabled:opacity-50"
+                            disabled={currentPage === 1 || commentsLoading}
+                        >
+                            Previous
+                        </button>
+                        <button
+                            onClick={handleNextPage}
+                            className="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
+                            disabled={currentPage * limit >= totalCount || commentsLoading}
+                        >
+                            Next
+                        </button>
+                    </div>
+                    {comments.map((comment) => (
+                        <Comment key={comment.id} comment={comment}/>
+                    ))}
+                    <div className="flex justify-between mt-4">
+
+                        <button
+                            onClick={handlePrevPage}
+                            className="py-2 px-4 bg-gray-500 hover:bg-gray-600 text-white rounded-lg disabled:opacity-50"
+                            disabled={currentPage === 1 || commentsLoading}
+                        >
+                            Previous
+                        </button>
+                        <button
+                            onClick={handleNextPage}
+                            className="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
+                            disabled={currentPage * limit >= totalCount || commentsLoading}
+                        >
+                            Next
+                        </button>
+                    </div>
+                </>
+            ) : (
+                <p>No comments yet. Be the first to comment!</p>
+            )}
         </div>
     );
 };

@@ -1,4 +1,5 @@
 import React from "react";
+import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
 
 interface CommentFormProps {
     value: string;
@@ -8,10 +9,11 @@ interface CommentFormProps {
 }
 
 const CommentForm = ({ value, onSubmit, onChange, placeholder }: CommentFormProps) => {
+    const { triggerOnboarding } = useJitOnboarding()
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (value.trim()) {
-            onSubmit(value.trim());
+            triggerOnboarding(() => onSubmit(value.trim()));
             onChange("");
         }
     };

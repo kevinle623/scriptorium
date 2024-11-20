@@ -57,6 +57,8 @@ export interface GetCommentsRequest {
     page?: number,
     limit?: number,
     hidden?: boolean,
+    blogPostId?: string,
+    commentId?: string,
 }
 
 export interface GetCommentReportsRequest {

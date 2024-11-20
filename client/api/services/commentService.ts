@@ -22,9 +22,15 @@ export const getCommentById = async (id: string): Promise<Comment> => {
     }
 };
 
-export const fetchComments = async (commentId: string): Promise<Comment[]> => {
-    const { data } = await axiosInstance.get(`/comments/${commentId}/comment`);
-    return data.comments;
+export const fetchComments = async (payload: GetCommentsRequest): Promise<GetCommentsResult> => {
+    const { page, limit, commentId } = payload
+    const { data } = await axiosInstance.get(`/comments/${commentId}/comment`, {
+        params: {
+            page,
+            limit
+        }
+    });
+    return data;
 };
 
 

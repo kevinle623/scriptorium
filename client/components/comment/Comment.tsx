@@ -6,8 +6,12 @@ import { Comment as CommentType } from "@types/dtos/comments";
 import { useReportComment } from "@client/hooks/useReportComment";
 import { useReplyComment } from "@client/hooks/useReplyComment";
 import { useCommentReplies } from "@client/hooks/useCommentReplies";
+import { useUserById } from "@client/hooks/useUserById";
 import CommentVote from "@client/components/vote/CommentVote";
-import { useToaster } from "@client/providers/ToasterProvider"
+import { useToaster } from "@client/providers/ToasterProvider";
+import { FaUserCircle } from "react-icons/fa";
+import Image from "next/image";
+import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
 
 interface CommentProps {
     comment: CommentType;
@@ -16,33 +20,46 @@ interface CommentProps {
 const Comment = ({ comment }: CommentProps) => {
     const { mutate: reportComment } = useReportComment();
     const { mutate: replyToComment } = useReplyComment();
-    const { replies, repliesLoading } = useCommentReplies(comment.id);
     const { setToaster } = useToaster();
+    const { triggerOnboarding } = useJitOnboarding();
+
+    const { data: user, isLoading: userLoading, isError: userError } = useUserById(comment.userId);
 
     const [isRepliesVisible, setIsRepliesVisible] = useState(false);
     const [activeForm, setActiveForm] = useState<"reply" | "report" | null>(null);
     const [replyContent, setReplyContent] = useState("");
     const [reportReason, setReportReason] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const limit = 5;
+
+    const { replies, repliesLoading, totalCount } = useCommentReplies({
+        commentId: comment.id,
+        page: currentPage,
+        limit,
+    });
 
     const handleReply = () => {
         if (!replyContent.trim()) {
             setToaster("Please write a reply before submitting.", "info");
             return;
         }
-        replyToComment(
-            { id: comment.id, content: replyContent },
-            {
-                onSuccess: () => {
-                    setReplyContent("");
-                    setActiveForm(null);
-                    setToaster("Reply submitted successfully!", "success");
-                },
-                onError: (error) => {
-                    setToaster(error.response.data.error || "Failed to report comment. Please try again.", "error");
-                    setActiveForm(null);
-                    console.error(error);
-                },
-            }
+        triggerOnboarding(() =>
+            replyToComment(
+                { id: comment.id, content: replyContent },
+                {
+                    onSuccess: () => {
+                        setReplyContent("");
+                        setActiveForm(null);
+                        setToaster("Reply submitted successfully!", "success");
+                        setCurrentPage(1);
+                    },
+                    onError: (error) => {
+                        setToaster(error.response?.data?.error || "Failed to reply. Please try again.", "error");
+                        setActiveForm(null);
+                        console.error(error);
+                    },
+                }
+            )
         );
     };
 
@@ -51,20 +68,22 @@ const Comment = ({ comment }: CommentProps) => {
             setToaster("Please provide a reason for reporting.", "info");
             return;
         }
-        reportComment(
-            { id: comment.id, reason: reportReason },
-            {
-                onSuccess: () => {
-                    setReportReason("");
-                    setActiveForm(null);
-                    setToaster("Comment reported successfully.", "success");
-                },
-                onError: (error) => {
-                    setToaster(error.response.data.error || "Failed to report comment. Please try again.", "error");
-                    setActiveForm(null);
-                    console.error(error);
-                },
-            }
+        triggerOnboarding(() =>
+            reportComment(
+                { id: comment.id, reason: reportReason },
+                {
+                    onSuccess: () => {
+                        setReportReason("");
+                        setActiveForm(null);
+                        setToaster("Comment reported successfully.", "success");
+                    },
+                    onError: (error) => {
+                        setToaster(error.response?.data?.error || "Failed to report comment. Please try again.", "error");
+                        setActiveForm(null);
+                        console.error(error);
+                    },
+                }
+            )
         );
     };
 
@@ -72,17 +91,56 @@ const Comment = ({ comment }: CommentProps) => {
         setActiveForm(activeForm === form ? null : form);
     };
 
+    const handleNextPage = () => {
+        if (currentPage * limit < totalCount) {
+            setCurrentPage((prev) => prev + 1);
+        }
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage((prev) => prev - 1);
+        }
+    };
+
     return (
         <div className="mb-4 p-4 rounded-lg shadow bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100">
             <div className="flex justify-between">
-                <div>
-                    <strong className="text-lg">User {comment.userId}</strong>
-                    <p className="mt-2">{comment.content}</p>
+                <div className="flex items-center space-x-4">
+                    {userLoading ? (
+                        <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 animate-pulse"></div>
+                    ) : userError || !user?.avatar ? (
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600">
+                            <FaUserCircle className="text-gray-500 dark:text-gray-400 w-8 h-8" />
+                        </div>
+                    ) : (
+                        <div className="rounded-full overflow-hidden">
+                            <Image
+                                src={user.avatar}
+                                alt={`${user.firstName}'s avatar`}
+                                width={45}
+                                height={45}
+                                className="object-cover rounded-full"
+                            />
+                        </div>
+                    )}
+
+                    <div>
+                        <strong className="text-lg">
+                            {userLoading
+                                ? "Loading..."
+                                : userError || !user
+                                    ? `User ${comment.userId}`
+                                    : `${user.firstName} ${user.lastName}`}
+                        </strong>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">
+                            {new Date(comment.createdAt).toLocaleString()}
+                        </p>
+                    </div>
                 </div>
-                <small className="text-gray-500 dark:text-gray-400 text-sm">
-                    {new Date(comment.createdAt).toLocaleString()}
-                </small>
             </div>
+
+            <p className="mt-4">{comment.content}</p>
 
             <div className="mt-4 flex items-center gap-4 text-sm">
                 <CommentVote commentId={comment.id} />
@@ -98,12 +156,12 @@ const Comment = ({ comment }: CommentProps) => {
                 >
                     {activeForm === "reply" ? "Cancel Reply" : "Reply"}
                 </button>
-                {replies && replies.length > 0 && (
+                {totalCount > 0 && (
                     <button
                         onClick={() => setIsRepliesVisible(!isRepliesVisible)}
                         className="px-3 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 transition"
                     >
-                        {isRepliesVisible ? "Hide Replies" : `View Replies (${replies.length})`}
+                        {isRepliesVisible ? "Hide Replies" : `View Replies (${totalCount})`}
                     </button>
                 )}
             </div>
@@ -145,7 +203,27 @@ const Comment = ({ comment }: CommentProps) => {
                     {repliesLoading ? (
                         <p className="text-gray-500 dark:text-gray-400">Loading replies...</p>
                     ) : (
-                        replies.map((reply) => <Comment key={reply.id} comment={reply} />)
+                        <>
+                            {replies.map((reply) => (
+                                <Comment key={reply.id} comment={reply} />
+                            ))}
+                            <div className="flex justify-between mt-4">
+                                <button
+                                    onClick={handlePrevPage}
+                                    className="py-2 px-4 bg-gray-500 hover:bg-gray-600 text-white rounded-lg disabled:opacity-50"
+                                    disabled={currentPage === 1 || repliesLoading}
+                                >
+                                    Previous
+                                </button>
+                                <button
+                                    onClick={handleNextPage}
+                                    className="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
+                                    disabled={currentPage * limit >= totalCount || repliesLoading}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </>
                     )}
                 </div>
             )}

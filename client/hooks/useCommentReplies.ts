@@ -1,15 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchComments } from "@client/api/services/commentService";
-import {Comment} from "@types/dtos/comments";
+import {GetCommentsRequest, GetCommentsResult} from "@types/dtos/comments";
 
-export const useCommentReplies = (id: string) => {
-    const { data: replies, isLoading: repliesLoading } =  useQuery<Comment[]>({
-        queryKey: ["replies", id],
+export const useCommentReplies = (payload: GetCommentsRequest) => {
+    const { commentId, page, limit} = payload
+    const { data: result, isLoading: repliesLoading } =  useQuery<GetCommentsResult>({
+        queryKey: ["replies", commentId, page, limit],
         queryFn: async () => {
-            const data = await fetchComments(id);
+            const data = await fetchComments(payload);
             return data;
         },
     });
 
-    return { replies, repliesLoading };
+    const { totalCount, comments } = result || {};
+
+    return { replies: comments, totalCount, repliesLoading };
 };

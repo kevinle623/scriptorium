@@ -30,7 +30,7 @@ const Playground = () => {
                 onSuccess: (data) => {
                     setOutput(data.result);
                 },
-                onError: (error: any) => {
+                onError: (error: Error) => {
                     setOutput(error?.response?.data?.error || "Error executing code.");
                 },
             }
