@@ -5,7 +5,7 @@ import { useAuth } from "@client/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useToaster } from "@client/providers/ToasterProvider";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
-import { Role } from "@types/dtos/roles"
+import { Role } from "@/types/dtos/roles"
 import { useUser } from "@client/hooks/useUser";
 
 interface AdminGuardProps {

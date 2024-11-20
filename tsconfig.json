@@ -21,7 +21,7 @@
       "@/*": ["./*"],
       "@server/*": ["./server/*"],
       "@client/*": ["./client/*"],
-      "@types/*": ["./types/*"],
+      "@/types/*": ["./types/*"],
       "@utils/*": ["./utils/*"]
     },
   },

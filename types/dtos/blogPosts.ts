@@ -1,5 +1,5 @@
-import {Tag} from "@types/dtos/tags";
-import {Report} from "@types/dtos/reports"
+import {Tag} from "@/types/dtos/tags";
+import {Report} from "@/types/dtos/reports"
 
 export interface BlogPostFilters {
     page?: number;
@@ -26,6 +26,11 @@ export interface BlogPost {
     commentIds?: number[];
     tags?: string[];
     reportCount?: number;
+}
+
+export interface BlogPostsResponse {
+    blogPosts: BlogPost[];
+    totalCount: number;
 }
 
 export interface BlogPostTag {
@@ -116,6 +121,7 @@ export interface CreateBlogPostResponse {
 export interface ReportBlogPostRequest {
     id: string;
     reason: string;
+    userId: string | number;
 }
 
 export interface ReportBlogPostResponse {

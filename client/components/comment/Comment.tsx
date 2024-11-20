@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import CommentForm from "./CommentForm";
-import { Comment as CommentType } from "@types/dtos/comments";
+import { Comment as CommentType } from "@/types/dtos/comments";
 import { useReportComment } from "@client/hooks/useReportComment";
 import { useReplyComment } from "@client/hooks/useReplyComment";
 import { useCommentReplies } from "@client/hooks/useCommentReplies";

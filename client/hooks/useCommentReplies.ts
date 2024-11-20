@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchComments } from "@client/api/services/commentService";
-import {GetCommentsRequest, GetCommentsResult} from "@types/dtos/comments";
+import {GetCommentsRequest, GetCommentsResult} from "@/types/dtos/comments";
 
 export const useCommentReplies = (payload: GetCommentsRequest) => {
     const { commentId, page, limit} = payload

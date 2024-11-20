@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useReportBlogPost } from "@client/hooks/useReportBlogPost";
-import { ReportBlogPostRequest } from "@types/dtos/blogPosts";
+import { ReportBlogPostRequest } from "@/types/dtos/blogPosts";
 import { useToaster } from "@client/providers/ToasterProvider";
 
 interface BlogPostReportProps {

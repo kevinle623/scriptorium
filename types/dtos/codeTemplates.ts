@@ -1,4 +1,4 @@
-import {Tag} from "@types/dtos/tags";
+import {Tag} from "@/types/dtos/tags";
 
 export type ExecuteCodeRequest = {
     language: string;
@@ -74,12 +74,12 @@ export interface CreateCodeTemplateRequest {
 export interface GetCodeTemplatesRequest {
     title?: string;
     userId?: string;
-    tags?: string[];
+    tags?: string;
     content?: string;
     page?: number;
     limit?: number;
     mineOnly?: boolean;
-    ids?: number[]
+    ids?: string
 }
 
 export interface GetCodeTemplateResponse {

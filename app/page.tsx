@@ -14,7 +14,7 @@ import {
 import { useAuth } from "@client/providers/AuthProvider";
 import LogoutButton from "@client/components/button/LogoutButton";
 import { useUser } from "@client/hooks/useUser";
-import { Role } from "@types/dtos/roles";
+import { Role } from "@/types/dtos/roles";
 
 export default function Home() {
   const { isAuthed } = useAuth();

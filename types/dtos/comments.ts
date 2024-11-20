@@ -1,4 +1,4 @@
-import {Report} from "@types/dtos/reports";
+import {Report} from "@/types/dtos/reports";
 
 export interface Comment {
     id: number;
@@ -12,6 +12,7 @@ export interface Comment {
     upVotes?: number;
     downVotes?: number;
     reportIds?: number[];
+    reportCount?: number;
 }
 export interface AddCommentRequest {
     id: string;
@@ -57,8 +58,8 @@ export interface GetCommentsRequest {
     page?: number,
     limit?: number,
     hidden?: boolean,
-    blogPostId?: string,
-    commentId?: string,
+    blogPostId?: string | number,
+    commentId?: string | number,
 }
 
 export interface GetCommentReportsRequest {
@@ -74,6 +75,7 @@ export interface GetCommentReportsResponse {
 
 export interface UpdateCommentHiddenStatusRequest {
     hidden: boolean;
+    commentId: string | number;
 }
 
 export interface UpdateCommentHiddenStatusResponse {

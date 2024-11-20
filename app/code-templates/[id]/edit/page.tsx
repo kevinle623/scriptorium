@@ -11,7 +11,8 @@ import { useUpdateCodeTemplate } from "@client/hooks/useEditCodeTemplate";
 import { useDeleteCodeTemplate } from "@client/hooks/useDeleteCodeTemplate";
 import { useUser } from "@client/hooks/useUser";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
-import {CodingLanguage} from "@types/dtos/codeTemplates";
+import {CodingLanguage} from "@/types/dtos/codeTemplates";
+import {AxiosError} from "axios";
 
 
 const EditCodeTemplatePage = () => {
@@ -22,8 +23,8 @@ const EditCodeTemplatePage = () => {
     const [editorTheme, setEditorTheme] = useState<"vs-dark" | "vs-light">("vs-dark");
 
     const { data: codeTemplate, isLoading: isLoadingTemplate } = useCodeTemplateById(Number(id));
-    const { mutate: updateCodeTemplate, isLoading: isUpdating } = useUpdateCodeTemplate();
-    const { mutate: deleteCodeTemplate, isLoading: isDeleting } = useDeleteCodeTemplate();
+    const { mutate: updateCodeTemplate, isPending: isUpdating } = useUpdateCodeTemplate();
+    const { mutate: deleteCodeTemplate, isPending: isDeleting } = useDeleteCodeTemplate();
     const { mutate: executeCode, isPending } = useExecuteCode();
     const { data: user, isLoading: userLoading } = useUser();
     const { setToaster } = useToaster();
@@ -43,7 +44,7 @@ const EditCodeTemplatePage = () => {
     useEffect(() => {
         if (codeTemplate) {
             setTitle(codeTemplate.title);
-            setLanguage(codeTemplate.language);
+            setLanguage(codeTemplate.language as CodingLanguage);
             setCode(codeTemplate.code);
             setExplanation(codeTemplate.explanation);
             setTags(codeTemplate.tags);
@@ -96,8 +97,18 @@ const EditCodeTemplatePage = () => {
                     setOutput(data.result);
                     setToaster("Code executed successfully!", "success");
                 },
-                onError: (error: Error) => {
-                    const errorMessage = error?.response?.data?.error || "Error executing code.";
+                onError: (error: unknown) => {
+                    let errorMessage = "Error executing code.";
+
+                    if (error && typeof error === "object" && "message" in error) {
+                        errorMessage = (error as Error).message;
+                    }
+
+                    if (error && (error as AxiosError).isAxiosError) {
+                        const axiosError = error as AxiosError<{ error: string }>;
+                        errorMessage = axiosError.response?.data?.error || errorMessage;
+                    }
+
                     setOutput(errorMessage);
                     setToaster(errorMessage, "error");
                 },

@@ -1,6 +1,6 @@
 import {useQuery} from "@tanstack/react-query";
 import {getCommentById} from "@client/api/services/commentService";
-import {Comment} from "@types/dtos/comments"
+import {Comment} from "@/types/dtos/comments"
 
 export const useComment = (id: string) => {
     const { data: comment, isLoading: commentLoading } =  useQuery<Comment>({

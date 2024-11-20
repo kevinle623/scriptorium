@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import {Role} from "@types/dtos/roles";
+import {Role} from "@/types/dtos/roles";
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET as string;
 const ACCESS_TOKEN_SECRET_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN as string;

@@ -4,10 +4,10 @@ import {
     Comment, GetCommentReportsRequest, GetCommentReportsResponse, GetCommentsRequest, GetCommentsResult,
     ReportCommentRequest,
     ReportCommentResponse, UpdateCommentHiddenStatusRequest, UpdateCommentHiddenStatusResponse
-} from "@types/dtos/comments";
+} from "@/types/dtos/comments";
 import axiosInstance from "@client/api/axiosInstance";
-import {CommentVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@types/dtos/votes";
-import {Comment} from "@types/dtos/comments";
+import {CommentVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@/types/dtos/votes";
+import {Comment} from "@/types/dtos/comments";
 
 
 export const getCommentById = async (id: string): Promise<Comment> => {

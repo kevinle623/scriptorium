@@ -1,5 +1,5 @@
 import {getBlogPostReports} from "@client/api/services/blogPostService"
-import {GetBlogPostReportsRequest, GetBlogPostReportsResponse} from "@types/dtos/blogPosts";
+import {GetBlogPostReportsRequest, GetBlogPostReportsResponse} from "@/types/dtos/blogPosts";
 import {useQuery} from "@tanstack/react-query";
 
 export const useBlogPostReports = (blogPostId: number, page = 1, limit = 10) => {

@@ -59,7 +59,7 @@ const BlogPost = () => {
                 </div>
                 <div className="mb-4">
                     <h2 className="text-lg font-semibold">Tags:</h2>
-                    <p className="text-blue-600 dark:text-blue-400">{blogPost?.tags.join(", ")}</p>
+                    <p className="text-blue-600 dark:text-blue-400">{blogPost?.tags?.join(", ")}</p>
                 </div>
                 <BlogPostVote blogPostId={Number(id)}/>
                 <BlogPostReport blogPostId={id}/>
@@ -67,18 +67,18 @@ const BlogPost = () => {
 
             {blogPost?.userId &&
                 <div className="mb-6">
-                <UserProfileSection userId={blogPost?.userId} sectionName="Author"/>
+                <UserProfileSection userId={String(blogPost?.userId)} sectionName="Author"/>
             </div>}
 
             {/* Code Templates Section */}
-            {blogPost.codeTemplateIds.length > 0 && (
+            {(blogPost?.codeTemplateIds?.length || 0) > 0 && (
                 <div className="p-6 mb-4 rounded-lg shadow-md bg-gray-100 dark:bg-gray-700">
                     <h2 className="text-xl font-bold mb-4">Code Templates</h2>
                     {codeTemplateLoading ? (
                         <p>Loading code templates...</p>
                     ) : (
                         <div className="space-y-4">
-                            {codeTemplateData?.codeTemplates.map((template) => (
+                            {codeTemplateData?.codeTemplates?.map((template) => (
                                 <details
                                     key={template.id}
                                     className="border rounded-lg p-4 bg-white dark:bg-gray-800"
@@ -113,8 +113,7 @@ const BlogPost = () => {
                 </div>
             )}
 
-            {/* Comments Section */}
-            <CommentSection blogPostId={blogPost?.id}/>
+            {blogPost && <CommentSection blogPostId={String(blogPost?.id)}/>}
         </div>
     );
 };

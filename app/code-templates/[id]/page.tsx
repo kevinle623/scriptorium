@@ -20,7 +20,7 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
 
     const { data: codeTemplate, isLoading, error } = useCodeTemplateById(id);
     const { data: user, isLoading: userLoading } = useUser();
-    const { mutate: executeCode, data: executeResponse, isLoading: isExecuting } = useExecuteCode();
+    const { mutate: executeCode, data: executeResponse, isPending: isExecuting } = useExecuteCode();
 
     const [stdin, setStdin] = useState("");
 
@@ -38,8 +38,10 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
 
     const handleCopyToPlayground = () => {
         resetPlayground();
-        setCode(codeTemplate?.code);
-        setLanguage(codeTemplate?.language);
+        if (codeTemplate) {
+            setCode(codeTemplate?.code);
+            setLanguage(codeTemplate?.language);
+        }
         router.push(`/playground`);
     };
 
@@ -106,7 +108,7 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
 
             {userId &&
                 <div className="mb-6">
-                    <UserProfileSection userId={userId} sectionName="Author"/>
+                    <UserProfileSection userId={String(userId)} sectionName="Author"/>
                 </div>}
 
             {explanation && (

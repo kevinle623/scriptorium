@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { CreateBlogPostForm, CreateBlogPostRequest } from "@types/dtos/blogPosts";
+import { CreateBlogPostForm, CreateBlogPostRequest } from "@/types/dtos/blogPosts";
 import { useCreateBlogPost } from "@client/hooks/useCreateBlogPost";
 import { useToaster } from "@client/providers/ToasterProvider";
 import TagInput from "@client/components/tag-input/TagInput";

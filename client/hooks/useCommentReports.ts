@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { useQuery } from "@tanstack/react-query";
-import { GetCommentReportsRequest, GetCommentReportsResponse } from "@types/dtos/comments"
+import { GetCommentReportsRequest, GetCommentReportsResponse } from "@/types/dtos/comments"
 import { getCommentReports } from "@client/api/services/commentService";
 
 export const useCommentReports = (id: number, page = 1, limit = 10) => {

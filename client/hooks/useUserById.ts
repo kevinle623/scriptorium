@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {GetUserResponse} from "@types/dtos/user";
+import {GetUserResponse} from "@/types/dtos/user";
 import {getUserById} from "@client/api/services/userService";
 
 export const useUserById = (userId: string) => {

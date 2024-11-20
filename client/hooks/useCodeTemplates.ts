@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {CodeTemplate, GetCodeTemplatesRequest} from "@types/dtos/codeTemplates"
+import {CodeTemplate, GetCodeTemplatesRequest} from "@/types/dtos/codeTemplates"
 import {fetchCodeTemplates} from "@client/api/services/codeTemplateService";
 
 export const useCodeTemplates = (filters: GetCodeTemplatesRequest) => {

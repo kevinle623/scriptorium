@@ -7,7 +7,8 @@ import Editor from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
-import {CodingLanguage} from "@types/dtos/codeTemplates";
+import {CodingLanguage} from "@/types/dtos/codeTemplates";
+import axios from "axios";
 
 const Playground = () => {
     const { language, code, setLanguage, setCode, resetPlayground } = useCodePlaygroundCache();
@@ -30,8 +31,15 @@ const Playground = () => {
                 onSuccess: (data) => {
                     setOutput(data.result);
                 },
-                onError: (error: Error) => {
-                    setOutput(error?.response?.data?.error || "Error executing code.");
+                onError: (error: unknown) => {
+                    if (axios.isAxiosError(error)) {
+                        const errorMessage =
+                            error.response?.data?.error || "An unexpected error occurred";
+                        setOutput(errorMessage);
+                        console.error("Failed to toggle hidden status:", errorMessage);
+                    } else {
+                        setOutput("An unexpected error occurred");
+                    }
                 },
             }
         );

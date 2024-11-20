@@ -3,8 +3,8 @@
 import {useForm} from "react-hook-form";
 import {useRegister} from "@client/hooks/useRegister";
 import {useState} from "react";
-import {CreateUserRequest, RegisterResponse} from "@types/dtos/user";
-import {Role} from "@types/dtos/roles";
+import {CreateUserRequest, RegisterResponse} from "@/types/dtos/user";
+import {Role} from "@/types/dtos/roles";
 import {useToaster} from "@client/providers/ToasterProvider";
 import {useAuth} from "@client/providers/AuthProvider";
 

@@ -7,6 +7,7 @@ import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScree
 import TagInput from "@client/components/tag-input/TagInput";
 import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
 import { useAuth } from "@client/providers/AuthProvider";
+import {BlogPostsResponse} from "@/types/dtos/blogPosts";
 
 const BlogPosts = () => {
     const router = useRouter();
@@ -32,7 +33,7 @@ const BlogPosts = () => {
         tags: searchFilters.tags && searchFilters.tags.length > 0 ? searchFilters.tags.join(",") : undefined,
     });
 
-    const { blogPosts = [], totalCount = 0 } = data;
+    const { blogPosts = [], totalCount = 0 } = data as BlogPostsResponse || {};
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;

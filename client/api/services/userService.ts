@@ -1,5 +1,5 @@
-import {EditUserRequest, EditUserResponse, GetUserResponse, LoginRequest, LoginResponse} from "@types/dtos/user";
-import { CreateUserRequest, RefreshResponse } from "@types/dtos/user";
+import {EditUserRequest, EditUserResponse, GetUserResponse, LoginRequest, LoginResponse} from "@/types/dtos/user";
+import { CreateUserRequest, RefreshResponse } from "@/types/dtos/user";
 import axiosInstance from "@client/api/axiosInstance";
 
 export const getUser = async (): Promise<GetUserResponse> => {

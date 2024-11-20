@@ -1,8 +1,8 @@
 import { DatabaseIntegrityException } from "@/types/exceptions";
 import {Report as ReportModel} from "@prisma/client";
 import { Report } from "@/types/dtos/reports";
-import {GetCommentReportsRequest, GetCommentReportsResponse} from "@types/dtos/comments";
-import {GetBlogPostReportsRequest, GetBlogPostReportsResponse} from "@types/dtos/blogPosts";
+import {GetCommentReportsRequest, GetCommentReportsResponse} from "@/types/dtos/comments";
+import {GetBlogPostReportsRequest, GetBlogPostReportsResponse} from "@/types/dtos/blogPosts";
 
 export async function getBlogPostReportByUser(
     prismaClient: any,

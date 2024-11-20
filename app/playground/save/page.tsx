@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCreateCodeTemplate } from "@client/hooks/useCreateCodeTemplate";
 import { useCodePlaygroundCache } from "@client/providers/CodePlaygroundCacheProvider";
 import TagInput from "@client/components/tag-input/TagInput";
+import {CodingLanguage} from "@/types/dtos/codeTemplates";
 
 interface CreateCodeTemplateFormValues {
     title: string;
@@ -17,7 +18,7 @@ interface CreateCodeTemplateFormValues {
 const CreateCodeTemplatePage = () => {
     const router = useRouter();
     const { language, code, resetPlayground } = useCodePlaygroundCache();
-    const { mutate: createTemplate, isLoading } = useCreateCodeTemplate();
+    const { mutate: createTemplate, isPending: isLoading } = useCreateCodeTemplate();
 
     const {
         register,
@@ -35,7 +36,7 @@ const CreateCodeTemplatePage = () => {
         createTemplate(
             {
                 ...data,
-                language,
+                language: language as CodingLanguage,
                 code,
                 tags: tags
             },

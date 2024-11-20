@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useCodeTemplates } from "@client/hooks/useCodeTemplates";
-import { CodeTemplate } from "@types/dtos/codeTemplates";
+import { CodeTemplate } from "@/types/dtos/codeTemplates";
 
 interface CodeTemplateSelectorProps {
     selectedIds: number[];
-    setSelectedIds: React.Dispatch<React.SetStateAction<number[]>>;
+    setSelectedIds: (newIds: number[]) => void;
 }
 
 const CodeTemplateSelector = ({

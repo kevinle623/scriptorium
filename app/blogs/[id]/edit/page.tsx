@@ -17,7 +17,7 @@ interface EditBlogPostForm {
     description: string;
     content: string;
     tags: string[];
-    codeTemplateIds: number[]; // Updated to match `CodeTemplateSelector`
+    codeTemplateIds: number[];
 }
 
 const EditBlogPostPage = () => {
@@ -27,8 +27,8 @@ const EditBlogPostPage = () => {
 
     const { blogPost, blogLoading } = useBlogPost(id);
     const { data: user, isLoading: userLoading } = useUser();
-    const { mutate: editBlogPost, isLoading: isUpdating } = useEditBlogPost();
-    const { mutate: deleteBlogPost, isLoading: isDeleting } = useDeleteBlogPost();
+    const { mutate: editBlogPost, isPending: isUpdating } = useEditBlogPost();
+    const { mutate: deleteBlogPost, isPending: isDeleting } = useDeleteBlogPost();
 
     const {
         register,
@@ -47,7 +47,7 @@ const EditBlogPostPage = () => {
             setValue("description", blogPost.description);
             setValue("content", blogPost.content);
             setValue("tags", blogPost.tags || []);
-            setValue("codeTemplateIds", blogPost.codeTemplateIds || []);
+            setValue("codeTemplateIds", blogPost.codeTemplateIds || [])
         }
     }, [blogPost, setValue]);
 

@@ -1,7 +1,7 @@
 
 import {
     BlogPost,
-    BlogPostFilters,
+    BlogPostFilters, BlogPostsResponse,
     CreateBlogPostRequest,
     CreateBlogPostResponse,
     EditBlogPostRequest,
@@ -9,19 +9,16 @@ import {
     GetBlogPostReportsResponse, GetBlogPostsResult,
     ReportBlogPostRequest,
     ReportBlogPostResponse, ToggleBlogPostHiddenStatusRequest, ToggleBlogPostHiddenStatusResponse
-} from "@types/dtos/blogPosts";
+} from "@/types/dtos/blogPosts";
 import {
     AddCommentRequest,
     AddCommentResponse,
-    Comment, GetCommentsRequest, GetCommentsResult,
-} from "@types/dtos/comments"
-import {BlogPostVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@types/dtos/votes";
+    GetCommentsRequest, GetCommentsResult,
+} from "@/types/dtos/comments"
+import {BlogPostVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@/types/dtos/votes";
 import axiosInstance from "@client/api/axiosInstance";
 
-export const fetchBlogPosts = async (filters: BlogPostFilters): Promise<{
-    blogPosts: BlogPost[];
-    totalCount: number;
-}> => {
+export const fetchBlogPosts = async (filters: BlogPostFilters): Promise<BlogPostsResponse> => {
     try {
         const { data } = await axiosInstance.get("/blogs", {
             params: filters
@@ -121,7 +118,7 @@ export const updateBlogPostHiddenStatus = async (
 ): Promise<ToggleBlogPostHiddenStatusResponse> => {
     try {
         const { hidden, blogPostId} = payload
-        const requestBody: ToggleBlogPostHiddenStatusRequest = { hidden };
+        const requestBody: ToggleBlogPostHiddenStatusRequest = { hidden, blogPostId };
 
         const { data } = await axiosInstance.put<ToggleBlogPostHiddenStatusResponse>(
             `/admin/blogs/${blogPostId}/hide`,

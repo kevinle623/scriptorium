@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { UpdateCodeTemplateRequest, UpdateCodeTemplateResponse } from '@types/dtos/codeTemplates';
+import { UpdateCodeTemplateRequest, UpdateCodeTemplateResponse } from '@/types/dtos/codeTemplates';
 import {editCodeTemplate} from "@client/api/services/codeTemplateService";
 
 export const useUpdateCodeTemplate = () => {

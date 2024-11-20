@@ -3,7 +3,7 @@ import {
     ExecuteCodeRequest,
     ExecuteCodeResponse,
     GetCodeTemplatesRequest, UpdateCodeTemplateRequest, UpdateCodeTemplateResponse
-} from "@types/dtos/codeTemplates";
+} from "@/types/dtos/codeTemplates";
 import axiosInstance from "@client/api/axiosInstance";
 
 

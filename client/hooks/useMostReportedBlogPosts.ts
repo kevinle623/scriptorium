@@ -1,4 +1,4 @@
-import {BlogPostFilters, GetBlogPostsResult} from "@types/dtos/blogPosts";
+import {BlogPostFilters, GetBlogPostsResult} from "@/types/dtos/blogPosts";
 import {useQuery} from "@tanstack/react-query";
 import {getMostReportedBlogPosts} from "@client/api/services/blogPostService";
 

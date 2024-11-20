@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useLogin } from "@client/hooks/useLogin";
 import { useState } from "react";
 import { useToaster } from "@client/providers/ToasterProvider";
-import {LoginRequest, LoginResponse} from "@types/dtos/user";
+import {LoginRequest, LoginResponse} from "@/types/dtos/user";
 import {useAuth} from "@client/providers/AuthProvider";
 
 interface LoginProps {

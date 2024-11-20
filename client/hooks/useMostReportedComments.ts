@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import {GetCommentsRequest, GetCommentsResult} from "@types/dtos/comments";
+import {GetCommentsRequest, GetCommentsResult} from "@/types/dtos/comments";
 import {getMostReportedComments} from "@client/api/services/commentService";
 
 export const useMostReportedComments = (filters: GetCommentsRequest) => {

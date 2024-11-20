@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCodeTemplateById } from "@client/hooks/useCodeTemplateById";
 import { useCreateCodeTemplate } from "@client/hooks/useCreateCodeTemplate";
 import TagInput from "@client/components/tag-input/TagInput";
+import {CodingLanguage} from "@/types/dtos/codeTemplates";
 
 interface ForkCodeTemplateFormValues {
     title: string;
@@ -17,7 +18,7 @@ interface ForkCodeTemplateFormValues {
 const ForkCodeTemplatePage = ({ params }: { params: { id: string } }) => {
     const id = parseInt(params.id, 10);
     const { data: codeTemplate, isLoading, error } = useCodeTemplateById(id);
-    const { mutate: createTemplate, isLoading: isCreating } = useCreateCodeTemplate();
+    const { mutate: createTemplate, isPending: isCreating } = useCreateCodeTemplate();
     const router = useRouter();
 
     const {
@@ -46,7 +47,7 @@ const ForkCodeTemplatePage = ({ params }: { params: { id: string } }) => {
             {
                 ...data,
                 code: codeTemplate?.code || "",
-                language: codeTemplate?.language || "javascript",
+                language: (codeTemplate?.language || "javascript") as CodingLanguage,
                 parentTemplateId: codeTemplate?.id,
             },
             {

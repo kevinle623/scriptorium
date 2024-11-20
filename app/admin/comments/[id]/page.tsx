@@ -9,6 +9,7 @@ import { useCommentReplies } from "@client/hooks/useCommentReplies";
 import { useToaster } from "@client/providers/ToasterProvider";
 import CommentVote from "@client/components/vote/CommentVote";
 import Reply from "@client/components/comment/Comment";
+import {AxiosError} from "axios";
 
 const AdminComment = () => {
     const params = useParams();
@@ -24,8 +25,8 @@ const AdminComment = () => {
     const [isRepliesVisible, setIsRepliesVisible] = useState(false);
     const limit = 5;
 
-    const { replies, repliesLoading, totalCount } = useCommentReplies({
-        commentId: Number(id),
+    const { replies, repliesLoading, totalCount = 0 } = useCommentReplies({
+        commentId: id,
         page: currentPage,
         limit,
     });
@@ -49,18 +50,25 @@ const AdminComment = () => {
                         "success"
                     );
                 },
-                onError: (error: Error) => {
-                    const errorMessage =
-                        error.response?.data?.error || "An unexpected error occurred";
-                    setToaster(errorMessage, "error");
-                    console.error("Failed to toggle hidden status:", errorMessage);
+                onError: (error: unknown) => {
+                    if ((error as AxiosError).isAxiosError) {
+                        const axiosError = error as AxiosError<{ error: string }>;
+                        const errorMessage =
+                            axiosError.response?.data?.error || "An unexpected error occurred";
+                        setToaster(errorMessage, "error");
+                        console.error("Failed to toggle hidden status:", errorMessage);
+                    } else {
+                        const errorMessage = "An unexpected error occurred";
+                        setToaster(errorMessage, "error");
+                        console.error("Failed to toggle hidden status:", error);
+                    }
                 },
             }
         );
     };
 
     const handleNextPage = () => {
-        if (currentPage * limit < totalCount) {
+        if (currentPage * limit < (totalCount || 0)) {
             setCurrentPage((prev) => prev + 1);
         }
     };
@@ -122,7 +130,7 @@ const AdminComment = () => {
                         {isHidden ? "Hidden" : "Visible"}
                     </p>
                 </div>
-                <CommentVote commentId={comment.id} />
+                {comment && <CommentVote commentId={comment.id} />}
             </div>
 
             {/* Replies Section */}
@@ -155,7 +163,7 @@ const AdminComment = () => {
                                     <button
                                         onClick={handleNextPage}
                                         className="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
-                                        disabled={currentPage * limit >= totalCount || repliesLoading}
+                                        disabled={currentPage * limit >= (totalCount || 0) || repliesLoading}
                                     >
                                         Next
                                     </button>

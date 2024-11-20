@@ -1,5 +1,5 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {ToggleVoteRequest, ToggleVoteResponse} from "@types/dtos/votes";
+import {ToggleVoteRequest, ToggleVoteResponse} from "@/types/dtos/votes";
 import {voteComment} from "@client/api/services/commentService";
 
 export const useVoteComment = () => {

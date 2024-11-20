@@ -15,6 +15,8 @@ export interface Vote {
 export interface ToggleVoteRequest {
     id: string;
     voteType: "up" | "down" | null;
+    blogPostId: number | string;
+    commentId: number | string;
 }
 
 export interface ToggleVoteResponse {

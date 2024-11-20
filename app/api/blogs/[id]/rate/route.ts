@@ -50,7 +50,7 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
 
         const blogPostId = parseInt(params.id, 10)
 
-        const {userVote: vote, upVotes, downVotes} =  await blogPostService.getBlogPostVoteByUserId(userId, blogPostId)
+        const {userVote: vote, upVotes, downVotes} =  await blogPostService.getBlogPostVoteByUserId(Number(userId), blogPostId)
 
         return NextResponse.json(
             {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMostReportedComments } from "@client/hooks/useMostReportedComments";
-import { GetCommentsRequest } from "@types/dtos/comments";
+import { GetCommentsRequest } from "@/types/dtos/comments";
 import Link from "next/link";
 
 const AdminCommentsPage = () => {
@@ -14,11 +14,12 @@ const AdminCommentsPage = () => {
 
     const { data, isLoading, isError } = useMostReportedComments(filters);
 
-    const handleFilterChange = (key: keyof GetCommentsRequest, value: string) => {
+    const handleFilterChange = (key: keyof GetCommentsRequest, value: unknown | undefined) => {
+        if (!value) return
         setFilters((prev) => ({
             ...prev,
             [key]: value,
-            page: 1, // Reset to first page on filter change
+            page: 1,
         }));
     };
 
@@ -31,7 +32,6 @@ const AdminCommentsPage = () => {
             <div className="max-w-6xl mx-auto px-4 py-8">
                 <h1 className="text-2xl font-bold mb-6">Admin - Most Reported Comments</h1>
 
-                {/* Navigation Section */}
                 <div className="flex items-center space-x-4 mb-6">
                     <Link
                         href="/"
@@ -53,12 +53,11 @@ const AdminCommentsPage = () => {
                     </Link>
                 </div>
 
-                {/* Filter Section */}
                 <div className="flex items-center space-x-4 mb-6">
                     <div>
                         <label className="block text-sm font-medium mb-1">Hidden</label>
                         <select
-                            value={filters.hidden}
+                            value={String(filters.hidden)}
                             onChange={(e) =>
                                 handleFilterChange(
                                     "hidden",
@@ -74,7 +73,6 @@ const AdminCommentsPage = () => {
                     </div>
                 </div>
 
-                {/* Table Section */}
                 {isLoading ? (
                     <p>Loading...</p>
                 ) : isError ? (
@@ -124,7 +122,6 @@ const AdminCommentsPage = () => {
                     </div>
                 )}
 
-                {/* Pagination */}
                 <div className="flex justify-end space-x-4 mt-4">
                     <button
                         onClick={() => handlePageChange(filters.page! - 1)}

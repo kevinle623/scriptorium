@@ -10,7 +10,7 @@ import AvatarUploader from "@client/components/avatar/AvatarUploader";
 
 const EditProfilePage = () => {
     const { data: user, isLoading: isUserLoading } = useUser();
-    const { mutate: editProfile, isLoading: isEditing } = useEditProfile();
+    const { mutate: editProfile, isPending: isEditing } = useEditProfile();
     const { setToaster } = useToaster();
     const router = useRouter();
 
@@ -31,6 +31,7 @@ const EditProfilePage = () => {
     }, [user]);
 
     const handleSubmit = (e: React.FormEvent) => {
+        if (!user) return
         e.preventDefault();
 
         editProfile(

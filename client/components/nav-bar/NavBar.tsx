@@ -8,7 +8,7 @@ import ThemeSwitcher from "@client/components/theme-switcher/ThemeSwitcher";
 import { useAuth } from "@client/providers/AuthProvider";
 import LogoutButton from "@client/components/button/LogoutButton";
 import { useUser } from "@client/hooks/useUser";
-import { Role } from "@types/dtos/roles"
+import { Role } from "@/types/dtos/roles"
 
 const NavBar = () => {
     const [menuOpen, setMenuOpen] = useState(false);

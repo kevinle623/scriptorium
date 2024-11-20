@@ -6,6 +6,7 @@ import {useRouter} from "next/navigation";
 import {useAuth} from "@client/providers/AuthProvider";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import TagInput from "@client/components/tag-input/TagInput";
+import {CodeTemplate} from "@/types/dtos/codeTemplates";
 
 const CodeTemplates = () => {
     const router = useRouter();
@@ -28,7 +29,7 @@ const CodeTemplates = () => {
         content: searchFilters.content || undefined,
         tags: searchFilters.tags && searchFilters.tags.length > 0 ? searchFilters.tags.join(",") : undefined,
     });
-    const {codeTemplates = [], totalCount = 0} = data;
+    const {codeTemplates = [], totalCount = 0} = (data || {}) as { codeTemplates: CodeTemplate[]; totalCount: number } ;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
@@ -149,7 +150,7 @@ const CodeTemplates = () => {
                         className="cursor-pointer border border-gray-300 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
                     >
                         <h2 className="text-xl font-bold mb-2">{template.title}</h2>
-                        <p className="text-gray-600 mb-2">{template.content}</p>
+                        {template.explanation && <p className="text-gray-600 mb-2">{template.explanation}</p>}
                         <div className="text-sm text-gray-500">
                             Tags: {template.tags?.join(", ")}
                         </div>
