@@ -41,8 +41,8 @@ const ProfilePage = () => {
                         <Image
                             src={user.avatar}
                             alt={`${user?.firstName}'s avatar`}
-                            width={60}
-                            height={60}
+                            width={100}
+                            height={100}
                             className="rounded-full  border-4 border-blue-500"
                         />
                     ) : (

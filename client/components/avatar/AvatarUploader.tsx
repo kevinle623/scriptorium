@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useUploadAvatar } from "@client/hooks/useUploadAvatar";
+import Image from "next/image"
 
 interface AvatarUploaderProps {
     onAvatarUpload: (avatarUrl: string) => void;
@@ -65,15 +66,23 @@ const AvatarUploader = ({ onAvatarUpload, initialAvatar }: AvatarUploaderProps) 
         });
     };
 
+    useEffect(() => {
+        if (initialAvatar && !preview) {
+            setPreview(initialAvatar)
+        }
+    }, [initialAvatar]);
+
     return (
         <div className="flex flex-col items-center space-y-4">
             {/* Avatar Preview */}
-            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500">
+            <div className="relative rounded-full overflow-hidden border-4 border-blue-500">
                 {preview ? (
-                    <img
+                    <Image
                         src={preview}
                         alt="Avatar Preview"
-                        className="w-full h-full object-cover"
+                        height={100}
+                        width={100}
+                        className="object-cover rounded-full"
                     />
                 ) : (
                     <div className="flex items-center justify-center w-full h-full bg-gray-200 text-gray-500">

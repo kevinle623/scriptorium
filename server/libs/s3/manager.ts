@@ -1,7 +1,8 @@
-import { S3 } from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
-import {UploadFile} from "@/types/dtos/file";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { UploadFile } from "@/types/dtos/file";
+import s3Client from "@server/libs/s3/client";
 
 function isNodeFile(file: UploadFile): file is { filepath: string; originalFilename: string; mimetype: string } {
     return "filepath" in file;
@@ -39,8 +40,8 @@ export async function uploadFileToS3(
             ContentType: mimetype,
         };
 
-        const s3Client = new S3();
-        await s3Client.upload(params).promise();
+        const command = new PutObjectCommand(params);
+        await s3Client.send(command);
 
         const fileUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
