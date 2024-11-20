@@ -5,7 +5,14 @@ const nextConfig = {
         BASE_URL: process.env.BASE_URL,
     },
     images: {
-        remotePatterns: ['csc309-scriptorium-kevin-le.s3.us-east-2.amazonaws.com'],
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'csc309-scriptorium-kevin-le.s3.us-east-2.amazonaws.com',
+                port: '',
+                pathname: '/avatars/**',
+                search: '',
+            }]
     },
 };
 
