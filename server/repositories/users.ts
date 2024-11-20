@@ -10,7 +10,7 @@ export async function createUser(prismaClient: any, createUserRequest: CreateUse
             data: {
                 email: createUserRequest.email,
                 phone: createUserRequest.phone,
-                firstName: createUserRequest.email,
+                firstName: createUserRequest.firstName,
                 lastName: createUserRequest.lastName,
                 role: createUserRequest.role,
                 avatar: createUserRequest.avatar,

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useToaster } from "@client/providers/ToasterProvider";
 import {LoginRequest, LoginResponse} from "@/types/dtos/user";
 import {useAuth} from "@client/providers/AuthProvider";
+import {AxiosError} from "axios";
 
 interface LoginProps {
     onSuccess: () => void;
@@ -32,9 +33,12 @@ const Login = ({ onSuccess, toggleRegister }: LoginProps) => {
                 setRefreshToken(data.refreshToken);
                 onSuccess();
             },
-            onError: (error: any) => {
-                setToaster(error.message || "Failed to log in", "error");
-                setErrorMessage(error.message || "Failed to log in")
+            onError: (error) => {
+                const axiosError = error as AxiosError<{ error: string }>;
+                const errorMessage =
+                    axiosError.response?.data?.error || "An unexpected error occurred";
+                setToaster(errorMessage, "error");
+                setErrorMessage(errorMessage || "Failed to log in")
             },
         });
     };

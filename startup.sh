@@ -1,19 +1,50 @@
+#!/bin/bash
+
 echo "Installing Node.js dependencies..."
 npm install
 
 echo "Loading environment variables from .env..."
 npx dotenv -e .env -- echo "Environment variables loaded."
 
-check_installed() {
-    if ! command -v $1 &> /dev/null
-    then
-        echo "$1 is not installed. Please install $1 to continue."
-        exit 1
+echo "Checking for Docker installation..."
+if ! command -v docker &> /dev/null
+then
+    echo "Docker is not installed. Please install Docker and try again."
+    exit 1
+fi
+
+echo "Docker is installed. Checking Docker service..."
+if ! docker info &> /dev/null
+then
+    echo "Docker is not running. Please start the Docker service and try again."
+    exit 1
+fi
+
+echo "Pulling required Docker images for code execution..."
+IMAGES=(
+    "gcc:latest"
+    "openjdk:latest"
+    "python:3.9-slim"
+    "node:16"
+    "ruby:latest"
+    "golang:latest"
+    "php:latest"
+    "swift:latest"
+    "rust:latest"
+)
+for IMAGE in "${IMAGES[@]}"
+do
+    if [[ "$(docker images -q $IMAGE 2> /dev/null)" == "" ]]; then
+        echo "Pulling $IMAGE..."
+        docker pull $IMAGE
+    else
+        echo "$IMAGE already available locally."
     fi
-}
+done
 
-echo "All required compilers and interpreters found in the machine! Proceeding..."
+echo "All required Docker images are ready."
 
+echo "Checking for existing database..."
 DB_PATH="server/libs/prisma/dev.db"
 if [ -f "$DB_PATH" ]; then
     echo "Found existing database at $DB_PATH. Deleting it..."
@@ -24,15 +55,24 @@ else
 fi
 
 echo "Running Prisma migrations..."
-cd server/libs || exit 1
-npx prisma migrate deploy
+prisma migrate deploy --schema=server/libs/prisma/schema.prisma
 
 echo "Generating Prisma client..."
-npx prisma generate
-cd - || exit 1
+prisma generate --schema=server/libs/prisma/schema.prisma
+
+echo "Building Docker container for custom setups (if applicable)..."
+if [ -f "Dockerfile" ]; then
+    echo "Found Dockerfile. Building custom container..."
+    docker build -t custom-app:latest .
+else
+    echo "No Dockerfile found. Skipping custom container build."
+fi
 
 echo "Creating admin user in the database..."
 npx node scripts/createAdminUser.js
 
-echo "Setup complete. You can now start the server with ./run.sh"
 
+echo "Populating Database.."
+npx node scripts/populateDatabase.js
+
+echo "Setup complete. You can now start the server with ./run.sh"

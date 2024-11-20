@@ -8,11 +8,12 @@ import TagInput from "@client/components/tag-input/TagInput";
 import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
 import { useAuth } from "@client/providers/AuthProvider";
 import {BlogPostsResponse} from "@/types/dtos/blogPosts";
+import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
 
 const BlogPosts = () => {
     const router = useRouter();
     const { triggerOnboarding } = useJitOnboarding();
-    const { isAuthed } = useAuth(); // Access isAuthed from useAuth()
+    const { isAuthed } = useAuth();
 
     const [filters, setFilters] = useState({
         title: "",
@@ -118,9 +119,8 @@ const BlogPosts = () => {
                     className="border border-gray-300 p-2 rounded-lg"
                 >
                     <option value="">Sort By</option>
-                    <option value="latest">Latest</option>
-                    <option value="oldest">Oldest</option>
-                    <option value="mostReported">Most Reported</option>
+                    <option value="mostValued">Most Valued</option>
+                    <option value="mostControversial">Most Controversial</option>
                 </select>
                 {isAuthed && (
                     <div className="flex items-center gap-2">
@@ -166,8 +166,19 @@ const BlogPosts = () => {
                             {post.title}
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 mb-2">{post.description}</p>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                             Tags: {post.tags?.join(", ")}
+                        </div>
+                        {/* Upvotes and Downvotes */}
+                        <div className="flex items-center justify-between text-gray-600 dark:text-gray-400 mt-4">
+                            <div className="flex items-center gap-2">
+                                <FaThumbsUp className="text-green-500"/>
+                                <span>{post.upVotes}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <FaThumbsDown className="text-red-500"/>
+                                <span>{post.downVotes}</span>
+                            </div>
                         </div>
                     </div>
                 ))}
