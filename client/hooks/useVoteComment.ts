@@ -8,7 +8,9 @@ export const useVoteComment = () => {
     return useMutation<ToggleVoteResponse, Error, ToggleVoteRequest>({
         mutationFn: voteComment,
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries(["commentVotes", variables.commentId]);
+            queryClient.invalidateQueries({
+                queryKey: ["commentVotes", variables.commentId]
+            });
         },
     });
 };

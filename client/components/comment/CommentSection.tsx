@@ -8,6 +8,7 @@ import { useCommentBlogPost } from "@client/hooks/useCommentBlogPost";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 import { useToaster } from "@client/providers/ToasterProvider";
 import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
+import {AxiosError} from "axios";
 
 interface CommentSectionProps {
     blogPostId: string;
@@ -24,7 +25,7 @@ const CommentSection = ({ blogPostId }: CommentSectionProps) => {
         limit,
     });
 
-    const { mutate: addComment, isLoading: addingComment } = useCommentBlogPost();
+    const { mutate: addComment, isPending: addingComment } = useCommentBlogPost();
     const { setToaster } = useToaster();
 
     const handleAddComment = (content: string) => {
@@ -36,9 +37,9 @@ const CommentSection = ({ blogPostId }: CommentSectionProps) => {
                     setCurrentPage(1);
                 },
                 onError: (error) => {
-                    const errorMessage =
-                        error.response?.data?.error || "Failed to add comment. Please try again.";
-                    setToaster(errorMessage, "error");
+                    const axiosError = error as AxiosError<{ error: string }>;
+                    const errorMessage = axiosError.response?.data?.error
+                    setToaster(errorMessage || "Comment failed to be added.", "error");
                     console.error("Error adding comment:", errorMessage);
                 },
             }
@@ -46,7 +47,7 @@ const CommentSection = ({ blogPostId }: CommentSectionProps) => {
     };
 
     const handleNextPage = () => {
-        if (currentPage * limit < totalCount) {
+        if (currentPage * limit < (totalCount || 0)) {
             setCurrentPage((prev) => prev + 1);
         }
     };
@@ -67,10 +68,10 @@ const CommentSection = ({ blogPostId }: CommentSectionProps) => {
                 onSubmit={handleAddComment}
                 onChange={() => {}}
                 placeholder="Add a comment..."
-                disabled={addingComment}
+                disableButton={addingComment}
             />
             <hr/>
-            {comments?.length > 0 ? (
+            {(comments?.length || 0) > 0 ? (
                 <>
                     <div className="flex justify-between mt-4 mb-4">
 
@@ -84,12 +85,12 @@ const CommentSection = ({ blogPostId }: CommentSectionProps) => {
                         <button
                             onClick={handleNextPage}
                             className="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
-                            disabled={currentPage * limit >= totalCount || commentsLoading}
+                            disabled={currentPage * limit >= (totalCount || 0) || commentsLoading}
                         >
                             Next
                         </button>
                     </div>
-                    {comments.map((comment) => (
+                    {comments?.map((comment) => (
                         <Comment key={comment.id} comment={comment}/>
                     ))}
                     <div className="flex justify-between mt-4">
@@ -104,7 +105,7 @@ const CommentSection = ({ blogPostId }: CommentSectionProps) => {
                         <button
                             onClick={handleNextPage}
                             className="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
-                            disabled={currentPage * limit >= totalCount || commentsLoading}
+                            disabled={currentPage * limit >= (totalCount || 0) || commentsLoading}
                         >
                             Next
                         </button>

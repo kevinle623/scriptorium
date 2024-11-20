@@ -6,9 +6,10 @@ interface CommentFormProps {
     onSubmit: (content: string) => void;
     onChange: (value: string) => void;
     placeholder?: string;
+    disableButton?: boolean;
 }
 
-const CommentForm = ({ value, onSubmit, onChange, placeholder }: CommentFormProps) => {
+const CommentForm = ({ value, onSubmit, onChange, placeholder, disableButton }: CommentFormProps) => {
     const { triggerOnboarding } = useJitOnboarding()
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,7 +30,7 @@ const CommentForm = ({ value, onSubmit, onChange, placeholder }: CommentFormProp
             />
             <button
                 type="submit"
-                disabled={!value.trim()}
+                disabled={!value.trim() || disableButton}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
             >
                 Submit

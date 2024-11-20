@@ -12,6 +12,7 @@ import { useToaster } from "@client/providers/ToasterProvider";
 import { FaUserCircle } from "react-icons/fa";
 import Image from "next/image";
 import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
+import {AxiosError} from "axios";
 
 interface CommentProps {
     comment: CommentType;
@@ -23,7 +24,7 @@ const Comment = ({ comment }: CommentProps) => {
     const { setToaster } = useToaster();
     const { triggerOnboarding } = useJitOnboarding();
 
-    const { data: user, isLoading: userLoading, isError: userError } = useUserById(comment.userId);
+    const { data: user, isLoading: userLoading, isError: userError } = useUserById(String(comment.userId));
 
     const [isRepliesVisible, setIsRepliesVisible] = useState(false);
     const [activeForm, setActiveForm] = useState<"reply" | "report" | null>(null);
@@ -45,7 +46,7 @@ const Comment = ({ comment }: CommentProps) => {
         }
         triggerOnboarding(() =>
             replyToComment(
-                { id: comment.id, content: replyContent },
+                { id: String(comment.id), content: replyContent },
                 {
                     onSuccess: () => {
                         setReplyContent("");
@@ -54,7 +55,8 @@ const Comment = ({ comment }: CommentProps) => {
                         setCurrentPage(1);
                     },
                     onError: (error) => {
-                        setToaster(error.response?.data?.error || "Failed to reply. Please try again.", "error");
+                        const axiosError = error as AxiosError<{ error: string }>;
+                        setToaster(axiosError.response?.data?.error || "Failed to reply. Please try again.", "error");
                         setActiveForm(null);
                         console.error(error);
                     },
@@ -70,7 +72,7 @@ const Comment = ({ comment }: CommentProps) => {
         }
         triggerOnboarding(() =>
             reportComment(
-                { id: comment.id, reason: reportReason },
+                { id: String(comment.id), reason: reportReason },
                 {
                     onSuccess: () => {
                         setReportReason("");
@@ -78,7 +80,8 @@ const Comment = ({ comment }: CommentProps) => {
                         setToaster("Comment reported successfully.", "success");
                     },
                     onError: (error) => {
-                        setToaster(error.response?.data?.error || "Failed to report comment. Please try again.", "error");
+                        const axiosError = error as AxiosError<{ error: string }>;
+                        setToaster(axiosError.response?.data?.error || "Failed to reply. Please try again.", "error");
                         setActiveForm(null);
                         console.error(error);
                     },
@@ -92,7 +95,7 @@ const Comment = ({ comment }: CommentProps) => {
     };
 
     const handleNextPage = () => {
-        if (currentPage * limit < totalCount) {
+        if (currentPage * limit < (totalCount || 0)) {
             setCurrentPage((prev) => prev + 1);
         }
     };
@@ -156,7 +159,7 @@ const Comment = ({ comment }: CommentProps) => {
                 >
                     {activeForm === "reply" ? "Cancel Reply" : "Reply"}
                 </button>
-                {totalCount > 0 && (
+                {(totalCount || 0) > 0 && (
                     <button
                         onClick={() => setIsRepliesVisible(!isRepliesVisible)}
                         className="px-3 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 transition"
@@ -204,7 +207,7 @@ const Comment = ({ comment }: CommentProps) => {
                         <p className="text-gray-500 dark:text-gray-400">Loading replies...</p>
                     ) : (
                         <>
-                            {replies.map((reply) => (
+                            {replies?.map((reply) => (
                                 <Comment key={reply.id} comment={reply} />
                             ))}
                             <div className="flex justify-between mt-4">
@@ -218,7 +221,7 @@ const Comment = ({ comment }: CommentProps) => {
                                 <button
                                     onClick={handleNextPage}
                                     className="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
-                                    disabled={currentPage * limit >= totalCount || repliesLoading}
+                                    disabled={currentPage * limit >= (totalCount || 0) || repliesLoading}
                                 >
                                     Next
                                 </button>

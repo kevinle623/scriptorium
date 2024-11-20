@@ -1,7 +1,7 @@
-export type VoteDto = "up" | "down" | undefined
+export type VoteDto = "UP" | "DOWN" | undefined
 export enum VoteType {
-    UP = "up",
-    DOWN = "down",
+    UP = "UP",
+    DOWN = "DOWN",
 }
 
 export interface Vote {
@@ -13,10 +13,10 @@ export interface Vote {
 }
 
 export interface ToggleVoteRequest {
-    id: string;
-    voteType: "up" | "down" | null;
-    blogPostId: number | string;
-    commentId: number | string;
+    id?: string;
+    voteType: VoteType | null;
+    blogPostId?: number | string;
+    commentId?: number | string;
 }
 
 export interface ToggleVoteResponse {

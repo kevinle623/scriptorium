@@ -11,6 +11,7 @@ import {
 import {CreateUserRequest, EditUserRequest} from "@/types/dtos/user";
 import * as revokedTokenRepository from '@server/repositories/revokedTokens'
 import * as s3Manager from "@server/libs/s3/manager"
+import {UploadFile} from "@/types/dtos/file";
 
 export async function registerUser(createUserRequest: CreateUserRequest) {
     try {
@@ -108,7 +109,7 @@ export async function logoutUser(accessToken: string, refreshToken: string) {
     }
 }
 
-export async function uploadAvatar(userId: number, file) {
+export async function uploadAvatar(userId: number, file: UploadFile) {
     try {
         const user = await userRepository.findUserById(prisma, userId)
         if (!user) {

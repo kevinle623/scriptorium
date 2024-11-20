@@ -29,11 +29,11 @@ const EditCodeTemplatePage = () => {
     const { data: user, isLoading: userLoading } = useUser();
     const { setToaster } = useToaster();
 
-    const [title, setTitle] = useState<string>("");
+    const [title, setTitle] = useState<string | undefined>("");
     const [language, setLanguage] = useState<CodingLanguage>(CodingLanguage.JAVASCRIPT);
-    const [code, setCode] = useState<string>("");
-    const [explanation, setExplanation] = useState<string>("");
-    const [tags, setTags] = useState<string[]>([]);
+    const [code, setCode] = useState<string | undefined>("");
+    const [explanation, setExplanation] = useState<string | undefined>("");
+    const [tags, setTags] = useState<string[] | undefined>([]);
     const [stdin, setStdin] = useState<string>("");
     const [output, setOutput] = useState<string | null>(null);
 
@@ -176,7 +176,7 @@ const EditCodeTemplatePage = () => {
                     <label className="block text-lg font-semibold mb-2">Tags (comma-separated)</label>
                     <input
                         type="text"
-                        value={tags.join(", ")}
+                        value={tags?.join(", ")}
                         onChange={(e) => setTags(e.target.value.split(",").map((tag) => tag.trim()))}
                         className="border rounded p-2 w-full"
                     />

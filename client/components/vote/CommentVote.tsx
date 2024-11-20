@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa";
-import { useCommentVotes } from "@client/hooks/useCommentVotes";
-import { useVoteComment } from "@client/hooks/useVoteComment";
+import React, {useState} from "react";
+import {FaArrowDown, FaArrowUp} from "react-icons/fa";
+import {useCommentVotes} from "@client/hooks/useCommentVotes";
+import {useVoteComment} from "@client/hooks/useVoteComment";
 import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
+import {VoteType} from "@/types/dtos/votes";
 
 interface CommentVoteProps {
     commentId: number;
@@ -10,12 +11,12 @@ interface CommentVoteProps {
 
 const CommentVote = ({ commentId }: CommentVoteProps) => {
     const { data, isLoading, isError, error } = useCommentVotes(commentId);
-    const { mutate: voteComment, isLoading: isVoting } = useVoteComment();
+    const { mutate: voteComment, isPending: isVoting } = useVoteComment();
     const {triggerOnboarding} = useJitOnboarding()
 
     const [upVotes, setUpVotes] = useState<number>(0);
     const [downVotes, setDownVotes] = useState<number>(0);
-    const [userVote, setUserVote] = useState<"UP" | "DOWN" | null>(null);
+    const [userVote, setUserVote] = useState<VoteType | null>(null);
 
     React.useEffect(() => {
         if (data) {
@@ -25,7 +26,7 @@ const CommentVote = ({ commentId }: CommentVoteProps) => {
         }
     }, [data]);
 
-    const handleVote = (voteType: "UP" | "DOWN") => {
+    const handleVote = (voteType: VoteType) => {
         const newVoteType = userVote === voteType ? null : voteType;
 
         triggerOnboarding(() => voteComment(
@@ -61,7 +62,7 @@ const CommentVote = ({ commentId }: CommentVoteProps) => {
     return (
         <div className="flex items-center gap-2 text-sm">
             <button
-                onClick={() => handleVote("UP")}
+                onClick={() => handleVote(VoteType.UP)}
                 disabled={isVoting}
                 className={`flex items-center gap-1 px-3 py-1 rounded ${
                     userVote === "UP"
@@ -74,7 +75,7 @@ const CommentVote = ({ commentId }: CommentVoteProps) => {
             </button>
 
             <button
-                onClick={() => handleVote("DOWN")}
+                onClick={() => handleVote(VoteType.DOWN)}
                 disabled={isVoting}
                 className={`flex items-center gap-1 px-3 py-1 rounded ${
                     userVote === "DOWN"

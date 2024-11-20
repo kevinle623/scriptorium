@@ -5,7 +5,7 @@ import { useToaster } from "@client/providers/ToasterProvider";
 import {useRouter} from "next/navigation";
 
 export const useRefresh = () => {
-    const { navigate } = useRouter()
+    const navigate = useRouter()
     const { setAccessToken, setRefreshToken, clearAuth } = useAuth();
     const { setToaster } = useToaster();
 
@@ -20,7 +20,7 @@ export const useRefresh = () => {
             console.error("Token refresh failed:", error);
             setToaster("Session expired. Please log in again.", "error");
             clearAuth();
-            navigate("/login")
+            navigate.push("/login")
         },
     });
 };

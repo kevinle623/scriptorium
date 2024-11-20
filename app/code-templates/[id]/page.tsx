@@ -10,6 +10,7 @@ import { useCodePlaygroundCache } from "@client/providers/CodePlaygroundCachePro
 import { useUser } from "@client/hooks/useUser";
 import { FaEdit } from "react-icons/fa";
 import UserProfileSection from "@client/components/user/UserProfileSection";
+import {CodingLanguage} from "@/types/dtos/codeTemplates";
 
 const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
     const id = parseInt(params.id, 10);
@@ -38,7 +39,7 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
 
     const handleCopyToPlayground = () => {
         resetPlayground();
-        if (codeTemplate) {
+        if (codeTemplate && codeTemplate?.code && codeTemplate?.language) {
             setCode(codeTemplate?.code);
             setLanguage(codeTemplate?.language);
         }
@@ -50,7 +51,7 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
 
         executeCode({
             code: codeTemplate.code,
-            language: codeTemplate.language,
+            language: codeTemplate.language as CodingLanguage,
             stdin,
         });
     };
@@ -121,7 +122,7 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
             <div className="mb-6">
                 <h2 className="text-xl font-bold mb-2">Tags</h2>
                 <div className="flex gap-2 flex-wrap">
-                    {tags.map((tag) => (
+                    {tags?.map((tag) => (
                         <span
                             key={tag}
                             className="px-3 py-1 bg-blue-500 text-white rounded-full text-sm"

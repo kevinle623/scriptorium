@@ -12,7 +12,7 @@ const AvatarUploader = ({ onAvatarUpload, initialAvatar }: AvatarUploaderProps) 
     const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(initialAvatar || null);
     const [error, setError] = useState<string | null>(null);
-    const { mutate: uploadAvatar, isLoading } = useUploadAvatar();
+    const { mutate: uploadAvatar, isPending: isLoading } = useUploadAvatar();
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     const VALID_FILE_TYPES = ["image/jpeg", "image/png"];

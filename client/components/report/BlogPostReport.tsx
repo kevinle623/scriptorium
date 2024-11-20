@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useReportBlogPost } from "@client/hooks/useReportBlogPost";
 import { ReportBlogPostRequest } from "@/types/dtos/blogPosts";
 import { useToaster } from "@client/providers/ToasterProvider";
+import {AxiosError} from "axios";
 
 interface BlogPostReportProps {
     blogPostId: string;
@@ -30,8 +31,9 @@ const BlogPostReport = ({ blogPostId }: BlogPostReportProps) => {
                     setToaster("Report submitted successfully!", "success");
                 },
                 onError: (error) => {
+                    const axiosError = error as AxiosError<{ error: string }>;
                     const errorMessage =
-                        error.response?.data?.error || "Failed to submit report. Please try again.";
+                        axiosError.response?.data?.error || "Failed to submit report. Please try again.";
                     setToaster(errorMessage, "error");
                     setShowReportForm(false)
                     console.error("Error reporting blog post:", errorMessage);

@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSun, faMoon, faDesktop } from "@fortawesome/free-solid-svg-icons";
+import {IconProp} from "@fortawesome/fontawesome-svg-core";
 
+type Theme = "light" | "dark" | "system";
 const ThemeSwitcher = () => {
     const { setTheme, resolvedTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
@@ -34,7 +36,7 @@ const ThemeSwitcher = () => {
             className="flex items-center justify-center gap-3 px-6 py-3 rounded-lg text-gray-900 bg-gray-200 hover:bg-gray-300 dark:text-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 shadow-lg transition-all"
             aria-label={`Toggle Theme (${resolvedTheme})`}
         >
-            <FontAwesomeIcon icon={icons[resolvedTheme || "system"]} className="text-xl" />
+            <FontAwesomeIcon icon={icons[resolvedTheme as Theme || "system"] as IconProp} className="text-xl" />
         </button>
     );
 };

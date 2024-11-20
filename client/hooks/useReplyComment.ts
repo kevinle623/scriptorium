@@ -7,10 +7,13 @@ export const useReplyComment = () => {
     return useMutation({
         mutationFn: addReplyToComment,
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries(["replies", variables.id]);
+            queryClient.invalidateQueries({
+                queryKey: ["replies", variables.id]
+                },
+            );
         },
-        onError: (error: any) => {
-            console.error("Failed to add reply to comment:", error.message);
+        onError: (error) => {
+            console.error("Failed to add reply to comment:", error);
         },
     });
 };

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa";
-import { useBlogPostVotes } from "@client/hooks/useBlogPostVotes";
-import { useVoteBlogPost } from "@client/hooks/useVoteBlogPost";
+import React, {useState} from "react";
+import {FaArrowDown, FaArrowUp} from "react-icons/fa";
+import {useBlogPostVotes} from "@client/hooks/useBlogPostVotes";
+import {useVoteBlogPost} from "@client/hooks/useVoteBlogPost";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
+import {VoteType} from "@/types/dtos/votes";
 
 interface BlogPostVoteProps {
     blogPostId: number;
@@ -11,12 +12,12 @@ interface BlogPostVoteProps {
 
 const BlogPostVote = ({ blogPostId }: BlogPostVoteProps) => {
     const { data, isLoading, isError, error } = useBlogPostVotes(blogPostId);
-    const { mutate: voteBlogPost, isLoading: isVoting } = useVoteBlogPost();
+    const { mutate: voteBlogPost, isPending: isVoting } = useVoteBlogPost();
     const {triggerOnboarding} = useJitOnboarding()
 
     const [upVotes, setUpVotes] = useState<number>(0);
     const [downVotes, setDownVotes] = useState<number>(0);
-    const [userVote, setUserVote] = useState<"UP" | "DOWN" | null>(null);
+    const [userVote, setUserVote] = useState<VoteType | null>(null);
 
     React.useEffect(() => {
         if (data) {
@@ -26,7 +27,7 @@ const BlogPostVote = ({ blogPostId }: BlogPostVoteProps) => {
         }
     }, [data]);
 
-    const handleVote = (voteType: "UP" | "DOWN") => {
+    const handleVote = (voteType: VoteType) => {
         const newVoteType = userVote === voteType ? null : voteType;
 
         triggerOnboarding(() => voteBlogPost(
@@ -69,7 +70,7 @@ const BlogPostVote = ({ blogPostId }: BlogPostVoteProps) => {
             <h2 className="text-xl font-bold mb-4">Votes</h2>
             <div className="flex items-center gap-4">
                 <button
-                    onClick={() => handleVote("UP")}
+                    onClick={() => handleVote(VoteType.UP)}
                     disabled={isVoting}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
                         userVote === "UP"
@@ -82,7 +83,7 @@ const BlogPostVote = ({ blogPostId }: BlogPostVoteProps) => {
                 </button>
 
                 <button
-                    onClick={() => handleVote("DOWN")}
+                    onClick={() => handleVote(VoteType.DOWN)}
                     disabled={isVoting}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
                         userVote === "DOWN"

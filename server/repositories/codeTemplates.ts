@@ -15,7 +15,7 @@ export async function createCodeTemplate(prismaClient: any, createCodeTemplateRe
                 title: createCodeTemplateRequest.title,
                 userId: createCodeTemplateRequest.userId,
                 code: createCodeTemplateRequest.code,
-                explanation: createCodeTemplateRequest.explaination,
+                explanation: createCodeTemplateRequest.explanation,
                 language: createCodeTemplateRequest.language,
                 parentTemplateId: createCodeTemplateRequest.parentTemplateId || null,
             },

@@ -34,6 +34,11 @@ export interface EditCommentRequest {
     content?: string,
     hidden?: boolean,
 }
+
+export interface GetCommentResponse {
+    message: string
+    comment: Comment
+}
 export interface GetCommentsResult {
     totalCount: number,
     comments: Comment[]

@@ -1,6 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-
-import { useQuery } from "@tanstack/react-query";
 import { GetCommentReportsRequest, GetCommentReportsResponse } from "@/types/dtos/comments"
 import { getCommentReports } from "@client/api/services/commentService";
 

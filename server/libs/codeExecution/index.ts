@@ -28,13 +28,13 @@ export async function runCode(
         filePath = await createTempFile(language, code);
         stdinFilePath = stdin ? await createTempStdinFile(stdin) : undefined;
 
-        // Execute code inside a Docker container
         return await executeCodeWithDocker(language, filePath, stdinFilePath);
     } catch (error) {
         console.error(error);
-        throw new CodeExecutionException(`Code execution error: ${error.message || error}`);
+        throw new CodeExecutionException(
+            `Code execution error: ${(error as Error).message || error}`
+        );
     } finally {
-        // Clean up temporary files
         if (filePath) await fs.unlink(filePath).catch(console.error);
         if (stdinFilePath) await fs.unlink(stdinFilePath).catch(console.error);
     }

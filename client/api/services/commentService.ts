@@ -1,24 +1,29 @@
 import {
     AddCommentRequest,
     AddCommentResponse,
-    Comment, GetCommentReportsRequest, GetCommentReportsResponse, GetCommentsRequest, GetCommentsResult,
+    Comment,
+    GetCommentReportsRequest,
+    GetCommentReportsResponse,
+    GetCommentResponse,
+    GetCommentsRequest,
+    GetCommentsResult,
     ReportCommentRequest,
-    ReportCommentResponse, UpdateCommentHiddenStatusRequest, UpdateCommentHiddenStatusResponse
+    ReportCommentResponse,
+    UpdateCommentHiddenStatusRequest,
+    UpdateCommentHiddenStatusResponse
 } from "@/types/dtos/comments";
 import axiosInstance from "@client/api/axiosInstance";
 import {CommentVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@/types/dtos/votes";
-import {Comment} from "@/types/dtos/comments";
+import {AxiosError} from "axios";
 
 
 export const getCommentById = async (id: string): Promise<Comment> => {
     try {
-        const response = await axiosInstance.get<Comment>(`/comments/${id}`);
+        const response = await axiosInstance.get<GetCommentResponse>(`/comments/${id}`);
         return response.data.comment;
-    } catch (error: any) {
-        if (error.response) {
-            throw new Error(error.response.data.message || "Failed to fetch comment.");
-        }
-        throw new Error("An unexpected error occurred.");
+    } catch (error) {
+        const axiosError = error as AxiosError<{error: string}>;
+        throw new Error(axiosError.response?.data?.error || "Failed to fetch comment.");
     }
 };
 
@@ -84,11 +89,12 @@ export const updateCommentHiddenStatus = async (
 ): Promise<UpdateCommentHiddenStatusResponse> => {
     try {
         const { hidden, commentId } = payload
-        const requestBody: UpdateCommentHiddenStatusRequest = { hidden };
 
         const { data } = await axiosInstance.put<UpdateCommentHiddenStatusResponse>(
             `/admin/comments/${commentId}/hide`,
-            requestBody
+            {
+                hidden
+            }
         );
 
         return data;

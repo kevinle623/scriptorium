@@ -1,7 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, {createContext, useContext, useState, ReactNode, useEffect, useRef} from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Login from "@client/components/onboarding/Login";
 import Register from "@client/components/onboarding/Register";
 import { useAuth } from "@client/providers/AuthProvider";
@@ -30,21 +30,16 @@ export const JitOnboardingProvider = ({ children }: JitOnboardingProviderProps) 
     const { isAuthed, isInitialized } = useAuth();
     const [onboardingAction, setOnboardingAction] = useState<(() => void) | null>(null);
     const [step, setStep] = useState<OnboardingStep | null>(null);
-    const router = useRouter();
+    const pathname = usePathname();
+    const previousPathname = useRef(pathname);
 
     useEffect(() => {
-        const handleRouteChange = () => {
+        if (pathname !== previousPathname.current) {
             setStep(null);
             setOnboardingAction(null);
-        };
-        if (router && router.events) {
-            router.events.on("routeChangeStart", handleRouteChange);
-
-            return () => {
-                router.events.off("routeChangeStart", handleRouteChange);
-            };
+            previousPathname.current = pathname;
         }
-    }, [router]);
+    }, [pathname]);
 
     useEffect(() => {
         if (isAuthed) {

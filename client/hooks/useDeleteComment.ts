@@ -7,9 +7,11 @@ export const useDeleteComment = () => {
     return useMutation({
         mutationFn: deleteComment,
         onSuccess: () => {
-            queryClient.invalidateQueries(["comments"]);
+            queryClient.invalidateQueries({
+                queryKey: ["comments"]
+            });
         },
-        onError: (error: any) => {
+        onError: (error) => {
             console.error("Failed to delete comment:", error);
         },
     });

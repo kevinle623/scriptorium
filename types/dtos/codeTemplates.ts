@@ -1,8 +1,8 @@
 import {Tag} from "@/types/dtos/tags";
 
 export type ExecuteCodeRequest = {
-    language: string;
-    code: string;
+    language?: CodingLanguage;
+    code?: string;
     stdin: string;
 };
 
@@ -28,13 +28,13 @@ export enum CodingLanguage {
 
 export interface CodeTemplate {
     id: number;
-    title: string;
-    code: string;
-    language: CodingLanguage;
+    title?: string;
+    code?: string;
+    language?: CodingLanguage;
     explanation?: string;
     userId: number;
     parentTemplateId?: number;
-    tags: string[];
+    tags?: string[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -47,8 +47,8 @@ export interface CodeTemplateTag {
 }
 
 export interface CodeExecutionRequest {
-    language: CodingLanguage;
-    code: string;
+    language?: CodingLanguage;
+    code?: string;
     stdin?: string;
 }
 
@@ -62,13 +62,13 @@ export interface UpdateCodeTemplateRequest {
 }
 
 export interface CreateCodeTemplateRequest {
-    title: string;
+    title?: string;
     userId?: string;
-    code: string;
+    code?: string;
     parentTemplateId?: number;
     language: CodingLanguage;
     explanation?: string;
-    tags: string[];
+    tags?: string[];
 }
 
 export interface GetCodeTemplatesRequest {
@@ -85,11 +85,11 @@ export interface GetCodeTemplatesRequest {
 export interface GetCodeTemplateResponse {
     id: number;
     userId: number;
-    title: string;
-    code: string;
-    language: string;
-    explanation: string;
-    tags: string[];
+    title?: string;
+    code?: string;
+    language?: CodingLanguage;
+    explanation?: string;
+    tags?: string[];
 }
 
 export interface GetCodeTemplatesResult {
@@ -99,11 +99,11 @@ export interface GetCodeTemplatesResult {
 
 export interface UpdateCodeTemplateRequest {
     id: number;
-    title: string;
-    code: string;
-    language: string;
-    explanation: string;
-    tags: string[];
+    title?: string;
+    code?: string;
+    language?: CodingLanguage;
+    explanation?: string;
+    tags?: string[];
 }
 
 export interface UpdateCodeTemplateResponse {
@@ -112,10 +112,10 @@ export interface UpdateCodeTemplateResponse {
         id: number;
         userId: number;
         title: string;
-        code: string;
-        language: string;
-        explanation: string;
-        tags: string[];
+        code?: string;
+        language?: CodingLanguage;
+        explanation?: string;
+        tags?: string[];
     };
 }
 

@@ -1,34 +1,45 @@
-import fs from "fs/promises";
-import s3Client from "@server/libs/s3/client";
+import { S3 } from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
+import {UploadFile} from "@/types/dtos/file";
 
-export async function uploadFileToS3(file, folder = "uploads", fileName = undefined) {
+function isNodeFile(file: UploadFile): file is { filepath: string; originalFilename: string; mimetype: string } {
+    return "filepath" in file;
+}
+
+export async function uploadFileToS3(
+    file: UploadFile,
+    folder: string = "uploads",
+    fileName?: string
+): Promise<string> {
     try {
-        let fileBuffer;
-        let originalFilename;
-        let mimetype;
+        let fileBuffer: Buffer;
+        let originalFilename: string;
+        let mimetype: string;
 
-        if (file.arrayBuffer) {
+        if ("arrayBuffer" in file && typeof file.arrayBuffer === "function") {
             fileBuffer = Buffer.from(await file.arrayBuffer());
             originalFilename = file.name;
             mimetype = file.type;
+        } else if (isNodeFile(file)) {
+            fileBuffer = await fs.promises.readFile(file.filepath);
+            originalFilename = file.originalFilename;
+            mimetype = file.mimetype;
         } else {
-            const { filepath, originalFilename: formidableFilename, mimetype: formidableMimetype } = file;
-            fileBuffer = await fs.promises.readFile(filepath);
-            originalFilename = formidableFilename;
-            mimetype = formidableMimetype;
+            throw new Error("Unsupported file type.");
         }
 
         const key = `${folder}/${fileName || `${uuidv4()}-${originalFilename}`}`;
         console.log("Uploading file with key:", key);
 
         const params = {
-            Bucket: process.env.AWS_S3_BUCKET_NAME,
+            Bucket: process.env.AWS_S3_BUCKET_NAME!,
             Key: key,
             Body: fileBuffer,
             ContentType: mimetype,
         };
 
+        const s3Client = new S3();
         await s3Client.upload(params).promise();
 
         const fileUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
@@ -36,6 +47,6 @@ export async function uploadFileToS3(file, folder = "uploads", fileName = undefi
         return fileUrl;
     } catch (e) {
         console.error("Something went wrong with S3:", e);
-        throw new Error(`S3 upload failed: ${e.message}`);
+        throw new Error(`S3 upload failed: ${(e as Error).message}`);
     }
 }

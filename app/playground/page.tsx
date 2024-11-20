@@ -26,7 +26,7 @@ const Playground = () => {
 
     const handleExecute = () => {
         executeCode(
-            { language, code, stdin },
+            { language: language as CodingLanguage, code, stdin },
             {
                 onSuccess: (data) => {
                     setOutput(data.result);
