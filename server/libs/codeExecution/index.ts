@@ -7,9 +7,6 @@ import { CodeExecutionException } from "@/types/exceptions";
 const MAX_CODE_EXECUTION_TIMEOUT = 5000;
 const MAX_RECURSION_DEPTH = 1000;
 
-/**
- * Main function to execute user-provided code.
- */
 export async function runCode(
     language: CodingLanguage,
     code: string,
@@ -19,12 +16,10 @@ export async function runCode(
     let stdinFilePath: string | undefined = undefined;
 
     try {
-        // Add recursion limit for Python
         if (language === CodingLanguage.PYTHON) {
             code = `import sys\nsys.setrecursionlimit(${MAX_RECURSION_DEPTH})\n` + code;
         }
 
-        // Create temporary files for code and stdin
         filePath = await createTempFile(language, code);
         stdinFilePath = stdin ? await createTempStdinFile(stdin) : undefined;
 
@@ -40,9 +35,6 @@ export async function runCode(
     }
 }
 
-/**
- * Create a temporary file for the user-provided code.
- */
 async function createTempFile(language: CodingLanguage, code: string): Promise<string> {
     const extension = getFileExtension(language);
     const fileName = `temp_${Date.now()}.${extension}`;
@@ -57,9 +49,6 @@ async function createTempFile(language: CodingLanguage, code: string): Promise<s
     return filePath;
 }
 
-/**
- * Create a temporary file for the user-provided stdin.
- */
 async function createTempStdinFile(stdin: string): Promise<string> {
     const fileName = `temp_stdin_${Date.now()}.txt`;
     const filePath = path.join('/tmp', fileName);
@@ -68,9 +57,6 @@ async function createTempStdinFile(stdin: string): Promise<string> {
     return filePath;
 }
 
-/**
- * Get the file extension for a given programming language.
- */
 function getFileExtension(language: CodingLanguage): string {
     switch (language.toLowerCase()) {
         case CodingLanguage.C: return 'c';
@@ -89,9 +75,6 @@ function getFileExtension(language: CodingLanguage): string {
     }
 }
 
-/**
- * Get the Docker image name for a given programming language.
- */
 function getDockerImageName(language: CodingLanguage): string {
     switch (language.toLowerCase()) {
         case CodingLanguage.C:
@@ -110,9 +93,6 @@ function getDockerImageName(language: CodingLanguage): string {
     }
 }
 
-/**
- * Build the Docker command to execute the code.
- */
 function buildDockerCommand(
     language: CodingLanguage,
     dockerImage: string,
@@ -126,9 +106,6 @@ function buildDockerCommand(
     return `docker run --rm -v ${filePath}:/sandbox/${codeFileName} ${stdinMount} ${dockerImage} ${getExecutionCommand(language, codeFileName, stdinRedirect)}`;
 }
 
-/**
- * Get the execution command for a given programming language.
- */
 function getExecutionCommand(language: CodingLanguage, fileName: string, stdinRedirect: string): string {
     switch (language.toLowerCase()) {
         case CodingLanguage.C:
@@ -159,9 +136,6 @@ function getExecutionCommand(language: CodingLanguage, fileName: string, stdinRe
     }
 }
 
-/**
- * Execute a Docker command and return the result.
- */
 async function runWithExec(command: string): Promise<string> {
     return new Promise((resolve, reject) => {
         exec(command, { timeout: MAX_CODE_EXECUTION_TIMEOUT }, (error, stdout, stderr) => {
@@ -176,9 +150,6 @@ async function runWithExec(command: string): Promise<string> {
     });
 }
 
-/**
- * Execute code within a Docker container.
- */
 async function executeCodeWithDocker(
     language: CodingLanguage,
     filePath: string,
