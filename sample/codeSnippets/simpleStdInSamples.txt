@@ -1,0 +1,81 @@
+### C ###
+#include <stdio.h>
+int main() {
+    char name[50];
+    printf("Enter your name: ");
+    scanf("%s", name);
+    printf("Hello, %s!", name);
+    return 0;
+}
+
+### CPP ###
+#include <iostream>
+#include <string>
+int main() {
+    std::string name;
+    std::cout << "Enter your name: ";
+    std::cin >> name;
+    std::cout << "Hello, " << name << "!";
+    return 0;
+}
+
+### JAVA ###
+import java.util.Scanner;
+public class HelloWorld {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine();
+        System.out.println("Hello, " + name + "!");
+    }
+}
+
+### PY ###
+name = input("Enter your name: ")
+print(f"Hello, {name}!")
+
+### JS ###
+let input = '';
+
+process.stdin.on('data', (data) => {
+    input += data.toString();
+});
+
+process.stdin.on('end', () => {
+    const name = input.trim();
+    console.log(`Hello, ${name}!`);
+});
+
+### RB ###
+print "Enter your name: "
+name = gets.chomp
+puts "Hello, #{name}!"
+
+### PL ###
+print "Enter your name: ";
+my $name = <STDIN>;
+chomp($name);
+print "Hello, $name!\n";
+
+### PHP ###
+<?php
+echo "Enter your name: ";
+$name = trim(fgets(STDIN));
+echo "Hello, $name!";
+?>
+
+### SWIFT ###
+import Foundation
+print("Enter your name: ", terminator: "")
+if let name = readLine() {
+    print("Hello, \(name)!")
+}
+
+### RS ###
+use std::io;
+fn main() {
+    println!("Enter your name: ");
+    let mut name = String::new();
+    io::stdin().read_line(&mut name).expect("Failed to read input");
+    println!("Hello, {}!", name.trim());
+}

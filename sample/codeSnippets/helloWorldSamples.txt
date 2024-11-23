@@ -1,0 +1,45 @@
+### C ###
+#include <stdio.h>
+int main() {
+    printf("Hello, World!");
+    return 0;
+}
+
+### CPP ###
+#include <iostream>
+int main() {
+    std::cout << "Hello, World!";
+    return 0;
+}
+
+### JAVA ###
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+
+### PY ###
+print("Hello, World!")
+
+### JS ###
+console.log("Hello, World!");
+
+### RB ###
+puts "Hello, World!"
+
+### PL ###
+print "Hello, World!\n";
+
+### PHP ###
+<?php
+echo "Hello, World!";
+?>
+
+### SWIFT ###
+print("Hello, World!")
+
+### RS ###
+fn main() {
+    println!("Hello, World!");
+}
