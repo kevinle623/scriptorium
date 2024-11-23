@@ -11,7 +11,6 @@ const nextConfig = {
                 hostname: 'csc309-scriptorium-kevin-le.s3.us-east-2.amazonaws.com',
                 port: '',
                 pathname: '/avatars/**',
-                search: '',
             }]
     },
 };

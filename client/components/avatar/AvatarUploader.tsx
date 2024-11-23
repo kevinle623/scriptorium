@@ -3,6 +3,8 @@
 import React, {useEffect, useState} from "react";
 import { useUploadAvatar } from "@client/hooks/users/useUploadAvatar";
 import Image from "next/image"
+import {useToaster} from "@client/providers/ToasterProvider";
+import {FaUserCircle} from "react-icons/fa";
 
 interface AvatarUploaderProps {
     onAvatarUpload: (avatarUrl: string) => void;
@@ -14,6 +16,7 @@ const AvatarUploader = ({ onAvatarUpload, initialAvatar }: AvatarUploaderProps) 
     const [preview, setPreview] = useState<string | null>(initialAvatar || null);
     const [error, setError] = useState<string | null>(null);
     const { mutate: uploadAvatar, isPending: isLoading } = useUploadAvatar();
+    const { setToaster } = useToaster()
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     const VALID_FILE_TYPES = ["image/jpeg", "image/png"];
@@ -39,9 +42,11 @@ const AvatarUploader = ({ onAvatarUpload, initialAvatar }: AvatarUploaderProps) 
                 setError(validationError);
                 setFile(null);
                 setPreview(null);
+
             } else {
                 setFile(selectedFile);
                 setPreview(URL.createObjectURL(selectedFile));
+
             }
         }
     };
@@ -57,8 +62,10 @@ const AvatarUploader = ({ onAvatarUpload, initialAvatar }: AvatarUploaderProps) 
 
         uploadAvatar(formData, {
             onSuccess: (data) => {
-                onAvatarUpload(data.avatar);
-                setPreview(data.avatar);
+                const updatedAvatarUrl = `${data.avatar}?timestamp=${new Date().getTime()}`;
+                onAvatarUpload(updatedAvatarUrl);
+                setPreview(updatedAvatarUrl);
+                setToaster("Avatar updated successfully!", "success");
             },
             onError: () => {
                 setError("Failed to upload avatar. Please try again.");
@@ -74,7 +81,6 @@ const AvatarUploader = ({ onAvatarUpload, initialAvatar }: AvatarUploaderProps) 
 
     return (
         <div className="flex flex-col items-center space-y-4">
-            {/* Avatar Preview */}
             <div className="relative rounded-full overflow-hidden border-4 border-blue-500">
                 {preview ? (
                     <Image
@@ -85,13 +91,10 @@ const AvatarUploader = ({ onAvatarUpload, initialAvatar }: AvatarUploaderProps) 
                         className="object-cover rounded-full"
                     />
                 ) : (
-                    <div className="flex items-center justify-center w-full h-full bg-gray-200 text-gray-500">
-                        No Avatar
-                    </div>
+                    <FaUserCircle className="text-gray-400 dark:text-gray-600 w-24 h-24" />
                 )}
             </div>
 
-            {/* File Input */}
             <input
                 type="file"
                 accept="image/jpeg,image/png"
@@ -99,10 +102,8 @@ const AvatarUploader = ({ onAvatarUpload, initialAvatar }: AvatarUploaderProps) 
                 className="text-sm text-gray-500"
             />
 
-            {/* Error Message */}
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
-            {/* Upload Button */}
             <button
                 type="button"
                 onClick={handleUpload}

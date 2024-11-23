@@ -92,13 +92,6 @@ const AdminBlogPost = () => {
                                 ? "Unhide Post"
                                 : "Hide Post"}
                     </button>
-                    <button
-                        onClick={() => router.push(`/blogs/${blogPost?.id}/edit`)}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                        <FaEdit className="text-lg" />
-                        Edit
-                    </button>
                 </div>
                 <h1 className="text-3xl font-bold mb-2">{blogPost?.title}</h1>
                 <p className="mb-4">{blogPost?.description}</p>
