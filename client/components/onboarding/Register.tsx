@@ -1,13 +1,13 @@
 "use client";
 
-import {useForm} from "react-hook-form";
-import {useRegister} from "@client/hooks/users/useRegister";
-import {useState} from "react";
-import {CreateUserRequest, RegisterResponse} from "@/types/dtos/user";
-import {Role} from "@/types/dtos/roles";
-import {useToaster} from "@client/providers/ToasterProvider";
-import {useAuth} from "@client/providers/AuthProvider";
-import {AxiosError} from "axios";
+import { useForm } from "react-hook-form";
+import { useRegister } from "@client/hooks/users/useRegister";
+import { useState } from "react";
+import { CreateUserRequest, RegisterResponse } from "@/types/dtos/user";
+import { Role } from "@/types/dtos/roles";
+import { useToaster } from "@client/providers/ToasterProvider";
+import { useAuth } from "@client/providers/AuthProvider";
+import { AxiosError } from "axios";
 
 interface RegisterProps {
     onSuccess: () => void;
@@ -15,16 +15,16 @@ interface RegisterProps {
 }
 
 const Register = ({ onSuccess, toggleLogin }: RegisterProps) => {
-
-    const {setAccessToken, setRefreshToken} = useAuth()
-    const {setToaster} = useToaster();
+    const { setAccessToken, setRefreshToken } = useAuth();
+    const { setToaster } = useToaster();
     const [errorMessage, setErrorMessage] = useState("");
 
     const {
         register,
         handleSubmit,
-        formState: {errors},
-    } = useForm<Omit<CreateUserRequest, "role">>();
+        watch,
+        formState: { errors },
+    } = useForm<Omit<CreateUserRequest, "role"> & { confirmPassword: string }>();
 
     const registerMutation = useRegister();
 
@@ -48,7 +48,7 @@ const Register = ({ onSuccess, toggleLogin }: RegisterProps) => {
                 const errorMessage =
                     axiosError.response?.data?.error || "An unexpected error occurred";
                 setToaster(errorMessage, "error");
-                setErrorMessage(errorMessage || "Failed to register")
+                setErrorMessage(errorMessage || "Failed to register");
             },
         });
     };
@@ -75,7 +75,7 @@ const Register = ({ onSuccess, toggleLogin }: RegisterProps) => {
                         <input
                             type="email"
                             id="email"
-                            {...register("email", {required: "Email is required"})}
+                            {...register("email", { required: "Email is required" })}
                             className={`w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
                                 errors.email ? "border-red-500" : "border-gray-300"
                             } dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100`}
@@ -91,9 +91,15 @@ const Register = ({ onSuccess, toggleLogin }: RegisterProps) => {
                             Phone
                         </label>
                         <input
-                            type="text"
+                            type="tel"
                             id="phone"
-                            {...register("phone", {required: "Phone is required"})}
+                            {...register("phone", {
+                                required: "Phone is required",
+                                pattern: {
+                                    value: /^[0-9]+$/,
+                                    message: "Phone number must be numeric",
+                                },
+                            })}
                             className={`w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
                                 errors.phone ? "border-red-500" : "border-gray-300"
                             } dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100`}
@@ -111,7 +117,7 @@ const Register = ({ onSuccess, toggleLogin }: RegisterProps) => {
                         <input
                             type="text"
                             id="firstName"
-                            {...register("firstName", {required: "First name is required"})}
+                            {...register("firstName", { required: "First name is required" })}
                             className={`w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
                                 errors.firstName ? "border-red-500" : "border-gray-300"
                             } dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100`}
@@ -129,7 +135,7 @@ const Register = ({ onSuccess, toggleLogin }: RegisterProps) => {
                         <input
                             type="text"
                             id="lastName"
-                            {...register("lastName", {required: "Last name is required"})}
+                            {...register("lastName", { required: "Last name is required" })}
                             className={`w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
                                 errors.lastName ? "border-red-500" : "border-gray-300"
                             } dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100`}
@@ -147,7 +153,7 @@ const Register = ({ onSuccess, toggleLogin }: RegisterProps) => {
                         <input
                             type="password"
                             id="password"
-                            {...register("password", {required: "Password is required"})}
+                            {...register("password", { required: "Password is required" })}
                             className={`w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
                                 errors.password ? "border-red-500" : "border-gray-300"
                             } dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100`}
@@ -155,6 +161,30 @@ const Register = ({ onSuccess, toggleLogin }: RegisterProps) => {
                         />
                         {errors.password && (
                             <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                        )}
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="confirmPassword" className="block text-gray-700 dark:text-gray-300">
+                            Confirm Password
+                        </label>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            {...register("confirmPassword", {
+                                required: "Confirm Password is required",
+                                validate: (value) =>
+                                    value === watch("password") || "Passwords do not match",
+                            })}
+                            className={`w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                                errors.confirmPassword ? "border-red-500" : "border-gray-300"
+                            } dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100`}
+                            placeholder="Re-enter your password"
+                        />
+                        {errors.confirmPassword && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.confirmPassword.message}
+                            </p>
                         )}
                     </div>
 

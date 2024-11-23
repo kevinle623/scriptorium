@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { useForm } from "react-hook-form";
 import Editor from "@monaco-editor/react";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import { useCodePlaygroundCache } from "@client/providers/CodePlaygroundCachePro
 import TagInput from "@client/components/tag-input/TagInput";
 import {CodingLanguage} from "@/types/dtos/codeTemplates";
 import {useToaster} from "@client/providers/ToasterProvider";
+import {useTheme} from "next-themes";
 
 interface CreateCodeTemplateFormValues {
     title: string;
@@ -21,6 +22,12 @@ const CreateCodeTemplatePage = () => {
     const { language, code, resetPlayground } = useCodePlaygroundCache();
     const { mutate: createTemplate, isPending: isLoading } = useCreateCodeTemplate();
     const { setToaster } = useToaster()
+    const { resolvedTheme } = useTheme();
+    const [editorTheme, setEditorTheme] = useState("vs-dark");
+
+    useEffect(() => {
+        setEditorTheme(resolvedTheme === "light" ? "vs-light" : "vs-dark");
+    }, [resolvedTheme]);
 
     const {
         register,
@@ -71,7 +78,6 @@ const CreateCodeTemplatePage = () => {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6">
-                {/* Title */}
                 <div>
                     <label htmlFor="title" className="block text-lg font-semibold mb-2">
                         Title
@@ -86,7 +92,6 @@ const CreateCodeTemplatePage = () => {
                     {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
                 </div>
 
-                {/* Explanation */}
                 <div>
                     <label htmlFor="explanation" className="block text-lg font-semibold mb-2">
                         Explanation
@@ -103,7 +108,6 @@ const CreateCodeTemplatePage = () => {
                     )}
                 </div>
 
-                {/* Tags */}
                 <div>
                     <label htmlFor="tags" className="block text-lg font-semibold mb-2">
                         Tags
@@ -111,7 +115,6 @@ const CreateCodeTemplatePage = () => {
                     <TagInput tags={tags} setTags={setTags} />
                 </div>
 
-                {/* Preview */}
                 <div>
                     <h2 className="text-lg font-semibold mb-4">Code Preview</h2>
                     <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
@@ -121,12 +124,10 @@ const CreateCodeTemplatePage = () => {
                             language={language}
                             value={code}
                             options={{ readOnly: true }}
-                            theme="vs-dark"
+                            theme={editorTheme}
                         />
                     </div>
                 </div>
-
-                {/* Submit */}
                 <div>
                     <button
                         type="submit"
