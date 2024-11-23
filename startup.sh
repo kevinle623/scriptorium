@@ -54,11 +54,12 @@ else
     echo "No existing database found at $DB_PATH. Proceeding..."
 fi
 
+echo "Generating Prisma client..."
+prisma generate --schema=server/libs/prisma/schema.prisma
+
 echo "Running Prisma migrations..."
 prisma migrate deploy --schema=server/libs/prisma/schema.prisma
 
-echo "Generating Prisma client..."
-prisma generate --schema=server/libs/prisma/schema.prisma
 
 echo "Building Docker container for custom setups (if applicable)..."
 if [ -f "Dockerfile" ]; then
