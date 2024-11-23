@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import { useForm } from "react-hook-form";
 import Editor from "@monaco-editor/react";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,8 @@ import { useCodeTemplateById } from "@client/hooks/codeTemplates/useCodeTemplate
 import { useCreateCodeTemplate } from "@client/hooks/codeTemplates/useCreateCodeTemplate";
 import TagInput from "@client/components/tag-input/TagInput";
 import {CodingLanguage} from "@/types/dtos/codeTemplates";
+import {useTheme} from "next-themes";
+import {useToaster} from "@client/providers/ToasterProvider";
 
 interface ForkCodeTemplateFormValues {
     title: string;
@@ -19,7 +21,14 @@ const ForkCodeTemplatePage = ({ params }: { params: { id: string } }) => {
     const id = parseInt(params.id, 10);
     const { data: codeTemplate, isLoading, error } = useCodeTemplateById(id);
     const { mutate: createTemplate, isPending: isCreating } = useCreateCodeTemplate();
+    const { resolvedTheme } = useTheme();
+    const [editorTheme, setEditorTheme] = useState("vs-dark");
     const router = useRouter();
+    const { setToaster } = useToaster()
+
+    useEffect(() => {
+        setEditorTheme(resolvedTheme === "light" ? "vs-light" : "vs-dark");
+    }, [resolvedTheme]);
 
     const {
         register,
@@ -53,9 +62,11 @@ const ForkCodeTemplatePage = ({ params }: { params: { id: string } }) => {
             {
                 onSuccess: () => {
                     router.push("/code-templates");
+                    setToaster("Code template successfully forked!", "success")
                 },
                 onError: (error: Error) => {
                     console.error("Error creating forked template:", error.message);
+                    setToaster("Error forking template...", "error")
                 },
             }
         );
@@ -136,7 +147,7 @@ const ForkCodeTemplatePage = ({ params }: { params: { id: string } }) => {
                             language={codeTemplate.language}
                             value={codeTemplate.code}
                             options={{ readOnly: true }}
-                            theme="vs-dark"
+                            theme={editorTheme}
                         />
                     </div>
                 </div>

@@ -82,18 +82,14 @@ const AvatarUploader = ({ onAvatarUpload, initialAvatar }: AvatarUploaderProps) 
     return (
         <div className="flex flex-col items-center space-y-4">
             <div className="relative rounded-full overflow-hidden border-4 border-blue-500">
-                {preview ? (
-                    <AvatarImage
-                        src={preview}
-                        alt="Avatar Preview"
-                        height={100}
-                        width={100}
-                        className="object-cover rounded-full"
-                        useCache={true}
-                    />
-                ) : (
-                    <FaUserCircle className="text-gray-400 dark:text-gray-600 w-24 h-24" />
-                )}
+                <AvatarImage
+                    src={preview || undefined}
+                    alt="Avatar Preview"
+                    height={100}
+                    width={100}
+                    className="object-cover rounded-full"
+                    useCache={true}
+                />
             </div>
 
             <input

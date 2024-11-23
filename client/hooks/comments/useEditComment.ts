@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {deleteComment} from "@client/api/services/commentService"
+import { EditCommentRequest, GetCommentResponse } from "@/types/dtos/comments";
+import { editComment } from "@client/api/services/commentService";
 
-export const useDeleteComment = () => {
+export const useEditComment = () => {
     const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: deleteComment,
+    return useMutation<GetCommentResponse, Error, EditCommentRequest>({
+        mutationFn: editComment,
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["blogPostComments"]
@@ -13,9 +14,6 @@ export const useDeleteComment = () => {
             queryClient.invalidateQueries({
                 queryKey: ["replies"]
             });
-        },
-        onError: (error) => {
-            console.error("Failed to delete comment:", error);
         },
     });
 };

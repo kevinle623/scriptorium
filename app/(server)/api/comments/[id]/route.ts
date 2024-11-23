@@ -48,6 +48,8 @@ export async function DELETE(req: Request, {params}: { params: { id: string } })
         }
 
         const commentId = parseInt(params.id, 10)
+        const comment = await commentService.getCommentById(commentId)
+        await authorizationService.verifyMatchingUserAuthorization(req, comment.userId)
 
         await commentService.removeComment(commentId)
         return NextResponse.json(

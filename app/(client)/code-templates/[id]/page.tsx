@@ -12,9 +12,11 @@ import { FaEdit } from "react-icons/fa";
 import UserProfileSection from "@client/components/user/UserProfileSection";
 import {CodingLanguage} from "@/types/dtos/codeTemplates";
 import {useAuth} from "@client/providers/AuthProvider";
+import useMobileDetect from "@client/hooks/utilities/useMobileDetect";
 
 const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
     const id = parseInt(params.id, 10);
+    const isMobile = useMobileDetect()
     const router = useRouter();
     const { isAuthed } = useAuth()
     const { triggerOnboarding } = useJitOnboarding();
@@ -70,13 +72,27 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
         return <div className="text-center py-8">No template found</div>;
     }
 
-    const { title, code, language, explanation, tags, userId } = codeTemplate;
+    const { title, code, language, explanation, tags, userId, parentTemplateId } = codeTemplate;
 
     return (
         <div className="container mx-auto px-6 py-8">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl font-bold">{title}</h1>
-                <div className="flex gap-4">
+            {parentTemplateId && (
+                <div className="bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 p-4 rounded-lg mb-4">
+                    <p>
+                        This is a forked code template. View the original{" "}
+                        <a
+                            href={`/code-templates/${parentTemplateId}`}
+                            className="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-600"
+                        >
+                            code template
+                        </a>
+                        .
+                    </p>
+                </div>
+            )}
+            <div className={`flex ${isMobile ? "flex-col" : "justify-between items-center"} mb-4 gap-4`}>
+                <h1 className={`text-3xl font-bold ${isMobile ? "text-center" : ""}`}>{title}</h1>
+                <div className={`flex ${isMobile ? "flex-col" : "gap-4"} ${isMobile ? "items-stretch" : ""}`}>
                     <button
                         onClick={handleFork}
                         className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
@@ -94,7 +110,7 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
                             onClick={() => router.push(`/code-templates/${id}/edit`)}
                             className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
                         >
-                            <FaEdit />
+                            <FaEdit/>
                             Edit Template
                         </button>
                     )}
@@ -104,7 +120,8 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
 
             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-6">
                 <h2 className="text-xl font-bold mb-2">Code</h2>
-                <pre className="overflow-x-auto whitespace-pre-wrap bg-white dark:bg-gray-900 p-4 rounded-lg shadow-md text-sm">
+                <pre
+                    className="overflow-x-auto whitespace-pre-wrap bg-white dark:bg-gray-900 p-4 rounded-lg shadow-md text-sm">
                     {code}
                 </pre>
             </div>

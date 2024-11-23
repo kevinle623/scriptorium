@@ -26,6 +26,7 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
                     language: codeTemplate.language,
                     explanation: codeTemplate.explanation,
                     tags: codeTemplate.tags,
+                    parentTemplateId: codeTemplate.parentTemplateId
                 },
             },
             {status: 201}

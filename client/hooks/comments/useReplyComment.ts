@@ -8,7 +8,7 @@ export const useReplyComment = () => {
         mutationFn: addReplyToComment,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: ["replies", variables.id]
+                queryKey: ["replies", Number(variables.id)]
                 },
             );
         },

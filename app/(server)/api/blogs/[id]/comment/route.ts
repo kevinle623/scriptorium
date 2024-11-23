@@ -41,18 +41,7 @@ export async function POST(req: Request, {params}: { params: { id: string } }) {
             {status: 201}
         );
     } catch (error) {
-        if (error instanceof DatabaseIntegrityException) {
-            return NextResponse.json({error: error.message}, {status: 400});
-        } else if (error instanceof InvalidCredentialsException) {
-            return NextResponse.json({error: error.message}, {status: 401});
-        } else if (error instanceof ServiceException) {
-            return NextResponse.json({error: error.message}, {status: 400});
-        } else if (error instanceof InsufficientPermissionsException) {
-            return NextResponse.json({error: error.message}, {status: 403});
-        } else if (error instanceof NotFoundException) {
-            return NextResponse.json({error: error.message}, {status: 400});
-        }
-        return NextResponse.json({error: "Internal server error"}, {status: 500});
+        routeHandlerException(error)
     }
 }
 

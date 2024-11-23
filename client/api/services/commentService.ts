@@ -1,7 +1,7 @@
 import {
     AddCommentRequest,
     AddCommentResponse,
-    Comment,
+    Comment, EditCommentRequest,
     GetCommentReportsRequest,
     GetCommentReportsResponse,
     GetCommentResponse,
@@ -15,6 +15,7 @@ import {
 import axiosInstance from "@client/api/axiosInstance";
 import {CommentVoteResponse, ToggleVoteRequest, ToggleVoteResponse} from "@/types/dtos/votes";
 import {AxiosError} from "axios";
+import {UpdateCodeTemplateRequest, UpdateCodeTemplateResponse} from "@/types/dtos/codeTemplates";
 
 
 export const getCommentById = async (id: string): Promise<Comment> => {
@@ -115,4 +116,13 @@ export const getMostReportedComments = async (filters: GetCommentsRequest): Prom
     });
     return data;
 };
+
+export async function editComment(request: EditCommentRequest): Promise<GetCommentResponse> {
+    const { data } = await axiosInstance.put<GetCommentResponse>(`/comments/${request.commentId}`, request, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    return data
+}
 
