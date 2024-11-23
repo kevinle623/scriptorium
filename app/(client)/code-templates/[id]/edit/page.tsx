@@ -98,7 +98,7 @@ const EditCodeTemplatePage = () => {
                     setToaster("Code executed successfully!", "success");
                 },
                 onError: (error: unknown) => {
-                    let errorMessage = "Error executing code.";
+                    let errorMessage = "Runtime max timeout reached or unexpected interruption.";
 
                     if (error && typeof error === "object" && "message" in error) {
                         errorMessage = (error as Error).message;

@@ -18,10 +18,9 @@ export enum CodingLanguage {
     PYTHON = "python",
     JAVASCRIPT = "javascript",
     RUBY = "ruby",
-    GO = "go",
+    PERL = "perl",
     PHP = "php",
     SWIFT = "swift",
-    KOTLIN = "kotlin",
     RUST = "rust"
 }
 

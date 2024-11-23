@@ -4,7 +4,8 @@ import path from 'path';
 import { CodingLanguage } from "@/types/dtos/codeTemplates";
 import { CodeExecutionException } from "@/types/exceptions";
 
-const MAX_CODE_EXECUTION_TIMEOUT = 5000;
+const MAX_CODE_EXECUTION_TIMEOUT = 6000;
+const DOCKER_CODE_EXECUTION_TIMEOUT = 4000;
 const MAX_RECURSION_DEPTH = 1000;
 
 export async function runCode(
@@ -40,7 +41,6 @@ async function createTempFile(language: CodingLanguage, code: string): Promise<s
     const fileName = `temp_${Date.now()}.${extension}`;
     const filePath = path.join('/tmp', fileName);
 
-    // Adjust class name for Java
     if (language === CodingLanguage.JAVA) {
         code = code.replace(/public\s+class\s+(\w+)/, `public class ${fileName.replace(`.${extension}`, '')}`);
     }
@@ -65,10 +65,9 @@ function getFileExtension(language: CodingLanguage): string {
         case CodingLanguage.PYTHON: return 'py';
         case CodingLanguage.JAVASCRIPT: return 'js';
         case CodingLanguage.RUBY: return 'rb';
-        case CodingLanguage.GO: return 'go';
+        case CodingLanguage.PERL: return 'pl';
         case CodingLanguage.PHP: return 'php';
         case CodingLanguage.SWIFT: return 'swift';
-        case CodingLanguage.KOTLIN: return 'kt';
         case CodingLanguage.RUST: return 'rs';
         default:
             throw new CodeExecutionException('Unsupported language');
@@ -77,17 +76,16 @@ function getFileExtension(language: CodingLanguage): string {
 
 function getDockerImageName(language: CodingLanguage): string {
     switch (language.toLowerCase()) {
-        case CodingLanguage.C:
-        case CodingLanguage.CPLUSPLUS: return 'gcc:latest';
-        case CodingLanguage.JAVA: return 'openjdk:latest';
-        case CodingLanguage.PYTHON: return 'python:3.9-slim';
-        case CodingLanguage.JAVASCRIPT: return 'node:16';
-        case CodingLanguage.RUBY: return 'ruby:latest';
-        case CodingLanguage.GO: return 'golang:latest';
-        case CodingLanguage.PHP: return 'php:latest';
-        case CodingLanguage.SWIFT: return 'swift:latest';
-        case CodingLanguage.KOTLIN: return 'openjdk:latest';
-        case CodingLanguage.RUST: return 'rust:latest';
+        case CodingLanguage.C: return 'language-runner-c';
+        case CodingLanguage.CPLUSPLUS: return 'language-runner-cpp';
+        case CodingLanguage.JAVA: return 'language-runner-java';
+        case CodingLanguage.PYTHON: return 'language-runner-python';
+        case CodingLanguage.JAVASCRIPT: return 'language-runner-node';
+        case CodingLanguage.RUBY: return 'language-runner-ruby';
+        case CodingLanguage.PERL: return 'language-runner-perl';
+        case CodingLanguage.PHP: return 'language-runner-php';
+        case CodingLanguage.SWIFT: return 'language-runner-swift';
+        case CodingLanguage.RUST: return 'language-runner-rust';
         default:
             throw new CodeExecutionException('Unsupported language');
     }
@@ -100,13 +98,25 @@ function buildDockerCommand(
     stdinFilePath?: string
 ): string {
     const codeFileName = path.basename(filePath);
-    const stdinMount = stdinFilePath ? `-v ${stdinFilePath}:/sandbox/stdin.txt` : '';
-    const stdinRedirect = stdinFilePath ? `</sandbox/stdin.txt` : '';
+    const resolvedStdinFilePath = stdinFilePath ? path.resolve(stdinFilePath) : null;
+    const stdinMount = resolvedStdinFilePath ? `-v ${resolvedStdinFilePath}:/sandbox/stdin.txt` : '';
+    const stdinRedirect = resolvedStdinFilePath ? `< /sandbox/stdin.txt` : '';
 
-    return `docker run --rm -v ${filePath}:/sandbox/${codeFileName} ${stdinMount} ${dockerImage} ${getExecutionCommand(language, codeFileName, stdinRedirect)}`;
+    const dockerOptions = [
+        '--rm',
+        '--memory="256m"',
+        '--cpus="1"',
+        '--pids-limit=50',
+        '--network=none',
+    ].join(' ');
+
+    const timeoutSeconds = Math.floor(DOCKER_CODE_EXECUTION_TIMEOUT / 1000);
+    const dockerTimeoutCommand = `timeout ${timeoutSeconds}s`;
+    return `docker run ${dockerOptions} -v ${filePath}:/sandbox/${codeFileName} ${stdinMount} ${dockerImage} ${dockerTimeoutCommand} ${getExecutionCommand(language, codeFileName, stdinRedirect)}`;
 }
 
 function getExecutionCommand(language: CodingLanguage, fileName: string, stdinRedirect: string): string {
+    console.log("file name", fileName)
     switch (language.toLowerCase()) {
         case CodingLanguage.C:
             return `sh -c "gcc /sandbox/${fileName} -o /sandbox/a.out && /sandbox/a.out ${stdinRedirect}"`;
@@ -116,19 +126,17 @@ function getExecutionCommand(language: CodingLanguage, fileName: string, stdinRe
             const className = path.basename(fileName, '.java');
             return `sh -c "javac /sandbox/${fileName} && java -cp /sandbox ${className} ${stdinRedirect}"`;
         case CodingLanguage.PYTHON:
-            return `python3 /sandbox/${fileName} ${stdinRedirect}`;
+            return `sh -c "python3 /sandbox/${fileName} ${stdinRedirect}"`;
         case CodingLanguage.JAVASCRIPT:
-            return `node /sandbox/${fileName} ${stdinRedirect}`;
+            return `sh -c "cat /sandbox/stdin.txt | node /sandbox/${fileName}"`;
         case CodingLanguage.RUBY:
-            return `ruby /sandbox/${fileName} ${stdinRedirect}`;
-        case CodingLanguage.GO:
-            return `sh -c "go run /sandbox/${fileName} ${stdinRedirect}"`;
+            return `sh -c "ruby /sandbox/${fileName} ${stdinRedirect}"`;
+        case CodingLanguage.PERL:
+            return `sh -c "perl /sandbox/${fileName} ${stdinRedirect}"`;
         case CodingLanguage.PHP:
-            return `php /sandbox/${fileName} ${stdinRedirect}`;
+            return `sh -c "php /sandbox/${fileName} ${stdinRedirect}"`;
         case CodingLanguage.SWIFT:
-            return `swift /sandbox/${fileName} ${stdinRedirect}`;
-        case CodingLanguage.KOTLIN:
-            return `sh -c "kotlinc /sandbox/${fileName} -include-runtime -d /sandbox/program.jar && java -jar /sandbox/program.jar ${stdinRedirect}"`;
+            return `sh -c "swift /sandbox/${fileName} ${stdinRedirect}"`;
         case CodingLanguage.RUST:
             return `sh -c "rustc /sandbox/${fileName} -o /sandbox/a.out && /sandbox/a.out ${stdinRedirect}"`;
         default:
@@ -140,15 +148,22 @@ async function runWithExec(command: string): Promise<string> {
     return new Promise((resolve, reject) => {
         exec(command, { timeout: MAX_CODE_EXECUTION_TIMEOUT }, (error, stdout, stderr) => {
             if (error) {
-                reject(new CodeExecutionException(`Error executing code: ${stderr || error.message}`));
-            } else if (stderr) {
-                reject(new CodeExecutionException(`Execution error: ${stderr}`));
-            } else {
-                resolve(stdout.trim());
+                if (error.killed) {
+                    reject(new CodeExecutionException(`Execution was killed due to timeout`));
+                } else {
+                    reject(new CodeExecutionException(`Error executing code: ${stderr || error.message}`));
+                }
+                return;
             }
+            if (stderr) {
+                reject(new CodeExecutionException(`Execution error: ${stderr}`));
+                return;
+            }
+            resolve(stdout.trim());
         });
     });
 }
+
 
 async function executeCodeWithDocker(
     language: CodingLanguage,

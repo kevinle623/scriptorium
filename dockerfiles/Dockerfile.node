@@ -1,0 +1,8 @@
+FROM node:16
+
+RUN apt-get update && apt-get install -y coreutils
+
+RUN apt-get update && apt-get install -y coreutils \
+    && npm install -g typescript # Add TypeScript support
+WORKDIR /sandbox
+CMD ["node"]

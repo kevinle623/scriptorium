@@ -42,7 +42,7 @@ const Playground = () => {
                         setOutput(errorMessage);
                         console.error("Failed to toggle hidden status:", errorMessage);
                     } else {
-                        setOutput("An unexpected error occurred");
+                        setOutput("Runtime max timeout reached or unexpected interruption.");
                     }
                 },
             }
