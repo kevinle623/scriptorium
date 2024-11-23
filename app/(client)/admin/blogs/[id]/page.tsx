@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useBlogPost } from "@client/hooks/blogs/useBlogPost";
 import { useParams, useRouter } from "next/navigation";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
-import { FaEdit } from "react-icons/fa";
 import { useHideBlogPost } from "@client/hooks/blogs/useHideBlogPost";
 import BlogPostVote from "@client/components/vote/BlogPostVote";
 import CommentSection from "@client/components/comment/CommentSection";
