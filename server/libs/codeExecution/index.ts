@@ -128,7 +128,7 @@ function getExecutionCommand(language: CodingLanguage, fileName: string, stdinRe
         case CodingLanguage.PYTHON:
             return `sh -c "python3 /sandbox/${fileName} ${stdinRedirect}"`;
         case CodingLanguage.JAVASCRIPT:
-            return `sh -c "cat /sandbox/stdin.txt | node /sandbox/${fileName}"`;
+            return `sh -c "node /sandbox/${fileName} ${stdinRedirect}"`;
         case CodingLanguage.RUBY:
             return `sh -c "ruby /sandbox/${fileName} ${stdinRedirect}"`;
         case CodingLanguage.PERL:
