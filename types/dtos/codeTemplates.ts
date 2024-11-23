@@ -90,6 +90,7 @@ export interface GetCodeTemplateResponse {
     language?: CodingLanguage;
     explanation?: string;
     tags?: string[];
+    parentTemplateId?: string
 }
 
 export interface GetCodeTemplatesResult {
