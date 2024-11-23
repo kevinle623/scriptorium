@@ -2,9 +2,9 @@
 
 import React, {useEffect, useState} from "react";
 import { useUploadAvatar } from "@client/hooks/users/useUploadAvatar";
-import Image from "next/image"
 import {useToaster} from "@client/providers/ToasterProvider";
 import {FaUserCircle} from "react-icons/fa";
+import AvatarImage from "@client/components/avatar/AvatarImage";
 
 interface AvatarUploaderProps {
     onAvatarUpload: (avatarUrl: string) => void;
@@ -83,12 +83,13 @@ const AvatarUploader = ({ onAvatarUpload, initialAvatar }: AvatarUploaderProps) 
         <div className="flex flex-col items-center space-y-4">
             <div className="relative rounded-full overflow-hidden border-4 border-blue-500">
                 {preview ? (
-                    <Image
+                    <AvatarImage
                         src={preview}
                         alt="Avatar Preview"
                         height={100}
                         width={100}
                         className="object-cover rounded-full"
+                        useCache={true}
                     />
                 ) : (
                     <FaUserCircle className="text-gray-400 dark:text-gray-600 w-24 h-24" />

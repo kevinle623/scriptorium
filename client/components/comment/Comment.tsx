@@ -10,9 +10,9 @@ import { useUserById } from "@client/hooks/users/useUserById";
 import CommentVote from "@client/components/vote/CommentVote";
 import { useToaster } from "@client/providers/ToasterProvider";
 import { FaUserCircle } from "react-icons/fa";
-import Image from "next/image";
 import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
 import {AxiosError} from "axios";
+import AvatarImage from "@client/components/avatar/AvatarImage";
 
 interface CommentProps {
     comment: CommentType;
@@ -110,24 +110,13 @@ const Comment = ({ comment }: CommentProps) => {
         <div className="mb-4 p-4 rounded-lg shadow bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100">
             <div className="flex justify-between">
                 <div className="flex items-center space-x-4">
-                    {userLoading ? (
-                        <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 animate-pulse"></div>
-                    ) : userError || !user?.avatar ? (
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600">
-                            <FaUserCircle className="text-gray-500 dark:text-gray-400 w-8 h-8" />
-                        </div>
-                    ) : (
-                        <div className="rounded-full overflow-hidden">
-                            <Image
-                                src={user.avatar}
-                                alt={`${user.firstName}'s avatar`}
-                                width={45}
-                                height={45}
-                                className="object-cover rounded-full"
-                            />
-                        </div>
-                    )}
-
+                    <AvatarImage
+                        src={user?.avatar}
+                        alt="User Avatar"
+                        width={45}
+                        height={45}
+                        className="object-cover rounded-full"
+                    />
                     <div>
                         <strong className="text-lg">
                             {userLoading

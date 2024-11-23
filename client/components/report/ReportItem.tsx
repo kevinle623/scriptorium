@@ -1,8 +1,9 @@
 import React from "react";
 import { useUserById } from "@client/hooks/users/useUserById";
 import { FaUserCircle } from "react-icons/fa";
-import Image from "next/image";
+;
 import { Report } from "@/types/dtos/reports"
+import AvatarImage from "@client/components/avatar/AvatarImage";
 
 interface ReportItemProps {
     report: Report
@@ -23,7 +24,7 @@ const ReportItem = ({ report }: ReportItemProps) => {
                         </div>
                     ) : (
                         <div className="rounded-full overflow-hidden">
-                            <Image
+                            <AvatarImage
                                 src={user.avatar}
                                 alt={`${user.firstName}'s avatar`}
                                 width={40}

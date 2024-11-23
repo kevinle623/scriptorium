@@ -9,7 +9,7 @@ export const useCommentBlogPost = () => {
         mutationFn: addCommentToBlogPost,
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: ["comments", variables.id]
+                queryKey: ["blogPostComments", variables.id]
             });
         },
         onError: (error) => {

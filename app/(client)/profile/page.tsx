@@ -4,8 +4,8 @@ import React from "react";
 import { useUser } from "@client/hooks/users/useUser";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import { useRouter } from "next/navigation";
-import { FaUserCircle } from "react-icons/fa";
-import Image from "next/image"
+
+import AvatarImage from "@client/components/avatar/AvatarImage";
 
 const ProfilePage = () => {
     const { data: user, isLoading, isError, error } = useUser();
@@ -33,23 +33,15 @@ const ProfilePage = () => {
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Your Profile</h1>
             </div>
 
-            {/* Profile Card */}
             <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 flex flex-col items-center">
-                {/* Avatar */}
                 <div className="relative mb-6">
-                    {user?.avatar ? (
-                        <Image
-                            src={user.avatar}
-                            alt={`${user?.firstName}'s avatar`}
-                            width={100}
-                            height={100}
-                            className="rounded-full  border-4 border-blue-500"
-                        />
-                    ) : (
-                        <div className="flex items-center justify-center rounded-full w-32 h-32 bg-gray-200 dark:bg-gray-700 border-4 border-blue-500">
-                            <FaUserCircle className="text-gray-500 dark:text-gray-400 w-28 h-28" />
-                        </div>
-                    )}
+                    <AvatarImage
+                        src={user?.avatar}
+                        alt="User Avatar"
+                        width={100}
+                        height={100}
+                        className="object-cover rounded-full"
+                    />
                 </div>
 
                 {/* Name */}
