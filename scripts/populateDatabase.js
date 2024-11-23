@@ -7,7 +7,6 @@ async function populateData() {
     try {
         console.log("Generating data...");
 
-        // Generate Tags
         const tags = await Promise.all(
             ["JavaScript", "Python", "React", "Node.js", "CSS", "HTML"].map((tag) =>
                 prisma.tag.upsert({
@@ -19,7 +18,6 @@ async function populateData() {
         );
         console.log(`Generated ${tags.length} tags.`);
 
-        // Generate Users
         const users = [];
         for (let i = 1; i <= 50; i++) {
             const user = await prisma.user.create({
@@ -36,7 +34,6 @@ async function populateData() {
         }
         console.log(`Generated ${users.length} users.`);
 
-        // Generate Blog Posts
         const blogPosts = [];
         for (let i = 1; i <= 60; i++) {
             const user = users[i % users.length];
@@ -57,7 +54,6 @@ async function populateData() {
         }
         console.log(`Generated ${blogPosts.length} blog posts.`);
 
-        // Generate Code Templates
         const codeTemplates = [];
         for (let i = 1; i <= 55; i++) {
             const user = users[i % users.length];
@@ -79,7 +75,6 @@ async function populateData() {
         }
         console.log(`Generated ${codeTemplates.length} code templates.`);
 
-        // Associate Code Templates with Blog Posts
         for (const blogPost of blogPosts) {
             await prisma.blogPostCodeTemplate.createMany({
                 data: codeTemplates.slice(0, 3).map((template) => ({
@@ -90,10 +85,9 @@ async function populateData() {
         }
         console.log("Associated code templates with blog posts.");
 
-        // Generate Comments
         const comments = [];
         for (const blogPost of blogPosts) {
-            const numComments = Math.floor(Math.random() * 5) + 1; // 1-5 comments per blog post
+            const numComments = Math.floor(Math.random() * 5) + 1;
             for (let i = 0; i < numComments; i++) {
                 const user = users[Math.floor(Math.random() * users.length)];
                 const comment = await prisma.comment.create({
@@ -108,10 +102,8 @@ async function populateData() {
         }
         console.log("Generated comments for blog posts.");
 
-        // Generate Reports
         for (const blogPost of blogPosts) {
             if (Math.random() > 0.7) {
-                // 30% of blog posts get a report
                 const user = users[Math.floor(Math.random() * users.length)];
                 await prisma.report.create({
                     data: {
@@ -125,7 +117,6 @@ async function populateData() {
 
         for (const comment of comments) {
             if (Math.random() > 0.5) {
-                // 50% of comments get a report
                 const user = users[Math.floor(Math.random() * users.length)];
                 await prisma.report.create({
                     data: {
@@ -138,15 +129,12 @@ async function populateData() {
         }
         console.log("Generated reports for blog posts and comments.");
 
-        // Generate Votes
-        // Generate Votes for Blog Posts
         for (const blogPost of blogPosts) {
-            const numVotes = Math.floor(Math.random() * 20) + 1; // 1-10 votes per blog post
+            const numVotes = Math.floor(Math.random() * 20) + 1;
             for (let i = 0; i < numVotes; i++) {
                 const user = users[Math.floor(Math.random() * users.length)];
                 const voteType = Math.random() > 0.5 ? "UP" : "DOWN";
 
-                // Check for existing vote using the unique constraint
                 const existingVote = await prisma.vote.findUnique({
                     where: {
                         unique_blog_vote: {
@@ -168,14 +156,12 @@ async function populateData() {
             }
         }
 
-        // Generate Votes for Comments
         for (const comment of comments) {
-            const numVotes = Math.floor(Math.random() * 20) + 1; // 1-5 votes per comment
+            const numVotes = Math.floor(Math.random() * 20) + 1;
             for (let i = 0; i < numVotes; i++) {
                 const user = users[Math.floor(Math.random() * users.length)];
                 const voteType = Math.random() > 0.5 ? "UP" : "DOWN";
 
-                // Check for existing vote using the unique constraint
                 const existingVote = await prisma.vote.findUnique({
                     where: {
                         unique_comment_vote: {
