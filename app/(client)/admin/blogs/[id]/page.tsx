@@ -10,6 +10,7 @@ import CommentSection from "@client/components/comment/CommentSection";
 import { useToaster } from "@client/providers/ToasterProvider";
 import {AxiosError} from "axios";
 import BlogPostReportsSection from "@client/components/report/BlogPostReportsSection";
+import UserProfileSection from "@client/components/user/UserProfileSection";
 
 const AdminBlogPost = () => {
     const params = useParams();
@@ -63,7 +64,6 @@ const AdminBlogPost = () => {
 
     return (
         <div className="max-w-4xl mx-auto p-4">
-            {/* Back Button */}
             <div className="mb-4">
                 <button
                     onClick={() => router.push("/admin/blogs")}
@@ -73,7 +73,6 @@ const AdminBlogPost = () => {
                 </button>
             </div>
 
-            {/* Blog Post Section */}
             <div className="relative p-6 mb-4 rounded-lg shadow-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                 <div className="absolute top-4 right-4 flex items-center space-x-4">
                     <button
@@ -114,6 +113,11 @@ const AdminBlogPost = () => {
                 </div>
                 <BlogPostVote blogPostId={Number(id)} />
             </div>
+
+            {blogPost?.userId &&
+                <div className="mb-6">
+                    <UserProfileSection userId={String(blogPost?.userId)} sectionName="Author"/>
+                </div>}
 
             {blogPost && <BlogPostReportsSection blogPostId={blogPost.id} />}
 

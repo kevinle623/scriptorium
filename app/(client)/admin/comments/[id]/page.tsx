@@ -11,6 +11,7 @@ import CommentVote from "@client/components/vote/CommentVote";
 import Reply from "@client/components/comment/Comment";
 import {AxiosError} from "axios";
 import CommentReportsSection from "@client/components/report/CommentReportsSection";
+import UserProfileSection from "@client/components/user/UserProfileSection";
 
 const AdminComment = () => {
     const params = useParams();
@@ -118,10 +119,6 @@ const AdminComment = () => {
                 <h1 className="text-xl font-bold mb-2">Comment Details</h1>
                 <p className="mb-4 text-gray-700 dark:text-gray-300">{comment?.content}</p>
                 <div className="mb-4">
-                    <h2 className="text-lg font-semibold">Author:</h2>
-                    <p className="text-blue-600 dark:text-blue-400">User {comment?.userId}</p>
-                </div>
-                <div className="mb-4">
                     <h2 className="text-lg font-semibold">Visibility Status:</h2>
                     <p
                         className={`font-bold ${
@@ -133,6 +130,11 @@ const AdminComment = () => {
                 </div>
                 {comment && <CommentVote commentId={comment.id} />}
             </div>
+
+            {comment?.userId &&
+                <div className="mb-6">
+                    <UserProfileSection userId={String(comment?.userId)} sectionName="Author"/>
+                </div>}
 
             {comment && <CommentReportsSection commentId={comment.id} />}
 

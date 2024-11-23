@@ -24,8 +24,7 @@ const CommentReportsSection = ({commentId}: CommentReportsListProps) => {
 
     return (
         <div className="p-6 mb-4 rounded-lg shadow-md bg-gray-50 dark:bg-gray-800">
-            <h3 className="text-2xl font-bold mb-4">Report</h3>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Comment Reports</h2>
+            <h3 className="text-2xl font-bold mb-4">Reports</h3>
             {commentReports?.reports?.length ? (
                 <ul className="space-y-4">
                     {commentReports.reports.map((report) => (

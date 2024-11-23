@@ -15,8 +15,7 @@ const AdminBlogsPage = () => {
 
     const { data, isLoading, isError } = useMostReportedBlogPosts(filters);
 
-    const handleFilterChange = (key: keyof BlogPostFilters, value: unknown | undefined) => {
-        if (!value) return
+    const handleFilterChange = (key: keyof BlogPostFilters, value: boolean | undefined) => {
         setFilters((prev) => ({
             ...prev,
             [key]: value,
