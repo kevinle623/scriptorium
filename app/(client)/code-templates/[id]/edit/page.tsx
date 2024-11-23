@@ -11,9 +11,9 @@ import { useUpdateCodeTemplate } from "@client/hooks/codeTemplates/useEditCodeTe
 import { useDeleteCodeTemplate } from "@client/hooks/codeTemplates/useDeleteCodeTemplate";
 import { useUser } from "@client/hooks/users/useUser";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
-import {CodingLanguage} from "@/types/dtos/codeTemplates";
-import {AxiosError} from "axios";
-
+import { CodingLanguage } from "@/types/dtos/codeTemplates";
+import { AxiosError } from "axios";
+import TagInput from "@client/components/tag-input/TagInput";
 
 const EditCodeTemplatePage = () => {
     const { id } = useParams() as { id: string };
@@ -33,7 +33,7 @@ const EditCodeTemplatePage = () => {
     const [language, setLanguage] = useState<CodingLanguage>(CodingLanguage.JAVASCRIPT);
     const [code, setCode] = useState<string | undefined>("");
     const [explanation, setExplanation] = useState<string | undefined>("");
-    const [tags, setTags] = useState<string[] | undefined>([]);
+    const [tags, setTags] = useState<string[]>([]);
     const [stdin, setStdin] = useState<string>("");
     const [output, setOutput] = useState<string | null>(null);
 
@@ -47,7 +47,7 @@ const EditCodeTemplatePage = () => {
             setLanguage(codeTemplate.language as CodingLanguage);
             setCode(codeTemplate.code);
             setExplanation(codeTemplate.explanation);
-            setTags(codeTemplate.tags);
+            setTags(codeTemplate.tags || []);
         }
     }, [codeTemplate]);
 
@@ -173,13 +173,8 @@ const EditCodeTemplatePage = () => {
 
                 {/* Tags */}
                 <div>
-                    <label className="block text-lg font-semibold mb-2">Tags (comma-separated)</label>
-                    <input
-                        type="text"
-                        value={tags?.join(", ")}
-                        onChange={(e) => setTags(e.target.value.split(",").map((tag) => tag.trim()))}
-                        className="border rounded p-2 w-full"
-                    />
+                    <label className="block text-lg font-semibold mb-2">Tags</label>
+                    <TagInput tags={tags} setTags={setTags} />
                 </div>
 
                 {/* Code */}

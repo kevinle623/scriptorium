@@ -5,7 +5,7 @@ interface TagInputProps {
     setTags: (tags: string[]) => void;
 }
 
-const TagInput: React.FC<TagInputProps> = ({ tags, setTags }) => {
+const TagInput = ({ tags, setTags }: TagInputProps) => {
     const [inputValue, setInputValue] = useState("");
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
