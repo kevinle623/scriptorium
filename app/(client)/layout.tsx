@@ -35,25 +35,24 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <link rel="icon" href="/app/(client)/favicon.ico" sizes="any"/>
-            <body
-                className={`${spaceGrotesk.variable} ${manrope.variable} bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
-            >
-                <ThemeProvider attribute="class" enableSystem={true} defaultTheme="system">
-                    <ReactQueryProvider>
-                        <ToasterProvider>
-                            <AuthProvider>
-                                <CodePlaygroundCacheProvider>
-                                    <NavBar/>
-                                    <JitOnboardingProvider>
-                                        {children}
-                                    </JitOnboardingProvider>
-                                </CodePlaygroundCacheProvider>
-                            </AuthProvider>
-                        </ToasterProvider>
-                    </ReactQueryProvider>
-                </ThemeProvider>
-            </body>
+        <body
+            className={`${spaceGrotesk.variable} ${manrope.variable} bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
+        >
+        <ThemeProvider attribute="class" enableSystem={true} defaultTheme="system">
+            <ReactQueryProvider>
+                <ToasterProvider>
+                    <AuthProvider>
+                        <CodePlaygroundCacheProvider>
+                            <NavBar/>
+                            <JitOnboardingProvider>
+                                {children}
+                            </JitOnboardingProvider>
+                        </CodePlaygroundCacheProvider>
+                    </AuthProvider>
+                </ToasterProvider>
+            </ReactQueryProvider>
+        </ThemeProvider>
+        </body>
         </html>
     );
 }
