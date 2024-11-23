@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useCodeTemplates } from "@client/hooks/useCodeTemplates";
+import { useCodeTemplates } from "@client/hooks/codeTemplates/useCodeTemplates";
 import { CodeTemplate } from "@/types/dtos/codeTemplates";
 
 interface CodeTemplateSelectorProps {

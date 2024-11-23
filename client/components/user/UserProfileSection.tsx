@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useUserById } from "@client/hooks/useUserById";
+import { useUserById } from "@client/hooks/users/useUserById";
 import { FaUserCircle } from "react-icons/fa";
 import Image from "next/image";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";

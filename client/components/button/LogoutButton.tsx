@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useLogout } from "@client/hooks/useLogout";
+import { useLogout } from "@client/hooks/users/useLogout";
 import { FaSignOutAlt } from "react-icons/fa";
 
 interface LogoutButtonProps {

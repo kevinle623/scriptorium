@@ -128,8 +128,4 @@ export async function uploadAvatar(userId: number, file: UploadFile) {
         throw e
     }
 
-
-
-
-
 }

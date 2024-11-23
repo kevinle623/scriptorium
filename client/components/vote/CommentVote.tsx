@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {FaArrowDown, FaArrowUp} from "react-icons/fa";
-import {useCommentVotes} from "@client/hooks/useCommentVotes";
-import {useVoteComment} from "@client/hooks/useVoteComment";
+import {useCommentVotes} from "@client/hooks/comments/useCommentVotes";
+import {useVoteComment} from "@client/hooks/comments/useVoteComment";
 import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
 import {VoteType} from "@/types/dtos/votes";
 

@@ -1,29 +1,41 @@
-import React from "react";
-import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
+import React, { useState, useEffect } from 'react';
+import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
 
 interface CommentFormProps {
-    value: string;
     onSubmit: (content: string) => void;
-    onChange: (value: string) => void;
+    onChange?: (value: string) => void;
     placeholder?: string;
     disableButton?: boolean;
+    value?: string;
 }
 
-const CommentForm = ({ value, onSubmit, onChange, placeholder, disableButton }: CommentFormProps) => {
-    const { triggerOnboarding } = useJitOnboarding()
+const CommentForm = ({ onSubmit, onChange, placeholder, disableButton, value: prompt }: CommentFormProps) => {
+    const { triggerOnboarding } = useJitOnboarding();
+    const [value, setValue] = useState('');
+
+    useEffect(() => {
+        if (prompt) {
+            setValue(prompt);
+        }
+    }, [prompt]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (value.trim()) {
-            triggerOnboarding(() => onSubmit(value.trim()));
-            onChange("");
-        }
+        triggerOnboarding(() => onSubmit(value.trim()));
+        setValue('');
+        if (onChange) onChange('');
+    };
+
+    const handleChange = (newValue: string) => {
+        setValue(newValue);
+        if (onChange) onChange(newValue);
     };
 
     return (
         <form onSubmit={handleSubmit} className="mb-4">
             <textarea
                 value={value}
-                onChange={(e) => onChange(e.target.value)}
+                onChange={(e) => handleChange(e.target.value)}
                 rows={3}
                 className="w-full p-2 border rounded mb-4 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
                 placeholder={placeholder || "Write a comment..."}

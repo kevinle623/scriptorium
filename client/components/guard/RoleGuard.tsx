@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useToaster } from "@client/providers/ToasterProvider";
 import LoadingSpinnerScreen from "@client/components/loading/LoadingSpinnerScreen";
 import { Role } from "@/types/dtos/roles"
-import { useUser } from "@client/hooks/useUser";
+import { useUser } from "@client/hooks/users/useUser";
 
 interface AdminGuardProps {
     children: React.ReactNode;

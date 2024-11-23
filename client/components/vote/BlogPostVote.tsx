@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {FaArrowDown, FaArrowUp} from "react-icons/fa";
-import {useBlogPostVotes} from "@client/hooks/useBlogPostVotes";
-import {useVoteBlogPost} from "@client/hooks/useVoteBlogPost";
+import {useBlogPostVotes} from "@client/hooks/blogs/useBlogPostVotes";
+import {useVoteBlogPost} from "@client/hooks/blogs/useVoteBlogPost";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
 import {VoteType} from "@/types/dtos/votes";

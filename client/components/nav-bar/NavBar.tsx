@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { FaPenNib, FaBars, FaTimes } from "react-icons/fa";
-import useMobileDetect from "@client/hooks/useMobileDetect";
+import useMobileDetect from "@client/hooks/utilities/useMobileDetect";
 import ThemeSwitcher from "@client/components/theme-switcher/ThemeSwitcher";
 import { useAuth } from "@client/providers/AuthProvider";
 import LogoutButton from "@client/components/button/LogoutButton";
-import { useUser } from "@client/hooks/useUser";
+import { useUser } from "@client/hooks/users/useUser";
 import { Role } from "@/types/dtos/roles"
 
 const NavBar = () => {

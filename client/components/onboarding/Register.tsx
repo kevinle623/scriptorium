@@ -1,7 +1,7 @@
 "use client";
 
 import {useForm} from "react-hook-form";
-import {useRegister} from "@client/hooks/useRegister";
+import {useRegister} from "@client/hooks/users/useRegister";
 import {useState} from "react";
 import {CreateUserRequest, RegisterResponse} from "@/types/dtos/user";
 import {Role} from "@/types/dtos/roles";

@@ -3,10 +3,10 @@
 import React, { useState } from "react";
 import CommentForm from "./CommentForm";
 import { Comment as CommentType } from "@/types/dtos/comments";
-import { useReportComment } from "@client/hooks/useReportComment";
-import { useReplyComment } from "@client/hooks/useReplyComment";
-import { useCommentReplies } from "@client/hooks/useCommentReplies";
-import { useUserById } from "@client/hooks/useUserById";
+import { useReportComment } from "@client/hooks/comments/useReportComment";
+import { useReplyComment } from "@client/hooks/comments/useReplyComment";
+import { useCommentReplies } from "@client/hooks/comments/useCommentReplies";
+import { useUserById } from "@client/hooks/users/useUserById";
 import CommentVote from "@client/components/vote/CommentVote";
 import { useToaster } from "@client/providers/ToasterProvider";
 import { FaUserCircle } from "react-icons/fa";

@@ -44,6 +44,14 @@ done
 
 echo "All required Docker images are ready."
 
+echo "Building Docker container for custom setups (if applicable)..."
+if [ -f "Dockerfile" ]; then
+    echo "Found Dockerfile. Building custom container..."
+    docker build -t custom-app:latest .
+else
+    echo "No Dockerfile found. Skipping custom container build."
+fi
+
 echo "Checking for existing database..."
 DB_PATH="server/libs/prisma/dev.db"
 if [ -f "$DB_PATH" ]; then
@@ -59,15 +67,6 @@ prisma generate --schema=server/libs/prisma/schema.prisma
 
 echo "Running Prisma migrations..."
 prisma migrate deploy --schema=server/libs/prisma/schema.prisma
-
-
-echo "Building Docker container for custom setups (if applicable)..."
-if [ -f "Dockerfile" ]; then
-    echo "Found Dockerfile. Building custom container..."
-    docker build -t custom-app:latest .
-else
-    echo "No Dockerfile found. Skipping custom container build."
-fi
 
 echo "Creating admin user in the database..."
 npx node scripts/createAdminUser.js

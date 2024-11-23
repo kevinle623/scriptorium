@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import { useUploadAvatar } from "@client/hooks/useUploadAvatar";
+import { useUploadAvatar } from "@client/hooks/users/useUploadAvatar";
 import Image from "next/image"
 
 interface AvatarUploaderProps {

@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
-import { useBlogPostComments } from "@client/hooks/useBlogPostComments";
-import { useCommentBlogPost } from "@client/hooks/useCommentBlogPost";
+import { useBlogPostComments } from "@client/hooks/blogs/useBlogPostComments";
+import { useCommentBlogPost } from "@client/hooks/blogs/useCommentBlogPost";
 import LoadingSpinner from "@client/components/loading/LoadingSpinner";
 import { useToaster } from "@client/providers/ToasterProvider";
 import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
