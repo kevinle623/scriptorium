@@ -119,7 +119,7 @@ export async function getCodeTemplatesByUserId(
                         },
                     },
                     {
-                        description: {
+                        explanation: {
                             contains: content,
                         },
                     },
