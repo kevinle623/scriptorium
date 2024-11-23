@@ -11,10 +11,12 @@ import { useUser } from "@client/hooks/users/useUser";
 import { FaEdit } from "react-icons/fa";
 import UserProfileSection from "@client/components/user/UserProfileSection";
 import {CodingLanguage} from "@/types/dtos/codeTemplates";
+import {useAuth} from "@client/providers/AuthProvider";
 
 const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
     const id = parseInt(params.id, 10);
     const router = useRouter();
+    const { isAuthed } = useAuth()
     const { triggerOnboarding } = useJitOnboarding();
     const { setCode, setLanguage, resetPlayground } = useCodePlaygroundCache();
     const [isAuthor, setIsAuthor] = useState(false);
@@ -26,12 +28,12 @@ const CodeTemplatePage = ({ params }: { params: { id: string } }) => {
     const [stdin, setStdin] = useState("");
 
     useEffect(() => {
-        if (user && codeTemplate) {
-            if (user.id === codeTemplate.userId) {
-                setIsAuthor(true);
-            }
+        if (user && codeTemplate && isAuthed) {
+            setIsAuthor(user.id === codeTemplate.userId);
+        } else {
+            setIsAuthor(false);
         }
-    }, [user, codeTemplate]);
+    }, [user, codeTemplate, isAuthed]);
 
     const handleFork = () => {
         triggerOnboarding(() => router.push(`/code-templates/${id}/fork`));

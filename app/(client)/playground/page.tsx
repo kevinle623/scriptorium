@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useJitOnboarding } from "@client/providers/JitOnboardingProvider";
 import {CodingLanguage} from "@/types/dtos/codeTemplates";
 import axios from "axios";
+import {useToaster} from "@client/providers/ToasterProvider";
 
 const Playground = () => {
     const { language, code, setLanguage, setCode, resetPlayground } = useCodePlaygroundCache();
@@ -19,6 +20,7 @@ const Playground = () => {
     const [editorTheme, setEditorTheme] = useState("vs-dark");
     const router = useRouter();
     const { triggerOnboarding } = useJitOnboarding();
+    const { setToaster } = useToaster()
 
     useEffect(() => {
         setEditorTheme(resolvedTheme === "light" ? "vs-light" : "vs-dark");
@@ -29,9 +31,11 @@ const Playground = () => {
             { language: language as CodingLanguage, code, stdin },
             {
                 onSuccess: (data) => {
+                    setToaster("Code ran successfully!", "success")
                     setOutput(data.result);
                 },
                 onError: (error: unknown) => {
+                    setToaster("Ran into an error running the code...", "error")
                     if (axios.isAxiosError(error)) {
                         const errorMessage =
                             error.response?.data?.error || "An unexpected error occurred";

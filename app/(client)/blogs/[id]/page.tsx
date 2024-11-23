@@ -12,12 +12,14 @@ import BlogPostReportForm from "@client/components/report/BlogPostReportForm";
 import { useCodeTemplates } from "@client/hooks/codeTemplates/useCodeTemplates";
 import Link from "next/link";
 import UserProfileSection from "@client/components/user/UserProfileSection";
+import {useAuth} from "@client/providers/AuthProvider";
 
 const BlogPost = () => {
     const params = useParams();
     const id = params?.id as string;
     const router = useRouter();
 
+    const { isAuthed } = useAuth()
     const [isAuthor, setIsAuthor] = useState(false);
 
     const { blogPost, blogLoading } = useBlogPost(id);
@@ -28,10 +30,12 @@ const BlogPost = () => {
     });
 
     useEffect(() => {
-        if (user && blogPost) {
+        if (user && blogPost && isAuthed) {
             setIsAuthor(user.id === blogPost.userId);
+        } else {
+            setIsAuthor(false)
         }
-    }, [user, blogPost]);
+    }, [user, blogPost, isAuthed]);
 
     if (blogLoading || userLoading) {
         return <LoadingSpinnerScreen />;

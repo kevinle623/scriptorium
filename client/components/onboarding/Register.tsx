@@ -7,6 +7,7 @@ import {CreateUserRequest, RegisterResponse} from "@/types/dtos/user";
 import {Role} from "@/types/dtos/roles";
 import {useToaster} from "@client/providers/ToasterProvider";
 import {useAuth} from "@client/providers/AuthProvider";
+import {AxiosError} from "axios";
 
 interface RegisterProps {
     onSuccess: () => void;
@@ -43,9 +44,11 @@ const Register = ({ onSuccess, toggleLogin }: RegisterProps) => {
                 onSuccess();
             },
             onError: (error: any) => {
-                const message = error.message || "An unexpected error occurred.";
-                setErrorMessage(message);
-                setToaster(message, "error");
+                const axiosError = error as AxiosError<{ error: string }>;
+                const errorMessage =
+                    axiosError.response?.data?.error || "An unexpected error occurred";
+                setToaster(errorMessage, "error");
+                setErrorMessage(errorMessage || "Failed to register")
             },
         });
     };

@@ -8,6 +8,7 @@ import { useCreateCodeTemplate } from "@client/hooks/codeTemplates/useCreateCode
 import { useCodePlaygroundCache } from "@client/providers/CodePlaygroundCacheProvider";
 import TagInput from "@client/components/tag-input/TagInput";
 import {CodingLanguage} from "@/types/dtos/codeTemplates";
+import {useToaster} from "@client/providers/ToasterProvider";
 
 interface CreateCodeTemplateFormValues {
     title: string;
@@ -19,6 +20,7 @@ const CreateCodeTemplatePage = () => {
     const router = useRouter();
     const { language, code, resetPlayground } = useCodePlaygroundCache();
     const { mutate: createTemplate, isPending: isLoading } = useCreateCodeTemplate();
+    const { setToaster } = useToaster()
 
     const {
         register,
@@ -44,9 +46,11 @@ const CreateCodeTemplatePage = () => {
                 onSuccess: () => {
                     resetPlayground()
                     router.push("/code-templates");
+                    setToaster("Successfully saved as a code template!", "success")
                 },
                 onError: (error: Error) => {
                     console.error("Error creating template:", error.message);
+                    setToaster("Failed to save the code template...", "error")
                 },
             }
         );

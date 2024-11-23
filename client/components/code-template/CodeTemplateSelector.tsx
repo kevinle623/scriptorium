@@ -17,13 +17,11 @@ const CodeTemplateSelector = ({
     const [searchInput, setSearchInput] = useState(""); // For immediate input updates
     const { data, isLoading } = useCodeTemplates(filters);
 
-    // Debouncer: Update filters.title after 500ms of no input changes
     useEffect(() => {
         const handler = setTimeout(() => {
             setFilters((prev) => ({ ...prev, title: searchInput, page: 1 }));
         }, 500);
 
-        // Cleanup the timeout if the user types again before 500ms
         return () => clearTimeout(handler);
     }, [searchInput]);
 
@@ -36,7 +34,7 @@ const CodeTemplateSelector = ({
     };
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchInput(e.target.value); // Update the search input immediately
+        setSearchInput(e.target.value);
     };
 
     const handlePageChange = (newPage: number) => {
