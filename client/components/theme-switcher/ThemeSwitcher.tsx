@@ -17,7 +17,7 @@ const ThemeSwitcher = () => {
 
     if (!mounted) return null;
 
-    const themes = ["light", "dark", "system"];
+    const themes = ["light", "dark"];
     const icons = {
         light: faSun,
         dark: faMoon,
@@ -25,7 +25,7 @@ const ThemeSwitcher = () => {
     };
 
     const toggleTheme = () => {
-        const currentIndex = themes.indexOf(resolvedTheme || "system");
+        const currentIndex = themes.indexOf(resolvedTheme || "light");
         const nextTheme = themes[(currentIndex + 1) % themes.length];
         setTheme(nextTheme);
     };
@@ -36,7 +36,7 @@ const ThemeSwitcher = () => {
             className="flex items-center justify-center gap-3 px-6 py-3 rounded-lg text-gray-900 bg-gray-200 hover:bg-gray-300 dark:text-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 shadow-lg transition-all"
             aria-label={`Toggle Theme (${resolvedTheme})`}
         >
-            <FontAwesomeIcon icon={icons[resolvedTheme as Theme || "system"] as IconProp} className="text-xl" />
+            <FontAwesomeIcon icon={icons[resolvedTheme as Theme || "light"] as IconProp} className="text-xl" />
         </button>
     );
 };

@@ -38,6 +38,12 @@ axiosInstance.interceptors.response.use(
                     throw new Error("No refresh token available");
                 }
 
+                const originalRequest = error.config;
+                if (originalRequest?.url?.includes('/refresh')) {
+                    clearTokens();
+                    return Promise.reject(error);
+                }
+
                 const { accessToken, refreshToken: newRefreshToken } = await refreshUser(refreshToken);
                 setAccessToken(accessToken);
                 setRefreshToken(newRefreshToken)
