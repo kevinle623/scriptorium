@@ -116,7 +116,6 @@ function buildDockerCommand(
 }
 
 function getExecutionCommand(language: CodingLanguage, fileName: string, stdinRedirect: string): string {
-    console.log("file name", fileName)
     switch (language.toLowerCase()) {
         case CodingLanguage.C:
             return `sh -c "gcc /sandbox/${fileName} -o /sandbox/a.out && /sandbox/a.out ${stdinRedirect}"`;
@@ -173,5 +172,5 @@ async function executeCodeWithDocker(
     const dockerImage = getDockerImageName(language);
     const dockerCommand = buildDockerCommand(language, dockerImage, filePath, stdinFilePath);
 
-    return await runWithExec(dockerCommand);
+    return runWithExec(dockerCommand);
 }

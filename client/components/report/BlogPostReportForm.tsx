@@ -5,6 +5,7 @@ import { useReportBlogPost } from "@client/hooks/blogs/useReportBlogPost";
 import { ReportBlogPostRequest } from "@/types/dtos/blogPosts";
 import { useToaster } from "@client/providers/ToasterProvider";
 import {AxiosError} from "axios";
+import {useJitOnboarding} from "@client/providers/JitOnboardingProvider";
 
 interface BlogPostReportProps {
     blogPostId: string;
@@ -15,6 +16,7 @@ const BlogPostReportForm = ({ blogPostId }: BlogPostReportProps) => {
     const [showReportForm, setShowReportForm] = useState(false);
     const { mutate: reportBlogPost } = useReportBlogPost();
     const { setToaster } = useToaster();
+    const { triggerOnboarding } = useJitOnboarding()
 
     const handleReport = () => {
         if (!reportReason.trim()) {
@@ -22,7 +24,7 @@ const BlogPostReportForm = ({ blogPostId }: BlogPostReportProps) => {
             return;
         }
 
-        reportBlogPost(
+        triggerOnboarding(() => reportBlogPost(
             { id: blogPostId, reason: reportReason } as ReportBlogPostRequest,
             {
                 onSuccess: () => {
@@ -39,7 +41,7 @@ const BlogPostReportForm = ({ blogPostId }: BlogPostReportProps) => {
                     console.error("Error reporting blog post:", errorMessage);
                 },
             }
-        );
+        ));
     };
 
     return (

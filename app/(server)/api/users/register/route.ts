@@ -3,6 +3,7 @@ import * as userService from "@server/services/users";
 import {Role} from "@/types/dtos/roles";
 import {CreateUserRequest} from "@/types/dtos/user";
 import {routeHandlerException} from "@server/utils/exceptionUtils";
+import {isValidEmail} from "@server/utils/emailUtils";
 
 export async function POST(req: Request) {
     try {
@@ -11,6 +12,13 @@ export async function POST(req: Request) {
         if (!email || !phone || !password || !firstName || !lastName || !role) {
             return NextResponse.json(
                 { message: "Not all required fields provided to register the user" },
+                { status: 400 }
+            );
+        }
+
+        if (!isValidEmail(email)) {
+            return NextResponse.json(
+                { message: "Invalid email format" },
                 { status: 400 }
             );
         }
