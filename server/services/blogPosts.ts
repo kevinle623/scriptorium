@@ -1,4 +1,3 @@
-
 import {prisma} from "@server/libs/prisma/client";
 import {
     BlogPost,
@@ -54,15 +53,19 @@ export async function createBlogPost(createBlogPostRequest: CreateBlogPostReques
 export async function deleteBlogPost(blogPostId: number) {
     try {
         await prisma.$transaction(async (prismaTx) => {
-            const existingBlogPost = await blogPostRepository.getBlogPostById(prismaTx, blogPostId);
-            if (!existingBlogPost) {
-                throw new NotFoundException("Blog Post does not exist");
-            }
-            await codeTemplateRepository.deleteCodeTemplateRelationsByBlogPostId(prismaTx, blogPostId)
-            await reportRepository.deleteReportByBlogPostId(prismaTx, blogPostId)
-            await tagRepository.deleteBlogPostTags(prismaTx, blogPostId);
-            await blogPostRepository.deleteBlogPost(prismaTx, blogPostId);
-        });
+                const existingBlogPost = await blogPostRepository.getBlogPostById(prismaTx, blogPostId);
+                if (!existingBlogPost) {
+                    throw new NotFoundException("Blog Post does not exist");
+                }
+                await codeTemplateRepository.deleteCodeTemplateRelationsByBlogPostId(prismaTx, blogPostId)
+                await reportRepository.deleteReportByBlogPostId(prismaTx, blogPostId)
+                await tagRepository.deleteBlogPostTags(prismaTx, blogPostId);
+                await blogPostRepository.deleteBlogPost(prismaTx, blogPostId);
+            },
+            {
+                maxWait: 5000,
+                timeout: 10000,
+            });
 
         return;
     } catch (e) {
@@ -72,7 +75,7 @@ export async function deleteBlogPost(blogPostId: number) {
 
 export async function updateBlogPost(editBlogPostRequest: EditBlogPostRequest): Promise<BlogPost> {
     try {
-        const { blogPostId, tags = [] } = editBlogPostRequest;
+        const {blogPostId, tags = []} = editBlogPostRequest;
         const updatedBlogPost = await prisma.$transaction(async (prismaTx) => {
             const existingBlogPost = await blogPostRepository.getBlogPostById(prismaTx, blogPostId);
             if (!existingBlogPost) {
@@ -127,18 +130,21 @@ export async function getBlogPosts(
     getBlogPostsRequest: GetBlogPostRequest
 ): Promise<GetBlogPostsResult> {
     try {
-        const { orderBy } = getBlogPostsRequest;
+        const {orderBy} = getBlogPostsRequest;
 
         let totalCount, blogPosts;
 
         if (orderBy) {
             if (orderBy === 'mostReported') {
-                ({ totalCount, blogPosts } = await blogPostRepository.getMostReportedBlogPosts(prisma, getBlogPostsRequest))
+                ({
+                    totalCount,
+                    blogPosts
+                } = await blogPostRepository.getMostReportedBlogPosts(prisma, getBlogPostsRequest))
             } else {
-                ({ totalCount, blogPosts } = await blogPostRepository.getOrderedBlogPosts(prisma, getBlogPostsRequest));
+                ({totalCount, blogPosts} = await blogPostRepository.getOrderedBlogPosts(prisma, getBlogPostsRequest));
             }
         } else {
-            ({ totalCount, blogPosts } = await blogPostRepository.getBlogPosts(prisma, getBlogPostsRequest));
+            ({totalCount, blogPosts} = await blogPostRepository.getBlogPosts(prisma, getBlogPostsRequest));
         }
 
         const populatedBlogPosts = await Promise.all(
@@ -149,7 +155,7 @@ export async function getBlogPosts(
             })
         );
 
-        return { totalCount, blogPosts: populatedBlogPosts };
+        return {totalCount, blogPosts: populatedBlogPosts};
     } catch (e) {
         throw e;
     }
@@ -184,7 +190,7 @@ export async function reportBlogPost(userId: number, blogPostId: number, reason:
         if (existingReport) {
             throw new ServiceException("User already reported this blog post.")
         }
-        const report  = await reportRepository.createReport(prisma, reason, userId, blogPostId, undefined)
+        const report = await reportRepository.createReport(prisma, reason, userId, blogPostId, undefined)
         return report
     } catch (e) {
         throw e
@@ -209,7 +215,7 @@ export async function getBlogPostVoteByUserId(
     blogPostId: number,
 ): Promise<BlogPostVoteResponse> {
     try {
-        const { upVotes, downVotes } = await voteRepository.getVoteCountsByBlogPostId(prisma, blogPostId);
+        const {upVotes, downVotes} = await voteRepository.getVoteCountsByBlogPostId(prisma, blogPostId);
 
         const userVote = userId ? await voteRepository.getBlogPostVoteByUserId(prisma, userId, blogPostId) : null;
 
@@ -222,6 +228,7 @@ export async function getBlogPostVoteByUserId(
         throw e;
     }
 }
+
 export async function getDirectCommentsFromBlogPost(
     blogPostId: number,
     page: number,
@@ -256,7 +263,7 @@ export async function toggleHiddenBlogPost(blogPostId: number, hidden: boolean) 
 
 export async function getReportsForBlogPost(getBlogPostReportsRequest: GetBlogPostReportsRequest) {
     try {
-        const { blogPostId} = getBlogPostReportsRequest
+        const {blogPostId} = getBlogPostReportsRequest
         const blogPost = await blogPostRepository.getBlogPostById(prisma, blogPostId)
         if (!blogPost) throw new NotFoundException("Blog post does not exist")
         return await reportRepository.getBlogPostReports(prisma, getBlogPostReportsRequest)
