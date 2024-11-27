@@ -11,21 +11,21 @@ export async function POST(req: Request) {
 
         if (!email || !phone || !password || !firstName || !lastName || !role) {
             return NextResponse.json(
-                { message: "Not all required fields provided to register the user" },
+                { error: "Not all required fields provided to register the user" },
                 { status: 400 }
             );
         }
 
         if (!isValidEmail(email)) {
             return NextResponse.json(
-                { message: "Invalid email format" },
+                { error: "Invalid email format" },
                 { status: 400 }
             );
         }
 
         if (role != Role.ADMIN && role != Role.USER) {
             return NextResponse.json(
-                { message: "Invalid user role" },
+                { error: "Invalid user role" },
                 { status: 400 }
             );
         }

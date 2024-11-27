@@ -5,10 +5,8 @@ import { routeHandlerException } from "@server/utils/exceptionUtils";
 
 export async function POST(request: Request) {
     try {
-        // Extract user ID from the authorization service
         const { userId } = await authorizationService.verifyBasicAuthorization(request);
 
-        // Extract the file from the form data
         const formData = await request.formData();
         const file = formData.get("avatar") as File;
 
@@ -20,7 +18,7 @@ export async function POST(request: Request) {
 
         if (!file) {
             return NextResponse.json(
-                { message: "No file provided" },
+                { error: "No file provided" },
                 { status: 400 }
             );
         }

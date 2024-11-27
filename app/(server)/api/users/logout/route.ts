@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
         if (!accessToken || !refreshToken) {
             return NextResponse.json(
-                { message: "Access token or refresh token not provided" },
+                { error: "Access token or refresh token not provided" },
                 { status: 400 }
             );
         }

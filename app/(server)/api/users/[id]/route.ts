@@ -9,7 +9,7 @@ export async function GET(req: Request, { params }: { params: { id: string }}){
     try {
         if (!Number(params.id)) {
             return NextResponse.json(
-                { message: "Invalid id" },
+                { error: "Invalid id" },
                 { status: 400 }
             );
         }
